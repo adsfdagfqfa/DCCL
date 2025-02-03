@@ -20,8 +20,9 @@ export default class threeDModel {
         this.scene=null;
         //渲染器
         this.renderer=null;
-        //模型数组
-        this.models=null;
+        // 创建一个组，用于管理模型
+        this.group = new THREE.Group();
+        
         // 坐标轴辅助线
         this.axesHelper=null;
         // 环境光

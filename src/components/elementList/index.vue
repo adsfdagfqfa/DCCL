@@ -1,15 +1,23 @@
 <template>
   <el-scrollbar class="max-h-[500px]">
     <el-collapse v-model="activeNames" @change="handleChange">
-      <el-collapse-item title="Consistency" name="1">
-        <div>
-          Consistent with real life: in line with the process and logic of real
-          life, and comply with languages and habits that the users are used to;
-        </div>
-        <div>
-          Consistent within interface: all elements should be consistent, such
-          as: design style, icons and texts, position of elements, etc.
-        </div>
+      <el-collapse-item  name="opticalElement">
+        <template #title>
+          <img src="@/assets/lens.svg"  class="w-3" />光学元件
+        </template>
+        <el-row>
+          <el-col class="text-center" :span="12" v-for="model in opticalModelList" :key="model.type">
+            <div draggable="true"
+                @dragstart="e => onDragstart(e, model)"
+                @drag="e => onDrag(e)">
+              <div>
+                <el-tooltip effect="dark" :content="`${model.name}:${model.type}`"  placement="top">
+                  <b> {{ model.name }}</b>
+                </el-tooltip>
+              </div>
+            </div>
+          </el-col>
+        </el-row>
       </el-collapse-item>
       <el-collapse-item title="Feedback" name="1111">
         <div>
@@ -21,39 +29,26 @@
           elements of the page.
         </div>
       </el-collapse-item>
-      <el-collapse-item title="Efficiency" name="1314">
-        <div>
-          Simplify the process: keep operating process simple and intuitive;
-        </div>
-        <div>
-          Definite and clear: enunciate your intentions clearly so that the
-          users can quickly understand and make decisions;
-        </div>
-        <div>
-          Easy to identify: the interface should be straightforward, which helps
-          the users to identify and frees them from memorizing and recalling.
-        </div>
-      </el-collapse-item>
-      <el-collapse-item title="Controllability" name="4">
-        <div>
-          Decision making: giving advices about operations is acceptable, but do
-          not make decisions for the users;
-        </div>
-        <div>
-          Controlled consequences: users should be granted the freedom to
-          operate, including canceling, aborting or terminating current
-          operation.
-        </div>
-      </el-collapse-item>
+      
+      
     </el-collapse>
   </el-scrollbar>
 </template>
 
 <script setup>
 import { ref } from 'vue';
-
+import { opticalModelList } from '@/utils/models/model'; 
+//记录打开的折叠面板
 const activeNames = ref([ ])
 const handleChange = (val) => {
   console.log(val)
 }
+const onDragstart=(event,model)=>{
+
+}
+//拖拽,关闭默认行为
+const onDrag = event => {
+  event.preventDefault();
+};
+
 </script>
