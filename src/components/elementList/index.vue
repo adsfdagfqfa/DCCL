@@ -8,7 +8,7 @@
         <el-row>
           <el-col class="text-center" :span="12" v-for="model in opticalModelList" :key="model.type">
             <div draggable="true"
-                @dragstart="e => onDragstart(e, model)"
+                @dragstart="e => onDragStart(e, model)"
                 @drag="e => onDrag(e)">
               <div>
                 <el-tooltip effect="dark" :content="`${model.name}:${model.type}`"  placement="top">
@@ -38,13 +38,15 @@
 <script setup>
 import { ref } from 'vue';
 import { opticalModelList } from '@/utils/models/model'; 
+import { useThreeInstanceStore } from '@/store';
 //记录打开的折叠面板
 const activeNames = ref([ ])
+const store=useThreeInstanceStore();
 const handleChange = (val) => {
   console.log(val)
 }
-const onDragstart=(event,model)=>{
-
+const onDragStart=(event,model)=>{
+  store.threeInstance.setDragModel(model)
 }
 //拖拽,关闭默认行为
 const onDrag = event => {

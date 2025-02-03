@@ -14,6 +14,6 @@ export function onlyKey(len, radix) {
             uuid[i] = chars[Math.floor(Math.random() * radix)];
         }
     }
-
+    //将数组转化为字符串返回
     return uuid.join("");
 }

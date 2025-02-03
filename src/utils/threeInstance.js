@@ -3,7 +3,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
 
 
-export default class threeDModel {
+export default class threeInstance {
     constructor(id) {
         this.id = id;
         //绑定的元素
@@ -31,6 +31,9 @@ export default class threeDModel {
         this.mousePosition = new THREE.Vector2();
         // 碰撞检测
         this.raycaster = new THREE.Raycaster();
+
+        // 拖拽模型
+        this.dragModel={}
     }
     init() {
         this.initScene();
@@ -98,7 +101,7 @@ export default class threeDModel {
         this.scene.add(this.axesHelper);
     }
     setupScene() {
-        //this.addLight();
+        // this.addLight();
         // this.addMirrors(-10);
         // this.addLenses(20);
         // this.addGainMedium(30);
@@ -142,6 +145,12 @@ export default class threeDModel {
         const direction = new THREE.Vector3(0, 0, -1); // Z轴负半轴方向
         this.currentCamera.lookAt(this.initialPosition.clone().add(direction)); // 相机沿指定方向看
     }
+    //保存拖拽的模型的相应参数
+    setDragModel(model){
+        this.dragModel=model
+        console.log(this.dragModel)
+    }
+
     // 动画循环
     animate = () => {
         requestAnimationFrame(this.animate);
