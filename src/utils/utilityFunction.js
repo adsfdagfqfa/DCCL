@@ -8,7 +8,6 @@ export function onlyKey(len, radix) {
     const chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     const uuid = [];
     radix = radix || chars.length;
-  
     if (len) {
         for (let i = 0; i < len; i++) {
             uuid[i] = chars[Math.floor(Math.random() * radix)];

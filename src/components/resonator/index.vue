@@ -1,6 +1,6 @@
 <template>
     <div style=" width: 900px; height: 300px" class="relative" id="resonator" 
-        @drop="onDragDrop">
+        @drop="onDragDrop" @dragover="onDragOver">
       <div class="absolute top-2.5 right-1/2">
         <el-tooltip effect="dark" content="重置视角" placement="top">
           <el-icon :size="18" color="#0000ff" @click="resetCamera">
@@ -45,22 +45,19 @@ function switchType () {
 function resetCamera(){
   store.threeInstance.resetCameraToNegativeZ()
 }
-
-function onDragDrop(){
-  // const { dragGeometryModel, dragTag, activeDragManyModel } = store.modelApi;
-  // const { clientX, clientY } = e;
-
-  // //更新拖拽位置
-  // const updateDragPosition = model => {
-  //   model.clientX = clientX;
-  //   model.clientY = clientY;
-  // };
-
-  // //处理几何体模型
-  // if (dragGeometryModel.id && store.modelType === "geometry") {
-  //   updateDragPosition(dragGeometryModel);
-  //   store.modelApi.onSwitchModel(dragGeometryModel);
-  // }
+function onDragOver(e){
+  e.preventDefault(); // 阻止默认行为，允许元素接收拖拽内容
+}
+const onDragDrop= (e) => {
+  const  dragModel  = store.threeInstance.dragModel;
+  const { clientX, clientY } = e;
+  // console.log(clientX)
+  // console.log(clientY)
+  // console.log(dragModel)
+  //模型
+  if (dragModel.id) {
+    store.threeInstance.addModel(dragModel);
+  }
 }
 </script>
     

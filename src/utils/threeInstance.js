@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-
-
+import { ModelFactory } from "@/utils/modelFactory/modelFactory"
+import { onlyKey } from './utilityFunction';
 
 export default class threeInstance {
     constructor(id) {
@@ -13,7 +13,7 @@ export default class threeInstance {
         this.camera3D=null;
         this.currentCamera=null;
         //相机初始位置
-        this.initialPosition=new THREE.Vector3(300,0,50);
+        this.initialCameraPosition=new THREE.Vector3(300,0,50);
         // 控制器
         this.controls=null;
         //场景
@@ -22,7 +22,9 @@ export default class threeInstance {
         this.renderer=null;
         // 创建一个组，用于管理模型
         this.group = new THREE.Group();
-        
+        this.model=null;
+        this.modelList=[]
+        this.initialModelPosition=new THREE.Vector3(0,0,0);
         // 坐标轴辅助线
         this.axesHelper=null;
         // 环境光
@@ -31,7 +33,8 @@ export default class threeInstance {
         this.mousePosition = new THREE.Vector2();
         // 碰撞检测
         this.raycaster = new THREE.Raycaster();
-
+        //显示辉光
+        this.glowModelList=null;
         // 拖拽模型
         this.dragModel={}
     }
@@ -72,7 +75,7 @@ export default class threeInstance {
         this.currentCamera.position.z=50
         // this.currentCamera.lookAt(new THREE.Vector3(0,0,0))
         console.log(this.currentCamera.position)
-
+        
        
     }
     //创建渲染器
@@ -141,16 +144,71 @@ export default class threeInstance {
     } 
     //重置相机位置，并使其对准Z轴负半轴
     resetCameraToNegativeZ() {
-        this.currentCamera.position.set(this.initialPosition.x,this.initialPosition.y,this.initialPosition.z);
+        
+        this.controls.target.set(0, 0, 0);
+        this.currentCamera.position.set(this.initialCameraPosition.x,this.initialCameraPosition.y,this.initialCameraPosition.z);
         const direction = new THREE.Vector3(0, 0, -1); // Z轴负半轴方向
-        this.currentCamera.lookAt(this.initialPosition.clone().add(direction)); // 相机沿指定方向看
+        this.currentCamera.lookAt(this.initialCameraPosition.clone().add(direction)); // 相机沿指定方向看
     }
     //保存拖拽的模型的相应参数
     setDragModel(model){
         this.dragModel=model
         console.log(this.dragModel)
     }
-
+    setModelList(mesh) {
+        mesh.traverse(v => {
+          if (!v.isMesh) return;
+          this.modelList.push(v);
+        });
+    }
+    //放置模型
+    setModel(model){
+        return new Promise((resolve) => {
+            // 创建几何体
+            console.log(model)
+            const mesh = ModelFactory.createModel(model.type);
+            //初始位置
+            
+            mesh.position.copy(this.initialModelPosition);
+            
+            mesh.userData.name = model.type + "_" + onlyKey(5,10);
+            
+            this.group.add(mesh);
+            this.model = this.group;
+            //获取模型的数组
+            this.setModelList(mesh);
+            //储存对应的名字
+           
+            this.glowModelList = this.modelList.map(v => v.userData.name);
+            
+            this.scene.add(this.model);
+            // //计算控制器缩放大小
+            // const box = new THREE.Box3().setFromObject(this.model);
+            // const size = box.getSize(new THREE.Vector3());
+            // this.controls.maxDistance = size.length() * 10;
+            
+            resolve(true);
+        });
+    }
+    
+    //添加模型
+    addModel(model){
+        return new Promise(async (resolve, reject) => {
+            try {
+                // 加载模型
+                if (model.type) {
+                    console.log(model.type)
+                    await this.setModel(model);
+                    //this.outlinePass.renderScene = this.geometryGroup;
+                    resolve();
+                } 
+            } catch (err) {
+                console.log("Error:" ,err);
+                reject();
+            }
+        });
+    }
+    
     // 动画循环
     animate = () => {
         requestAnimationFrame(this.animate);
