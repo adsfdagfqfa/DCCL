@@ -34,7 +34,7 @@ export default class threeInstance {
         // 碰撞检测
         this.raycaster = new THREE.Raycaster();
         //显示辉光
-        this.glowModelList=null;
+        this.glowModelList=[];
         // 拖拽模型
         this.dragModel={}
     }
@@ -172,6 +172,7 @@ export default class threeInstance {
             mesh.position.copy(this.initialModelPosition);
             
             mesh.userData.name = model.type + "_" + onlyKey(5,10);
+            mesh.userData.attribute=model
             
             this.group.add(mesh);
             this.model = this.group;
@@ -186,7 +187,7 @@ export default class threeInstance {
             // const box = new THREE.Box3().setFromObject(this.model);
             // const size = box.getSize(new THREE.Vector3());
             // this.controls.maxDistance = size.length() * 10;
-            
+            console.log(mesh.userData)
             resolve(true);
         });
     }

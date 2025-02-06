@@ -22,4 +22,8 @@ import ElementList from '@/components/elementList/index.vue'
 import ElementPanel from '@/components/elementPanel/index.vue'
 
 import Resonator from '@/components/resonator/index.vue';
+import { onMounted } from 'vue';
+onMounted(async()=>{
+  console.log("mainView","挂载")
+})
 </script>

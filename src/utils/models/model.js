@@ -3,7 +3,7 @@ const opticalModelList=[
         id: 1,
         name: '凸透镜',
         type: 'lens',
-        position: null,
+        // position: null,
         focalLength: 0.03,
         radius: 0.012
     },
@@ -11,7 +11,7 @@ const opticalModelList=[
         id: 2,
         name: '平面镜',
         type: 'mirror',
-        position :null,
+        // position :null,
         reflectivity:1,
         radius:0.012,
     },
@@ -19,7 +19,7 @@ const opticalModelList=[
         id: 3,
         name:'介质',
         type:'medium',
-        position:null,
+        // position:null,
         radius:0.003,
         length:0.001,
         pumpEfficiency:0.72,//泵浦效率

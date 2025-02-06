@@ -1,5 +1,5 @@
 <template>
-    <div style=" width: 900px; height: 300px" class="relative" id="resonator" 
+    <div  style="height:400px" class="relative" id="resonator" 
         @drop="onDragDrop" @dragover="onDragOver">
       <div class="absolute top-2.5 right-1/2">
         <el-tooltip effect="dark" content="重置视角" placement="top">
@@ -50,7 +50,6 @@ function onDragOver(e){
 }
 const onDragDrop= (e) => {
   const  dragModel  = store.threeInstance.dragModel;
-  const { clientX, clientY } = e;
   // console.log(clientX)
   // console.log(clientY)
   // console.log(dragModel)
