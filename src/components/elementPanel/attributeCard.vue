@@ -4,14 +4,15 @@
       <el-icon size="20"><List/></el-icon>
       <span> 模型列表 </span>
     </div>
-    <el-scrollbar>
-      <div  @click="onChangeSelectedModel()"
-            v-for="mesh in modelList"
+    <el-scrollbar max-height="150">
+      <div  v-for="mesh in modelList"
             :key="mesh.userData.name">
-        <div class="flex justify-between items-center" @click="setSelectedElement(mesh.userData.name)">
+        <div  class="flex justify-between items-center"
+              :class="mesh.userData.name===store.selectedElement?'choose':''" 
+              @click="setSelectedElement(mesh.userData.name)">
           <span>{{ mesh.userData.name }} </span>
           <el-space>
-            <div v-if="mesh.userData.name===store.selectedElement">
+            <div v-show="mesh.userData.name===store.selectedElement">
               <el-icon size="20" color="#0c5df2">
                 <Check/>
               </el-icon>
@@ -31,52 +32,51 @@
       <el-icon size="20"><Edit/></el-icon>
       <span>编辑面板</span>
     </div>
-    <div v-for="(value, key) in component" :key="key">
-      <label :for="key">{{ key }}: </label>
-      <!-- <el-input v-if="isEditableType(key)"  v-model="component.key" @blur="updateComponent" placeholder="请输入"/>
-      <div v-else-if="key==='position'">
-          <div class="flex items-center justify-center">
-              <span>x:</span>
-              <el-input v-model="component.position.x" @blur="updateComponent" placeholder="请输入"/>
-          </div>
-          <div class="flex items-center justify-center">
-              <span>y:</span>
-              <el-input v-model="component.position.y" @blur="updateComponent" placeholder="请输入"/>
-          </div>
-          <div class="flex items-center justify-center">
-              <span>z:</span>
-              <el-input v-model="component.position.z" @blur="updateComponent" placeholder="请输入"/>
-          </div>
-      </div> -->
-      <!-- <span v-else>{{ value }}</span> -->
+    <div v-for="(value, key) in attribute" :key="key">
+      <div v-if="isEditableType(key)" class="flex justify-between gap-2"> 
+        <label class="no-wrap" :for="key">{{keyMappings[key] }} </label>
+        <el-input  v-model="attribute[key]"  placeholder="请输入"/>
+      </div>
     </div>
   </div>
+  <div class="flex flex-col">
+    <div class="flex items-center">
+        <el-icon size="20"><Location /></el-icon>
+        <span> 模型位置 </span>
+    </div>
+    <div class="flex" v-if="store.selectedElement"> 
+      <el-button class="mx-2" type="primary" link>X 轴</el-button>
+      <el-slider class="mx-2" v-model="position.x"/>   
+    </div>
+    <div class="flex" v-if="store.selectedElement">
+      <el-button class="mx-2" type="primary" link>Y 轴</el-button>
+      <el-slider class="mx-2" v-model="position.y"/> 
+    </div></div>
 </template>
   
 <script setup>
-
+import { keyMappings } from '@/utils/models/model';
 import { computed, ref ,reactive} from 'vue';
 import { onMounted } from 'vue';
 import { watch } from 'vue';
 import { useThreeInstanceStore } from '@/store';
 //icon相应的图表需要重新引入
-import {List,Delete,Check,Edit} from '@element-plus/icons-vue'
+import {List,Delete,Check,Edit,Location} from '@element-plus/icons-vue'
 const store=useThreeInstanceStore();
 
 
 
 function isEditableType(key) {
-    //定义哪些属性是可以编辑的
-    
-    const editableTypes = [ 'length', 'focalLength','radius','reflectivity'];
-    return editableTypes.includes(key);
+  //判断是否可编辑 
+  const readOnlyTypes = [ 'id', 'type','name'];
+  return !readOnlyTypes.includes(key);
 }
-function updateComponent() {
-    // 通知父组件对象已更新
-    console.log(component.value)
-    emits('update:component', component.value);
+// function updateComponent() {
+//   // 通知父组件对象已更新
+//   console.log(component.value)
+//   emits('update:component', component.value);
     
-}
+// }
 function setSelectedElement(name){
   if(name){
     store.setSelectedElement(name)
@@ -88,16 +88,31 @@ function setSelectedElement(name){
 //可选链运算符?.
 const modelList = computed(() => store.threeInstance?.modelList);
 
-const component=ref({})
+const attribute=ref({})
+const position=ref({})
 watch(()=>store.selectedElement,(newVal)=>{
   
   const foundItem=modelList.value?.filter(item=>item.userData.name===newVal)
+
   if (foundItem) {
-    console.log(foundItem.userData)
-    component.value = foundItem[0].userData.attribute;
-    
+    // console.log(foundItem.userData)
+    attribute.value = foundItem[0]?.userData.attribute;
+    position.value=foundItem[0]?.position
   } else {
-    component.value = undefined;
+    attribute.value = undefined;
   }
+  console.log(attribute.value)
+  console.log(foundItem[0].userData.attribute)
 })
+
+
 </script>
+
+<style scoped>
+.choose{
+  background: #eeeeee;
+}
+.no-wrap {
+  white-space: nowrap;  
+}
+</style>

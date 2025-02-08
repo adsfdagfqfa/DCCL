@@ -28,4 +28,13 @@ const opticalModelList=[
 
     }
 ]
-export {opticalModelList}
+const keyMappings={
+    radius:"半径(m)",
+    length:"长度(m)",
+    pumpEfficiency:"泵浦效率",//泵浦效率
+    sigma:"受激发射截面(m²)", //Nd:YVO4 吸收发射截面
+    tau:"上能级粒子寿命(s)",  //Nd:YVO4 介质上能级粒子寿命
+    reflectivity:"反射率",
+    focalLength:"焦距(m)"
+}
+export {opticalModelList,keyMappings}

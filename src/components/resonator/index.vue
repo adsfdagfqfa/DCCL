@@ -56,6 +56,8 @@ const onDragDrop= (e) => {
   //模型
   if (dragModel.id) {
     store.threeInstance.addModel(dragModel);
+    //结束后设置dragModel为空
+    store.threeInstance.dragModel=null;
   }
 }
 </script>

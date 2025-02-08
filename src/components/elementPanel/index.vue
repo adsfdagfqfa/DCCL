@@ -6,15 +6,14 @@
         <Card :item="store.getters.selectedElement" @update:component="updateComponent"></Card>
       </div>
     </div> -->
-  <div class="flex flex-col">
+  <el-scrollbar max-height="400px">
     <AttributeCard></AttributeCard>
-    <PositionCard></PositionCard>
-  </div>
+  </el-scrollbar>
     
 </template>
 
 <script setup>
-import PositionCard from './positionCard.vue';
+
 import AttributeCard from './attributeCard.vue';
 
 
