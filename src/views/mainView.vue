@@ -14,13 +14,16 @@
     <ElementPanel class="col-span-2"/>
     <!-- <test></test> -->
   </div>
+  <div>
+    <OutputResult></OutputResult>
+  </div>
 </template>
 
 <script setup>
 import Menu from '@/components/menu/index.vue'
 import ElementList from '@/components/elementList/index.vue'
 import ElementPanel from '@/components/elementPanel/index.vue'
-
+import OutputResult from '@/components/outputResult/index.vue';
 import Resonator from '@/components/resonator/index.vue';
 import { onMounted } from 'vue';
 onMounted(async()=>{
