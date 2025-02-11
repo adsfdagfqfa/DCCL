@@ -46,16 +46,17 @@
     </div>
     <div class="flex" v-if="store.selectedElement"> 
       <el-button class="mx-2" type="primary" link>X 轴</el-button>
-      <el-slider class="mx-2" v-model="position.x"/>   
+      <el-slider class="mx-2" v-model="position.x" @mouseup="handlePositionChange"/>   
     </div>
     <div class="flex" v-if="store.selectedElement">
       <el-button class="mx-2" type="primary" link>Y 轴</el-button>
-      <el-slider class="mx-2" v-model="position.y"/> 
-    </div></div>
+      <el-slider class="mx-2" v-model="position.y" @mouseup="handlePositionChange"/> 
+    </div>
+  </div>
 </template>
   
 <script setup>
-import { keyMappings } from '@/utils/models/model';
+import { keyMappings } from '@/utils/constant/model';
 import { computed, ref ,reactive} from 'vue';
 import { onMounted } from 'vue';
 import { watch } from 'vue';
@@ -104,6 +105,31 @@ watch(()=>store.selectedElement,(newVal)=>{
   console.log(attribute.value)
   console.log(foundItem[0].userData.attribute)
 })
+// watch(position,()=>{
+  
+//   if(modelList){
+    
+//     modelList.value.sort((a, b) => {
+//       return a.position.x-b.position.x ; // 从小到大排序
+//     });
+//   }
+// })
+function handlePositionChange(){
+  if(modelList){
+    modelList.value.sort((a, b) => {
+      return a.position.x-b.position.x ; // 从小到大排序
+    });
+    store.distance.forEach((item,index)=>{
+      store.distance[index]=modelList.value[index+1].position.x-modelList.value[index].position.x
+    })
+    store.angle.forEach((item,index)=>{
+      
+      let result=Math.atan((modelList.value[index+1].position.y-modelList.value[index].position.y)/store.distance[index])*180/Math.PI
+      store.angle[index]=isNaN(result)?0:result.toFixed(3)//保留三位小数
+   })
+  }
+  console.log("位置变化")
+}
 
 
 </script>

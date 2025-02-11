@@ -37,7 +37,7 @@
 
 <script setup>
 import { ref } from 'vue';
-import { opticalModelList } from '@/utils/models/model'; 
+import { opticalModelList } from '@/utils/constant/model'; 
 import { useThreeInstanceStore } from '@/store';
 //记录打开的折叠面板
 const activeNames = ref([ ])
