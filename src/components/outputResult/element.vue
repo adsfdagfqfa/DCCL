@@ -15,7 +15,7 @@
           <el-scrollbar   class="height-full">
             <div class="flex items-center">
               <span class="font-bold whitespace-nowrap min-w-36">模型元素(element)</span>
-              <div v-for="item in modelList" :key="item.userData.name" class="flex-item">
+              <div v-for="item in store.threeInstance?.modelList" :key="item.userData.name" class="flex-item">
                 <span>{{ item.userData.name }}</span>
               </div>
             </div>
@@ -24,7 +24,7 @@
               <div class="flex items-center">
                 <span class="font-bold whitespace-nowrap min-w-36">距离(distance)</span>
                 <div class="w-[100px]"></div><!-- 用于占位 -->
-                <div v-for="(d,index) in distance" :key="index" class="flex-item">
+                <div v-for="(d,index) in store.distance" :key="index" class="flex-item">
                   <span>{{ d }}</span>
                 </div>
               </div>
@@ -33,7 +33,7 @@
               <div class="flex items-center">
                 <span class="font-bold whitespace-nowrap min-w-36">角度(angle)</span>
                 <div class="w-[100px]"></div>
-                <div v-for="(a,index) in angle" :key="index" class="flex-item">
+                <div v-for="(a,index) in store.angle" :key="index" class="flex-item">
                   <span>{{ a }}</span>
                 </div>
               </div>
@@ -73,9 +73,8 @@ import { computed } from 'vue';
 import { useThreeInstanceStore } from '@/store';
 const store = useThreeInstanceStore();
 
-const modelList = computed(() => store.threeInstance?.modelList);
-const distance = computed(() => store.distance);
-const angle = computed(() => store.angle);
+// const modelList = computed(() => store.threeInstance?.modelList);
+
 </script>
 
 <style scoped>

@@ -209,7 +209,29 @@ export default class threeInstance {
             }
         });
     }
-    
+    deleteModel(name){
+      //移除对应模型
+      let model = this.modelList.find(v => v.userData.name === name);
+      if (model.geometry) {
+        console.log("model.geometry")
+        model.geometry.dispose();
+      }
+      // 清理材质
+      if (model.material) {
+        console.log("model.material")
+        if (Array.isArray(model.material)) {
+          model.material.forEach(mat => {
+            mat.dispose();
+            if (mat.map) mat.map.dispose();
+          });
+        } else {
+          model.material.dispose();
+          if (model.material.map) model.material.map.dispose();
+        }
+      }
+      this.group.remove(model);
+      this.modelList=this.modelList.filter(v => v.userData.name !== name);
+    }
     // 动画循环
     animate = () => {
         requestAnimationFrame(this.animate);

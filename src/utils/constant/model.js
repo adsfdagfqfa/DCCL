@@ -22,8 +22,8 @@ const opticalModelList=[
         // position:null,
         radius:0.003,
         length:0.001,
-        sigma:15.6e-23,     //Nd:YVO4 吸收发射截面
-        tau:100e-6          //Nd:YVO4 介质上能级粒子寿命
+        // sigma:15.6e-23,     //Nd:YVO4 吸收发射截面
+        // tau:100e-6          //Nd:YVO4 介质上能级粒子寿命
 
     }
 ]
@@ -40,14 +40,22 @@ const keyMappings={
   vacuumPermittivity: "真空介电常数(F/m)",
   vacuumPermeability: "真空磁导率(H/m)",
   elementaryCharge: "元电荷(C)",
-  pumpEfficiency:"泵浦效率",//泵浦效率
-  pumpWatt:"泵浦功率(W)",//泵浦功率
-  lamada:"波长(nm)"//波长
-}
-const parameterList = {
-  pumpEfficiency:0.72,//泵浦效率
-  pumpWatt:100,//泵浦功率
-  lamada:1064,//波长
+  pumpEfficiency:"泵浦效率",
+  pumpWatt:"泵浦功率(W)",
+  lamada:"波长(nm)",
+  sampleNumber:"采样点数量",
+  windowExpandFactor:"窗口扩展因子",
 }
 
-export {opticalModelList,keyMappings}
+const rangeLimits= {
+  //元件参数范围
+  focalLength: {min: 0, max: 1},
+  radius:{min: 0, max: 1},
+  length:{min: 0, max: 1},
+  reflectivity:{min: 0, max: 1},
+  //仿真参数范围
+  pumpEfficiency: { min: 0, max: 1 },
+  pumpWatt: { min: 0, max: 1000 },
+  lamada: { min: 700, max: 2500 }
+}
+export {opticalModelList , keyMappings , rangeLimits}

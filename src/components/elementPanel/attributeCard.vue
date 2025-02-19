@@ -18,7 +18,7 @@
               </el-icon>
             </div>
             <div>
-              <el-icon size="20" color="#FA8072">
+              <el-icon size="20" color="#FA8072" @click.stop="deleteModel(mesh.userData.name)">
                 <Delete/>
               </el-icon>
             </div>
@@ -35,7 +35,8 @@
     <div v-for="(value, key) in attribute" :key="key">
       <div v-if="isEditableType(key)" class="flex justify-between gap-2"> 
         <label class="no-wrap" :for="key">{{keyMappings[key] }} </label>
-        <el-input  v-model="attribute[key]"  placeholder="请输入"/>
+        <el-input type="number"  v-model.number="attribute[key]"  placeholder="请输入"
+                  :min="rangeLimits[key]?.min" :max="rangeLimits[key]?.max"/>
       </div>
     </div>
   </div>
@@ -46,23 +47,26 @@
     </div>
     <div class="flex" v-if="store.selectedElement"> 
       <el-button class="mx-2" type="primary" link>X 轴</el-button>
-      <el-slider class="mx-2" v-model="position.x" @mouseup="handlePositionChange"/>   
+      <el-slider class="mx-2" v-model="position.x"/>   
     </div>
     <div class="flex" v-if="store.selectedElement">
       <el-button class="mx-2" type="primary" link>Y 轴</el-button>
-      <el-slider class="mx-2" v-model="position.y" @mouseup="handlePositionChange"/> 
+      <el-slider class="mx-2" v-model="position.y"/> 
     </div>
   </div>
+  <el-button  @click="handleInput">输出数据</el-button>
 </template>
   
 <script setup>
-import { keyMappings } from '@/utils/constant/model';
+import { keyMappings  } from '@/utils/constant/model';
+import { rangeLimits } from '@/utils/constant/model';
 import { computed, ref ,reactive} from 'vue';
 import { onMounted } from 'vue';
 import { watch } from 'vue';
 import { useThreeInstanceStore } from '@/store';
 //icon相应的图表需要重新引入
 import {List,Delete,Check,Edit,Location} from '@element-plus/icons-vue'
+import { storeToRefs } from 'pinia';
 const store=useThreeInstanceStore();
 
 
@@ -76,7 +80,6 @@ function isEditableType(key) {
 //   // 通知父组件对象已更新
 //   console.log(component.value)
 //   emits('update:component', component.value);
-    
 // }
 function setSelectedElement(name){
   if(name){
@@ -92,46 +95,61 @@ const modelList = computed(() => store.threeInstance?.modelList);
 const attribute=ref({})
 const position=ref({})
 watch(()=>store.selectedElement,(newVal)=>{
-  
-  const foundItem=modelList.value?.filter(item=>item.userData.name===newVal)
 
-  if (foundItem) {
+  const foundItem=modelList.value?.filter(item=>item.userData.name===newVal)
+  
+  if (foundItem.length!==0) {
+    console.log(111)
     // console.log(foundItem.userData)
     attribute.value = foundItem[0]?.userData.attribute;
     position.value=foundItem[0]?.position
   } else {
+    console.log(222)
+    //未找到时候设置为undefined
     attribute.value = undefined;
   }
-  console.log(attribute.value)
-  console.log(foundItem[0].userData.attribute)
-})
-// watch(position,()=>{
   
-//   if(modelList){
-    
-//     modelList.value.sort((a, b) => {
-//       return a.position.x-b.position.x ; // 从小到大排序
-//     });
-//   }
-// })
-function handlePositionChange(){
+})
+
+watch([()=>position.value.x,()=>position.value.y],()=>{
+  console.log("位置变化")
   if(modelList){
     modelList.value.sort((a, b) => {
       return a.position.x-b.position.x ; // 从小到大排序
     });
-    store.distance.forEach((item,index)=>{
+    updateDistance()
+  }
+})
+
+
+function updateDistance(){
+  console.log("更新距离")
+  store.distance.forEach((item,index)=>{
       store.distance[index]=modelList.value[index+1].position.x-modelList.value[index].position.x
     })
-    store.angle.forEach((item,index)=>{
-      
-      let result=Math.atan((modelList.value[index+1].position.y-modelList.value[index].position.y)/store.distance[index])*180/Math.PI
-      store.angle[index]=isNaN(result)?0:result.toFixed(3)//保留三位小数
-   })
-  }
-  console.log("位置变化")
+  console.log("更新角度")
+  store.angle.forEach((item,index)=>{
+    let result=Math.atan((modelList.value[index+1].position.y-modelList.value[index].position.y)/store.distance[index])*180/Math.PI
+    store.angle[index]=isNaN(result)?0:result.toFixed(3)//保留三位小数
+    })
 }
-
-
+function deleteModel(name){
+  if(name){
+    store.threeInstance.deleteModel(name)
+    //将modellist中的元素删除，放在vue文件中以方便即使渲染
+    // store.threeInstance.modelList=store.threeInstance.modelList.filter(v => v.userData.name !== name);
+    if(store.selectedElement===name){
+      store.selectedElement=""
+    }
+    store.distance.pop()
+    store.angle.pop()
+    console.log(modelList.value)
+    updateDistance()
+  }
+}
+function handleInput(){
+  console.log(attribute.value)
+}
 </script>
 
 <style scoped>
