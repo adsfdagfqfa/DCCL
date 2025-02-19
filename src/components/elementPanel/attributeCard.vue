@@ -6,19 +6,19 @@
     </div>
     <el-scrollbar max-height="150">
       <div  v-for="mesh in modelList"
-            :key="mesh.userData.name">
+            :key="mesh.userData.attribute.model">
         <div  class="flex justify-between items-center"
-              :class="mesh.userData.name===store.selectedElement?'choose':''" 
-              @click="setSelectedElement(mesh.userData.name)">
-          <span>{{ mesh.userData.name }} </span>
+              :class="mesh.userData.attribute.model===store.selectedElement?'choose':''" 
+              @click="setSelectedElement(mesh.userData.attribute.model)">
+          <span>{{ mesh.userData.attribute.model }} </span>
           <el-space>
-            <div v-show="mesh.userData.name===store.selectedElement">
+            <div v-show="mesh.userData.attribute.model===store.selectedElement">
               <el-icon size="20" color="#0c5df2">
                 <Check/>
               </el-icon>
             </div>
             <div>
-              <el-icon size="20" color="#FA8072" @click.stop="deleteModel(mesh.userData.name)">
+              <el-icon size="20" color="#FA8072" @click.stop="deleteModel(mesh.userData.attribute.model)">
                 <Delete/>
               </el-icon>
             </div>
@@ -73,7 +73,7 @@ const store=useThreeInstanceStore();
 
 function isEditableType(key) {
   //判断是否可编辑 
-  const readOnlyTypes = [ 'id', 'type','name'];
+  const readOnlyTypes = [ 'model' ,'type','name'];
   return !readOnlyTypes.includes(key);
 }
 // function updateComponent() {
@@ -96,7 +96,7 @@ const attribute=ref({})
 const position=ref({})
 watch(()=>store.selectedElement,(newVal)=>{
 
-  const foundItem=modelList.value?.filter(item=>item.userData.name===newVal)
+  const foundItem=modelList.value?.filter(item=>item.userData.attribute.model===newVal)
   
   if (foundItem.length!==0) {
     console.log(111)
@@ -137,7 +137,7 @@ function deleteModel(name){
   if(name){
     store.threeInstance.deleteModel(name)
     //将modellist中的元素删除，放在vue文件中以方便即使渲染
-    // store.threeInstance.modelList=store.threeInstance.modelList.filter(v => v.userData.name !== name);
+    // store.threeInstance.modelList=store.threeInstance.modelList.filter(v => v.userData.attribute.model !== name);
     if(store.selectedElement===name){
       store.selectedElement=""
     }

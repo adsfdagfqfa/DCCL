@@ -1,4 +1,5 @@
 // store.js
+import { opticalModelList } from "@/utils/constant/model";
 import { defineStore } from "pinia";
 
 export const useThreeInstanceStore = defineStore("threeInstance", {

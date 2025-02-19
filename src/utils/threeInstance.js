@@ -171,16 +171,17 @@ export default class threeInstance {
             
             mesh.position.copy(this.initialModelPosition);
             
-            mesh.userData.name = model.type + "_" + onlyKey(5,10);
+            // mesh.userData.attribute.model = model.type + "_" + onlyKey(5,10);
             mesh.userData.attribute=model
-            
+            mesh.userData.attribute.model=model.type + "_" + onlyKey(4,10)
+
             this.group.add(mesh);
             this.model = this.group;
             //获取模型的数组
             this.setModelList(mesh);
             //储存对应的名字
            
-            this.glowModelList = this.modelList.map(v => v.userData.name);
+            this.glowModelList = this.modelList.map(v => v.userData.attribute.model);
             
             this.scene.add(this.model);
             // //计算控制器缩放大小
@@ -211,7 +212,7 @@ export default class threeInstance {
     }
     deleteModel(name){
       //移除对应模型
-      let model = this.modelList.find(v => v.userData.name === name);
+      let model = this.modelList.find(v => v.userData.attribute.model === name);
       if (model.geometry) {
         console.log("model.geometry")
         model.geometry.dispose();
@@ -230,7 +231,7 @@ export default class threeInstance {
         }
       }
       this.group.remove(model);
-      this.modelList=this.modelList.filter(v => v.userData.name !== name);
+      this.modelList=this.modelList.filter(v => v.userData.attribute.model !== name);
     }
     // 动画循环
     animate = () => {
