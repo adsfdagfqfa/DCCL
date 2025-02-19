@@ -1,6 +1,5 @@
 const opticalModelList=[
     {
-        id: 1,
         name: '凸透镜',
         type: 'lens',
         // position: null,
@@ -8,7 +7,6 @@ const opticalModelList=[
         radius: 0.012
     },
     {
-        id: 2,
         name: '平面镜',
         type: 'mirror',
         // position :null,
@@ -16,7 +14,6 @@ const opticalModelList=[
         radius:0.012,
     },
     {
-        id: 3,
         name:'介质',
         type:'medium',
         // position:null,
@@ -24,7 +21,6 @@ const opticalModelList=[
         length:0.001,
         // sigma:15.6e-23,     //Nd:YVO4 吸收发射截面
         // tau:100e-6          //Nd:YVO4 介质上能级粒子寿命
-
     }
 ]
 const keyMappings={

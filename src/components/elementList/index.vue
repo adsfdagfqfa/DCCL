@@ -1,5 +1,5 @@
 <template>
-  <el-scrollbar class="max-h-[500px]">
+  <el-scrollbar class="max-h-[400px]">
     <el-collapse v-model="activeNames" @change="handleChange">
       <el-collapse-item  name="opticalElement">
         <template #title>

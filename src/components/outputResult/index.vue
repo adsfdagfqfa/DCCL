@@ -8,7 +8,7 @@
       <Parameter/>
     </el-tab-pane>
     <el-tab-pane label="仿真" name="emulation">
-      emulation
+      <Emulation/>
     </el-tab-pane>
     
   </el-tabs>
@@ -18,6 +18,7 @@
 import Element from './element.vue';
 import Constant from './constant.vue';
 import Parameter from './parameter.vue';
+import Emulation from './emulation.vue';
 const tabs=[]
 function handleClick(tab, event) {
   console.log(tab, event);
