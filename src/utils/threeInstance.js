@@ -152,7 +152,8 @@ export default class threeInstance {
     }
     //保存拖拽的模型的相应参数
     setDragModel(model){
-        this.dragModel=model
+        //实现深拷贝
+        this.dragModel=JSON.parse(JSON.stringify(model))
         console.log(this.dragModel)
     }
     setModelList(mesh) {
