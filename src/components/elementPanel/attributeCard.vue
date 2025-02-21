@@ -5,20 +5,20 @@
       <span> 模型列表 </span>
     </div>
     <el-scrollbar max-height="150">
-      <div  v-for="mesh in modelList"
-            :key="mesh.userData.attribute.model">
+      <div  v-for="item in modelAttributeList"
+            :key="item.model">
         <div  class="flex justify-between items-center"
-              :class="mesh.userData.attribute.model===store.selectedElement?'choose':''" 
-              @click="setSelectedElement(mesh.userData.attribute.model)">
-          <span>{{ mesh.userData.attribute.model }} </span>
+              :class="item.model===store.selectedElement?'choose':''" 
+              @click="setSelectedElement(item.model)">
+          <span>{{ item.model }} </span>
           <el-space>
-            <div v-show="mesh.userData.attribute.model===store.selectedElement">
+            <div v-show="item.model===store.selectedElement">
               <el-icon size="20" color="#0c5df2">
                 <Check/>
               </el-icon>
             </div>
             <div>
-              <el-icon size="20" color="#FA8072" @click.stop="deleteModel(mesh.userData.attribute.model)">
+              <el-icon size="20" color="#FA8072" @click.stop="deleteModel(item.model)">
                 <Delete/>
               </el-icon>
             </div>
@@ -90,8 +90,8 @@ function setSelectedElement(name){
 
 
 //可选链运算符?.
+const modelAttributeList = computed(() => store.threeInstance?.modelAttributeList);
 const modelList = computed(() => store.threeInstance?.modelList);
-
 const attribute=ref({})
 const position=ref({})
 watch(()=>store.selectedElement,(newVal)=>{
@@ -99,12 +99,12 @@ watch(()=>store.selectedElement,(newVal)=>{
   const foundItem=modelList.value?.filter(item=>item.userData.attribute.model===newVal)
   
   if (foundItem.length!==0) {
-    console.log(111)
+    console.log("找到元素")
     // console.log(foundItem.userData)
     attribute.value = foundItem[0]?.userData.attribute;
     position.value=foundItem[0]?.position
   } else {
-    console.log(222)
+    console.log("未找到元素")
     //未找到时候设置为undefined
     attribute.value = undefined;
   }
@@ -114,9 +114,19 @@ watch(()=>store.selectedElement,(newVal)=>{
 watch([()=>position.value.x,()=>position.value.y],()=>{
   console.log("位置变化")
   if(modelList){
-    modelList.value.sort((a, b) => {
-      return a.position.x-b.position.x ; // 从小到大排序
-    });
+    // modelList.value.sort((a, b) => {
+    //   return a.position.x-b.position.x ; // 从小到大排序
+      
+    // });
+    const sortedIndices = modelList.value
+      .map((item, index) => ({ item, index })) // 将每个 item 和它的索引绑定
+      .sort((a, b) => a.item.position.x - b.item.position.x) // 按 position.x 排序
+      .map(item => item.index); // 提取排序后的索引
+    console.log(sortedIndices)
+  
+    // 2. 使用索引映射更新两个数组
+    modelList.value.splice(0, modelList.value.length, ...sortedIndices.map(index => modelList.value[index]));
+    modelAttributeList.value.splice(0, modelAttributeList.value.length, ...sortedIndices.map(index => modelAttributeList.value[index]));
     updateDistance()
   }
 })
@@ -134,16 +144,19 @@ function updateDistance(){
     })
 }
 function deleteModel(name){
+  console.log("删除模型",name)
   if(name){
     store.threeInstance.deleteModel(name)
-    //将modellist中的元素删除，放在vue文件中以方便即使渲染
+  
     // store.threeInstance.modelList=store.threeInstance.modelList.filter(v => v.userData.attribute.model !== name);
     if(store.selectedElement===name){
       store.selectedElement=""
     }
     store.distance.pop()
     store.angle.pop()
-    console.log(modelList.value)
+    console.log(modelAttributeList.value)
+    // console.log(store.modelAttributeList)
+    // console.log(store.threeInstance.modelAttributeList)
     updateDistance()
   }
 }

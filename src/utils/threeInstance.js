@@ -159,11 +159,11 @@ export default class threeInstance {
         console.log(this.dragModel)
     }
     setModelList(mesh) {
-        mesh.traverse(v => {
-          if (!v.isMesh) return;
-          this.modelList.push(v);
-          this.modelAttributeList.push(v.userData.attribute)
-        });
+      mesh.traverse(v => {
+        if (!v.isMesh) return;
+        this.modelList.push(v);
+        this.modelAttributeList.push(v.userData.attribute)
+      });
     }
     //放置模型
     setModel(model){
@@ -183,7 +183,7 @@ export default class threeInstance {
             this.model = this.group;
             //获取模型的数组
             this.setModelList(mesh);
-            console.log(this.modelAttributeList)
+            // console.log(this.modelAttributeList)
             //储存对应的名字
            
           
@@ -236,7 +236,25 @@ export default class threeInstance {
         }
       }
       this.group.remove(model);
-      this.modelList=this.modelList.filter(v => v.userData.attribute.model !== name);
+      // this.modelList=this.modelList.filter(v => v.userData.attribute.model !== name);
+      // this.modelAttributeList=this.modelAttributeList.filter(v => v.model !== name);
+      //使用filter删除数组中的元素，会生成一个新的数组，进而导致代码中其他引用该数组的地方出现问题，不能及时更新
+      //使用splice删除数组中的元素，会直接删除数组中的元素，不会生成新的数组，不会导致其他引用该数组的地方出现问题
+      // 删除 modelList 中 userData.attribute.model 等于 name 的元素
+      for (let i = this.modelList.length - 1; i >= 0; i--) {
+        if (this.modelList[i].userData.attribute.model === name) {
+          this.modelList.splice(i, 1); // 删除当前索引的元素
+          break;
+        }
+      }
+      for (let i = this.modelAttributeList.length - 1; i >= 0; i--) {
+        if (this.modelAttributeList[i].model === name) {
+          this.modelAttributeList.splice(i, 1); // 删除当前索引的元素
+          break;
+        }
+      }
+      console.log("删除元素",this.modelList)
+      console.log("删除元素",this.modelAttributeList)
     }
     // 动画循环
     animate = () => {

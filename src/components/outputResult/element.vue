@@ -5,8 +5,8 @@
           <el-scrollbar   class="height-full">
             <div class="flex items-center">
               <span class="font-bold whitespace-nowrap min-w-36">模型元素(element)</span>
-              <div v-for="item in store.threeInstance?.modelList" :key="item.userData.attribute.model" class="flex-item">
-                <span>{{ item.userData.attribute.model }}</span>
+              <div v-for="item in store.threeInstance?.modelAttributeList" :key="item.model" class="flex-item">
+                <span>{{ item.model }}</span>
               </div>
             </div>
            
@@ -63,7 +63,7 @@ import { computed } from 'vue';
 import { useThreeInstanceStore } from '@/store';
 const store = useThreeInstanceStore();
 
-// const modelList = computed(() => store.threeInstance?.modelList);
+// const modelAttributeList = computed(() => store.threeInstance?.modelAttributeList);
 
 </script>
 

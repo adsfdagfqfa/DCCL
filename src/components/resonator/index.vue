@@ -58,7 +58,7 @@ const onDragDrop= (e) => {
     store.threeInstance.addModel(dragModel);
     //结束后设置dragModel为空
     store.threeInstance.dragModel=null;
-    if(store.threeInstance.modelList.length>1){
+    if(store.threeInstance?.modelAttributeList.length>1){
       store.distance.push(0)
       store.angle.push(0)
     }

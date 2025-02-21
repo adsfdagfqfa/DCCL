@@ -67,8 +67,8 @@ function getAllParameter() {
   data.angle=store.angle;
   data.resonatorParam=store.resonatorParam;
   data.fastFTParam=store.fastFourierTransformParam;
-  data.modelAttributeList=store.modelAttributeList;
-  console.log(store.modelAttributeList);
+  data.modelAttributeList=store.threeInstance.modelAttributeList;
+  
   console.log(data)
   // var nodes=jp.nodes(data,'$..focalLength');
   // console.log(nodes)
@@ -76,7 +76,7 @@ function getAllParameter() {
 
 function handleChange(activePath){
   console.log('当前展开的路径：', activePath);
-  
+  console.log('当前数据：',data );
   // 获取当前展开的节点
   const currentNode = getNodeByPath(jsonpath.value, activePath);
   // 动态加载子节点数据
@@ -101,7 +101,6 @@ async function loadChildren(node) {
   // 模拟异步加载,如果有需要可以使用await
   // await  new Promise((resolve) => setTimeout(resolve, 1000));
   console.log('加载子节点：', node.value);
-  console.log(data)
   var dataList=jp.nodes(data, node.value);
   console.log(dataList)
   //生成children结点数组
@@ -117,7 +116,6 @@ async function loadChildren(node) {
 onMounted(()=>{
   getAllParameter();
   console.log('Component is mounted');
-  
 })
 
 </script>

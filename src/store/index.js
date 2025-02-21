@@ -8,7 +8,6 @@ export const useThreeInstanceStore = defineStore("threeInstance", {
     threeInstance: null,//threejs的实例
     components:[],//储存的元素属性
     selectedElement: "",//当前选择的元素的名称
-    modelAttributeList: [],//元素属性列表
     distance:[],//储存的元素之间的距离
     angle:[],//储存的元素之间的角度，具体而言是其连线与主光轴的夹角
     resonatorParam : {
@@ -28,7 +27,6 @@ export const useThreeInstanceStore = defineStore("threeInstance", {
   actions: {
     setThreeInstance(threeInstance){
       this.threeInstance=threeInstance
-      this.modelAttributeList=this.threeInstance.modelAttributeList
     },
     setSelectedElement(name){
       this.selectedElement=name
