@@ -2,19 +2,8 @@
   <div class="flex">
     <div style="flex:0 0 30%">
       <el-card>
-        <el-select
-        v-model="value"
-        placeholder="Select"
-        size="large"
-        style="width: 240px">
-          <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          />
-        </el-select>
-        <el-button type="primary" >开始仿真</el-button>
+        <el-cascader  v-model="value" :options="jsonpath"  @expand-change="handleChange"/>
+        <el-button type="primary" @click="getAllParameter">开始仿真</el-button>
       </el-card>
     </div>
     <div class="flex-1">
@@ -26,35 +15,111 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+// import {JSONPath} from 'jsonpath-plus';
+import { onMounted,onBeforeMount, ref ,computed} from 'vue';
+import { useThreeInstanceStore } from '@/store';
+var jp = require('jsonpath');
+const data={};
+const store = useThreeInstanceStore();
+const value = ref([])
+
+const jsonpath=ref([
+  {
+    value: '$.modelAttributeList[*].focalLength',
+    label:'焦距',
+    children:[],
+    leaf:false
+  },
+  {
+    value: '$.modelAttributeList[*].reflectivity',
+    label:'反射率',
+    children:[],
+    leaf:false
+  },
+  {
+    value:'$.angle[*]',
+    label:'角度',
+    children:[],
+    leaf:false
+  },
+  {
+    value:'$.distance[*]',
+    label:'距离',
+    children:[],
+    leaf:false
+  },
+  {
+    value:'$.resonatorParam.lamada',
+    label:'波长',
+    leaf:true
+  },
+  {
+    value:'$.resonatorParam.pumpPower',
+    label:'泵浦功率',
+    leaf:true
+  },
+])
 
 
-const value = ref('')
 
-const options = [
-  {
-    value: 'Option1',
-    label: 'Option1',
-  },
-  {
-    value: 'Option2',
-    label: 'Option2',
-  },
-  {
-    value: 'Option3',
-    label: 'Option3',
-  },
-  {
-    value: 'Option4',
-    label: 'Option4',
-  },
-  {
-    value: 'Option5',
-    label: 'Option5',
-  },
-]
-// Define your reactive variables and functions here
-const message = ref('Hello, Vue 3!');
+function getAllParameter() {
+  data.distance=store.distance;
+  data.angle=store.angle;
+  data.resonatorParam=store.resonatorParam;
+  data.fastFTParam=store.fastFourierTransformParam;
+  data.modelAttributeList=store.modelAttributeList;
+  console.log(store.modelAttributeList);
+  console.log(data)
+  // var nodes=jp.nodes(data,'$..focalLength');
+  // console.log(nodes)
+}
+
+function handleChange(activePath){
+  console.log('当前展开的路径：', activePath);
+  
+  // 获取当前展开的节点
+  const currentNode = getNodeByPath(jsonpath.value, activePath);
+  // 动态加载子节点数据
+  try {
+    loadChildren(currentNode).then((children) => {
+      console.log('加载子节点成功：', children);
+      // 使用 $set 确保响应式
+      currentNode.children = children;
+    });
+  } catch (error) {
+    console.error('加载子节点失败：', error);
+  }
+  
+}
+function getNodeByPath(tree, path) {
+  // 根据路径获取节点,对path中的每一项（currentValue）进行递进查找
+  return path.reduce((acc, currentValue) => {
+    return acc.find((node) => node.value === currentValue);
+  }, tree);
+}
+async function loadChildren(node) {
+  // 模拟异步加载,如果有需要可以使用await
+  // await  new Promise((resolve) => setTimeout(resolve, 1000));
+  console.log('加载子节点：', node.value);
+  console.log(data)
+  var dataList=jp.nodes(data, node.value);
+  console.log(dataList)
+  //生成children结点数组
+  var nodes = Array.from(dataList).map((item) => ({
+    value: jp.stringify(item.path),
+    label: jp.stringify(item.path),
+    //只生成一级菜单
+    leaf: true,
+  }))
+  return nodes;
+ 
+}
+onMounted(()=>{
+  getAllParameter();
+  console.log('Component is mounted');
+  
+})
+
 </script>
 
 <style scoped>

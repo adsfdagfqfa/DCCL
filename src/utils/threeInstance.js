@@ -37,6 +37,8 @@ export default class threeInstance {
         this.glowModelList=[];
         // 拖拽模型
         this.dragModel={}
+        //模型属性列表
+        this.modelAttributeList=[]
     }
     init() {
         this.initScene();
@@ -160,6 +162,7 @@ export default class threeInstance {
         mesh.traverse(v => {
           if (!v.isMesh) return;
           this.modelList.push(v);
+          this.modelAttributeList.push(v.userData.attribute)
         });
     }
     //放置模型
@@ -180,9 +183,10 @@ export default class threeInstance {
             this.model = this.group;
             //获取模型的数组
             this.setModelList(mesh);
+            console.log(this.modelAttributeList)
             //储存对应的名字
            
-            this.glowModelList = this.modelList.map(v => v.userData.attribute.model);
+          
             
             this.scene.add(this.model);
             // //计算控制器缩放大小
