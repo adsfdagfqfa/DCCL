@@ -1,10 +1,15 @@
 <template>
   <div class="flex">
     <div style="flex:0 0 30%">
-      <el-card>
-        <el-cascader  v-model="value" :options="jsonpath"  @expand-change="handleChange"/>
-        <el-button type="primary" @click="getAllParameter">开始仿真</el-button>
+      <el-card class="h-full flex-col">
+        <el-cascader class="mb-5" v-model="selectedElement" :options="jsonpath" :show-all-levels="false" @expand-change="handleExpandChange"/>
+        <RangeGenerator @get-result-array="getResultArray" />
+        <el-button type="primary" @click="onUploadParameter">上传参数</el-button>
+        <el-button type="primary" @click="onEmulation">开始仿真</el-button>
+        
       </el-card>
+    
+    
     </div>
     <div class="flex-1">
       <el-scrollbar >
@@ -18,10 +23,12 @@
 // import {JSONPath} from 'jsonpath-plus';
 import { onMounted,onBeforeMount, ref ,computed} from 'vue';
 import { useThreeInstanceStore } from '@/store';
+import RangeGenerator from './rangeGenerator.vue';
 var jp = require('jsonpath');
 const data={};
 const store = useThreeInstanceStore();
-const value = ref([])
+//selectedElement为数组，记录选中的元素的路径
+const selectedElement = ref([])
 
 const jsonpath=ref([
   {
@@ -62,19 +69,17 @@ const jsonpath=ref([
 
 
 
-function getAllParameter() {
+async function getAllParameter() {
   data.distance=store.distance;
   data.angle=store.angle;
   data.resonatorParam=store.resonatorParam;
   data.fastFTParam=store.fastFourierTransformParam;
   data.modelAttributeList=store.threeInstance.modelAttributeList;
-  
-  console.log(data)
   // var nodes=jp.nodes(data,'$..focalLength');
   // console.log(nodes)
 }
 
-function handleChange(activePath){
+function handleExpandChange(activePath){
   console.log('当前展开的路径：', activePath);
   console.log('当前数据：',data );
   // 获取当前展开的节点
@@ -106,18 +111,46 @@ async function loadChildren(node) {
   //生成children结点数组
   var nodes = Array.from(dataList).map((item) => ({
     value: jp.stringify(item.path),
-    label: jp.stringify(item.path),
+    label: label(item),
     //只生成一级菜单
     leaf: true,
   }))
   return nodes;
  
 }
-onMounted(()=>{
-  getAllParameter();
+//将jsonpath转换可现实的选项标签
+function label(item){
+  console.log(item)
+  let length=item.path.length;
+  switch(item.path[1]){
+    case 'modelAttributeList':
+      let a=jp.query(data,jp.stringify(item.path.slice(0,length-1)));
+      return a[0].model+"_"+item.path[length-1];
+    case 'angle':
+      return item.path[1]+'_'+item.path[length-1];
+    case 'distance':
+      return item.path[1]+'_'+item.path[length-1];
+  }
+  return jp.stringify(item.path);
+}
+onMounted(async () => {
+  await getAllParameter();
   console.log('Component is mounted');
 })
+function onEmulation(){
+  // let length=selectedElement.value.length;
+  // console.log(selectedElement.value);
+  // console.log(jp.query(data,selectedElement.value[length-1]));
 
+  console.log('开始仿真')
+}
+function onUploadParameter(){
+
+  console.log('上传参数')
+}
+function getResultArray(value){
+  console.log(value)
+}
 </script>
 
 <style scoped>

@@ -54,7 +54,7 @@
       <el-slider class="mx-2" v-model="position.y"/> 
     </div>
   </div>
-  <el-button  @click="handleInput">输出数据</el-button>
+  <!-- <el-button  @click="handleInput">输出数据</el-button> -->
 </template>
   
 <script setup>
