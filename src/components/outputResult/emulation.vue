@@ -1,11 +1,19 @@
 <template>
   <div class="flex">
     <div style="flex:0 0 30%">
-      <el-card class="h-full flex-col">
-        <el-cascader class="mb-5" v-model="selectedElement" :options="jsonpath" :show-all-levels="false" @expand-change="handleExpandChange"/>
-        <RangeGenerator @get-result-array="getResultArray" />
-        <el-button type="primary" @click="onUploadParameter">上传参数</el-button>
-        <el-button type="primary" @click="onEmulation">开始仿真</el-button>
+      <el-card class="h-full">
+        
+        
+          <el-cascader class="mb-5" clearable 
+                  v-model="selectedElement" 
+                  :options="jsonpath" 
+                  :show-all-levels="false" 
+                  placeholder="请选择参数"
+                  @expand-change="handleExpandChange"/>
+          
+          <RangeGenerator @get-result-array="getResultArray" />
+          <el-button type="primary" @click="onUploadParameter">上传参数</el-button>
+          <el-button type="primary" @click="onEmulation">开始仿真</el-button>
         
       </el-card>
     

@@ -8,7 +8,12 @@
           <div v-for="(value, key) in resonatorParam" :key="key" >
             <div class="flex"> 
               <label class="no-wrap font-bold min-w-40"  :for="key">{{keyMappings[key] }} </label>
-              <el-input type='number' style="width:240px"  v-model.number="resonatorParam[key]"  placeholder="请输入" @change="handleChange"/>
+              <el-input type='number' 
+                        style="width:240px"  
+                        v-model.number="resonatorParam[key]" 
+                        placeholder="请输入" 
+                        @change="handleChange"
+                        title=""/>
             </div>
           </div>
         </div>
@@ -21,7 +26,12 @@
           <div v-for="(value, key) in fastFTParam" :key="key" >
             <div class="flex"> 
               <label class="no-wrap font-bold min-w-40"  :for="key">{{keyMappings[key] }} </label>
-              <el-input type='number' style="width:240px"  v-model.number="fastFTParam[key]"  placeholder="请输入" @change="handleChange"/>
+              <el-input type='number' 
+                        style="width:240px"  
+                        v-model.number="fastFTParam[key]"  
+                        placeholder="请输入" 
+                        @change="handleChange"
+                        title=""/>
             </div>
           </div>
         </div>

@@ -9,6 +9,7 @@
         v-model.number="minValue"
         placeholder="请输入最小值"
         @blur="generateArray"
+        title=""
       />
     </div>
     <div class="flex items-center mb-5">
@@ -19,16 +20,18 @@
         v-model.number="maxValue"
         placeholder="请输入最大值"
         @blur="generateArray"
+        title=""
       />
     </div>
     <div class="flex items-center mb-5">
-      <label class="whitespace-nowrap min-w-20">中间数量:</label>
+      <label class="whitespace-nowrap min-w-20">步长:</label>
       <el-input
         type="number"
         id="count"
         v-model.number="count"
-        placeholder="介于最小值与最大值之间的取值数量"
+        placeholder="请输入步长"
         @blur="generateArray"
+        title=""
       />
     </div>
   </div>
@@ -50,7 +53,7 @@ function generateArray() {
     count.value === null)
     return;
   if(minValue.value >= maxValue.value || count.value< 0) {
-    alert("请输入有效的最小值、最大值和中间数量！");
+    alert("请输入有效的最小值、最大值和步长！");
     return;
   }
 
