@@ -11,7 +11,7 @@ export const useThreeInstanceStore = defineStore("threeInstance", {
     distance:[],//储存的元素之间的距离
     angle:[],//储存的元素之间的角度，具体而言是其连线与主光轴的夹角
     resonatorParam : {
-      lamada:1064,//光的波长
+      lamada:1064e-9,//光的波长
       pumpWatt:100,//泵浦功率
       pumpEfficiency:0.72,//泵浦效率
       
