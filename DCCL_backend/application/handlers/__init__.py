@@ -1,8 +1,8 @@
 
 from .base import routes
-from handlers import aperture
-from handlers import simulation
-from handlers import *
+
+from application.handlers import simulation
+from application.handlers import *
 @routes.route('/test1',methods=['GET'])
 def t():
     print(1)

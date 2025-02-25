@@ -1,8 +1,10 @@
 <template>
-  <div v-for="(value, key) in constant" :key="key" >
-    <div class="flex"> 
-      <label class="whitespace-nowrap font-bold min-w-40"  :for="key">{{keyMappings[key] }} </label>
-      <div>{{ value }}</div>
+  <div>
+    <div v-for="(value, key) in constant" :key="key" >
+      <div class="flex"> 
+        <label class="whitespace-nowrap font-bold min-w-40"  :for="key">{{keyMappings[key] }} </label>
+        <div>{{ value }}</div>
+      </div>
     </div>
   </div>
 </template>

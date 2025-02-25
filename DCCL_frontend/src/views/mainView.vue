@@ -1,21 +1,23 @@
 <template>
-  <!-- 顶端部分 -->
-  <header class="flex flex-col">
-    <div class="bg-blue-200 text-gray-800 text-center leading-[60px]">分布式耦合腔激光系统仿真软件</div>
-    <Menu></Menu>
-  </header>
-  <div class="grid grid-cols-8">
-    <!-- <Steps  @update:router-view="handleClick"/> -->
-    <ElementList></ElementList>
-    <div class="col-span-5">
-      <Resonator></Resonator>
-      <router-view/>
-    </div>
-    <ElementPanel class="col-span-2"/>
-    <!-- <test></test> -->
-  </div>
   <div>
-    <OutputResult></OutputResult>
+    <!-- 顶端部分 -->
+    <header class="flex flex-col">
+      <div class="bg-blue-200 text-gray-800 text-center leading-[60px]">分布式耦合腔激光系统仿真软件</div>
+      <Menu></Menu>
+    </header>
+    <div class="grid grid-cols-8">
+      <!-- <Steps  @update:router-view="handleClick"/> -->
+      <ElementList></ElementList>
+      <div class="col-span-5">
+        <Resonator></Resonator>
+        <router-view/>
+      </div>
+      <ElementPanel class="col-span-2"/>
+      <!-- <test></test> -->
+    </div>
+    <div>
+      <OutputResult></OutputResult>
+    </div>
   </div>
 </template>
 

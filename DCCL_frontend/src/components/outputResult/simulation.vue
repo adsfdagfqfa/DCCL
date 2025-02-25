@@ -13,7 +13,7 @@
           
           <RangeGenerator @get-result-array="getResultArray" />
           <el-button type="primary" @click="onUploadParameter">上传参数</el-button>
-          <el-button type="primary" @click="onEmulation">开始仿真</el-button>
+          <el-button type="primary" @click="onSimulation">开始仿真</el-button>
         
       </el-card>
     
@@ -32,6 +32,7 @@
 import { onMounted,onBeforeMount, ref ,computed} from 'vue';
 import { useThreeInstanceStore } from '@/store';
 import RangeGenerator from './rangeGenerator.vue';
+
 var jp = require('jsonpath');
 const data={};
 const store = useThreeInstanceStore();
@@ -41,7 +42,7 @@ const selectedElement = ref([])
 const jsonpath=ref([
   {
     value: '$.modelAttributeList[*].focalLength',
-    label:'焦距',
+    label:'焦距(m)',
     children:[],
     leaf:false
   },
@@ -53,24 +54,24 @@ const jsonpath=ref([
   },
   {
     value:'$.angle[*]',
-    label:'角度',
+    label:'角度(deg)',
     children:[],
     leaf:false
   },
   {
     value:'$.distance[*]',
-    label:'距离',
+    label:'距离(m)',
     children:[],
     leaf:false
   },
   {
     value:'$.resonatorParam.lamada',
-    label:'波长',
+    label:'波长(nm)',
     leaf:true
   },
   {
     value:'$.resonatorParam.pumpPower',
-    label:'泵浦功率',
+    label:'泵浦功率(W)',
     leaf:true
   },
 ])
@@ -145,15 +146,16 @@ onMounted(async () => {
   await getAllParameter();
   console.log('Component is mounted');
 })
-function onEmulation(){
+function onSimulation(){
   // let length=selectedElement.value.length;
   // console.log(selectedElement.value);
   // console.log(jp.query(data,selectedElement.value[length-1]));
 
   console.log('开始仿真')
+ 
 }
 function onUploadParameter(){
-
+  store.uploadParameter(JSON.stringify(data))
   console.log('上传参数')
 }
 function getResultArray(value){
