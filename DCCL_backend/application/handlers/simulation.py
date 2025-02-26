@@ -1,6 +1,6 @@
 from datetime import datetime
 import uuid
-import jwt
+import jwt,json
 from flask import request, make_response
 from .base import routes
 from application.utils.utilityFunction import generate_jwt_token, verify_jwt_token
@@ -27,6 +27,9 @@ def upload_parameter():
     #将前端发送的数据转换为字典
     form_data=request.form.to_dict()
     print(form_data.get('payload'))
+    #将 JSON 字符串解析为字典
+    data = json.loads(form_data.get('payload'))
+    print(data['modelAttributeList'])
     token = request.cookies.get('token')
     print(token)
     if not token or not verify_jwt_token(token):

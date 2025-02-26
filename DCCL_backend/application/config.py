@@ -8,7 +8,8 @@ class Config:
     # 数据库配置
     
     #Redis数据库的URL，格式为redis://:password@localhost:6379/0
-    REDIS_URL = "redis://192.168.2.128:6379/0"
+    REDIS_URL = "redis://:2151767@127.0.0.1:6379/0"
+    #REDIS_URL = "redis://:2151767@127.0.0.1:6379/0"
 
     
     
