@@ -150,7 +150,7 @@ function onSimulation(){
   // let length=selectedElement.value.length;
   // console.log(selectedElement.value);
   // console.log(jp.query(data,selectedElement.value[length-1]));
-
+  console.log(data)
   console.log('开始仿真')
  
 }

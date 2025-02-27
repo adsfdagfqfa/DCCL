@@ -1,6 +1,6 @@
 from numpy import pi, linspace, meshgrid, exp, sqrt
 
-from ..utils.para_FFT import para_FFT
+from ..utils import para_FFT
 
 
 def cal_transfer_matrix(length, lambda_, r_max):

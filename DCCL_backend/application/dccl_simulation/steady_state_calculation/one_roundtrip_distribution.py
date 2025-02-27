@@ -1,11 +1,10 @@
 import numpy as np
 
-from cal_field_transition import cal_field_transition
-from freeCavityTrans import free_cavity_trans
+from ..utils import cal_field_transition,operator_reflectivity,operator_transmissivity
+from ..gain_calculation import propagation_within_gain
+from free_cavity_trans import free_cavity_trans
 from main_cavity_trans import main_cavity_trans
-from operator_reflectivity import operator_reflectivity
-from operator_transmissivity import operator_transmissivity
-from propagation_within_gain import propagation_within_gain
+
 
 
 def one_roundtrip_distribution(U_M1pre, U_M2pre, H_fsdf, H_fsf, B_aper, B_CatEye1, B_CatEye2, B_CatEye3, r1, r2, r3,

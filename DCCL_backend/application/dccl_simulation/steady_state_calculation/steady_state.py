@@ -1,10 +1,10 @@
 import numpy as np
 import time
 
-from cal_overlap import cal_overlap
-from cal_trans_factor import cal_trans_factor
+from ..utils import cal_overlap
+from ..utils import cal_trans_factor
 from one_roundtrip_distribution import one_roundtrip_distribution
-from para_FFT import para_FFT
+from ..utils import para_FFT
 
 
 def steady_state(H_fsdf, H_fsf, B_aper, B_CatEye1, B_CatEye2, B_CatEye3, r1, r2, r3, P_in, lambda_):
@@ -36,10 +36,12 @@ def steady_state(H_fsdf, H_fsf, B_aper, B_CatEye1, B_CatEye2, B_CatEye3, r1, r2,
 
         v1 = cal_trans_factor(s_it1, tempU1)
         v2 = cal_trans_factor(s_it2, tempU2)
-        phase_shift = np.exp(-1j * np.angle(cal_overlap(s_it1, tempU1, delta)))
-        tempU1 = s_it1 * phase_shift
-        phase_shift = np.exp(-1j * np.angle(cal_overlap(s_it2, tempU2, delta)))
-        tempU2 = s_it2 * phase_shift
+        # phase_shift = np.exp(-1j * np.angle(cal_overlap(s_it1, tempU1, delta)))
+        # tempU1 = s_it1 * phase_shift
+        tempU1=s_it1
+        # phase_shift = np.exp(-1j * np.angle(cal_overlap(s_it2, tempU2, delta)))
+        # tempU2 = s_it2 * phase_shift
+        tempU2=s_it2
         c = c1
         t += 1
 

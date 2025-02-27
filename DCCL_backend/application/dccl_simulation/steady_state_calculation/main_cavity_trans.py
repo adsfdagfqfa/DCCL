@@ -1,5 +1,5 @@
-from cal_field_transition import cal_field_transition
-from propagation_within_gain import propagation_within_gain
+from ..utils.cal_field_transition import cal_field_transition
+from ..gain_calculation import propagation_within_gain
 
 
 def main_cavity_trans(U_pre, H_fsf, B_CatEye1, B_aper, B_CatEye2, P_in, lambda_):

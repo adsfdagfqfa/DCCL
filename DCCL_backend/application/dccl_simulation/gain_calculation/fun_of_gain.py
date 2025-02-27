@@ -13,10 +13,10 @@ def fun_of_gain(in_U, lm, P_in, lambda_):
     epsilon = 8.854187817e-12
     mu0 = 4 * np.pi * 1e-7
 
-    # 系统参数
+    # 系统参数,这里分别是sigma吸收/发射截面，tau_f上能级(激发态)粒子寿命
     sigma = 15.6e-23  # Nd:YVO4
     tau_f = 100e-6  # Nd:YVO4
-
+    #频率
     nu = c / lambda_
 
     # eta_Q = 0.95
@@ -26,13 +26,14 @@ def fun_of_gain(in_U, lm, P_in, lambda_):
     # eta_T = 0.99
     # eta_a = 0.91
     # eta_c = eta_Q * eta_S * eta_B * eta_P * eta_T * eta_a  # 从泵浦到存储功率的效率，不包括重叠效率 eta_B
+    # eta_c类似泵浦效率
     eta_c = 0.72
     a_m = 0.003  # 泵浦光束半径
     V = np.pi * a_m ** 2 * lm
-    deltaT = 0.3e-6 / 200
-    tau = 0.3e-6
+    # deltaT = 0.3e-6 / 200
+    # tau = 0.3e-6
 
-    I_s = h * nu / (sigma * tau_f)
+    I_s = h * nu / (sigma * tau_f) #增益介质饱和强度
     V_sat2 = I_s / (0.5 * (epsilon * c))
     g0 = eta_c * P_in / (I_s * V)
 
