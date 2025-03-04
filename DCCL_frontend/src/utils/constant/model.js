@@ -38,7 +38,7 @@ const keyMappings={
   elementaryCharge: "元电荷(C)",
   pumpEfficiency:"泵浦效率",
   pumpWatt:"泵浦功率(W)",
-  lambda:"波长(nm)",
+  lambda:"波长(m)",
   sampleNumber:"采样点数量",
   windowExpandFactor:"窗口扩展因子",
 }
@@ -52,6 +52,6 @@ const rangeLimits= {
   //仿真参数范围
   pumpEfficiency: { min: 0, max: 1 },
   pumpWatt: { min: 0, max: 1000 },
-  lambda: { min: 700, max: 2500 }
+  lambda: { min: 700e-9, max: 2500e-9 }
 }
 export {opticalModelList , keyMappings , rangeLimits}
