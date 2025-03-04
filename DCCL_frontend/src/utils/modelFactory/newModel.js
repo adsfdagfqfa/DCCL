@@ -12,7 +12,7 @@ const glassMaterial = new THREE.MeshPhysicalMaterial({
  * @returns {THREE.Mesh} 返回一个threejs中的mesh对象
  */
 export function newMedium(){
-  var geometry = new THREE.CylinderGeometry( 20, 20, 10, 32 );
+  var geometry = new THREE.CylinderGeometry( 10, 10, 5, 32 );
   var material = new THREE.MeshBasicMaterial( {color:0x0727F1} );
   var cylinder = new THREE.Mesh( geometry, material );
   cylinder.rotation.z=Math.PI/2
@@ -29,7 +29,7 @@ export function newLens(){
   const radius = 40;
   const widthSegments = 32;
   const heightSegments = 32;
-  let distance=1.5*radius
+  let distance=1.7*radius
   const sphere1 = new THREE.SphereGeometry(radius, widthSegments, heightSegments);
   const sphere2 = new THREE.SphereGeometry(radius, widthSegments, heightSegments);
   const sphereMesh1=new THREE.Mesh(sphere1,glassMaterial)
