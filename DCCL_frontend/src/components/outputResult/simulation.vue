@@ -64,7 +64,7 @@ const jsonpath=ref([
     leaf:false
   },
   {
-    value:'$.resonatorParam.lamada',
+    value:'$.resonatorParam.lambda',
     label:'波长(nm)',
     leaf:true
   },
