@@ -32,21 +32,32 @@ export const useThreeInstanceStore = defineStore("threeInstance", {
       this.selectedElement=name
     },
     async uploadParameter(data){
-      console.log(data)
-      const formData = new FormData();
-      formData.append('payload', data); // 正确字段名
+      
       //上传参数
-      await axios.post('/flask/api/v1/uploadParameter',formData,{
-        'withCredentials':true
+      await axios.post('/flask/api/v1/uploadParameter',data,{
+        headers: {
+          'Content-Type': 'application/json'  // 显式指定内容类型为 JSON
+        },
+        'withCredentials':true //携带cookie
       }).then(res=>{
-        
         console.log(res)
       }).catch(err=>{
         console.log(err)
       })
     },
-    async simulation(){
+    async simulation(param){
+      console.log(param)
       //模拟
+      await axios.post('/flask/api/v1/simulation',param,{
+        headers: {
+          'Content-Type': 'application/json'  // 显式指定内容类型为 JSON
+        },
+        'withCredentials':true //携带cookie
+      }).then(res=>{
+        console.log(res)
+      }).catch(err=>{
+        console.log(err)
+      })
     }
   }
 });

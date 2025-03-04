@@ -2,16 +2,14 @@
   <div class="flex">
     <div style="flex:0 0 30%">
       <el-card class="h-full">
-        
-        
           <el-cascader class="mb-5" clearable 
                   v-model="selectedElement" 
                   :options="jsonpath" 
                   :show-all-levels="false" 
                   placeholder="请选择参数"
-                  @expand-change="handleExpandChange"/>
-          
-          <RangeGenerator @get-result-array="getResultArray" />
+                  @expand-change="handleExpandChange"
+                  @clear="handleClear"/>    
+          <RangeGenerator @get-result-array="getResultArray"  ref="rangeGenerator"/>
           <el-button type="primary" @click="onUploadParameter">上传参数</el-button>
           <el-button type="primary" @click="onSimulation">开始仿真</el-button>
         
@@ -32,13 +30,14 @@
 import { onMounted,onBeforeMount, ref ,computed} from 'vue';
 import { useThreeInstanceStore } from '@/store';
 import RangeGenerator from './rangeGenerator.vue';
+const rangeGenerator = ref();//引用的rangeGenerator组件
 
 var jp = require('jsonpath');
 const data={};
 const store = useThreeInstanceStore();
 //selectedElement为数组，记录选中的元素的路径
 const selectedElement = ref([])
-
+const vectors=ref([])
 const jsonpath=ref([
   {
     value: '$.modelAttributeList[*].focalLength',
@@ -89,6 +88,10 @@ async function getAllParameter() {
 }
 
 function handleExpandChange(activePath){
+  if(activePath.length==0){
+    //当activePath为空时直接退出
+    return
+  } 
   console.log('当前展开的路径：', activePath);
   console.log('当前数据：',data );
   // 获取当前展开的节点
@@ -146,20 +149,37 @@ onMounted(async () => {
   await getAllParameter();
   console.log('Component is mounted');
 })
-function onSimulation(){
+async function onSimulation(){
   // let length=selectedElement.value.length;
   // console.log(selectedElement.value);
   // console.log(jp.query(data,selectedElement.value[length-1]));
-  console.log(data)
+  
+  //判断是否设置参数
+  const param={}
+  if(selectedElement.value!==undefined){
+    let length=selectedElement.value.length;
+    param.path=selectedElement.value[length-1]
+    param.vectors=vectors.value
+  }
+  await store.simulation(JSON.stringify(param))
+  // console.log(data)
   console.log('开始仿真')
  
 }
-function onUploadParameter(){
-  store.uploadParameter(JSON.stringify(data))
+async function onUploadParameter(){
+  await store.uploadParameter(JSON.stringify(data))
   console.log('上传参数')
 }
 function getResultArray(value){
   console.log(value)
+  vectors.value=value
+}
+function handleClear(){
+  //清除rangeGenerator里面的输入
+  console.log("清除输入")
+  if (rangeGenerator.value) {
+    rangeGenerator.value.clearInput();
+  }
 }
 </script>
 
