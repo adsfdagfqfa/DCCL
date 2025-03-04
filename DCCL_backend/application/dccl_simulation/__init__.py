@@ -1,7 +1,7 @@
 import numpy as np
-from aperture import cal_all_aperture
-from transfer_matrix import cal_all_matrix
-from steady_state_calculation import cal_final_output
+from .aperture import cal_all_aperture
+from .transfer_matrix import cal_all_matrix
+from .steady_state_calculation import cal_final_output
 def dccl_simulation(data):
     #这里是直接写死的，针对dccl结构的
     angle_2=np.abs(data['angle'][5])

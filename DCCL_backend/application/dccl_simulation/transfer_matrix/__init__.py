@@ -1,7 +1,7 @@
 
 import numpy as np
 import cupy as cp
-from cal_transfer_matrix import cal_transfer_matrix
+from .cal_transfer_matrix import cal_transfer_matrix
 def cal_all_matrix(data,r_max,angle_1,angle_2):
     matrix_all=[]
     #这里需要分为两个传输矩阵分别计算，差不多相当于写死,angle_1与angle_2分别是谐振腔与自由空间传输腔内部稳定光束与主光轴的夹角

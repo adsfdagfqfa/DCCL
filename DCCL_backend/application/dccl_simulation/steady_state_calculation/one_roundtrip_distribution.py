@@ -2,8 +2,8 @@ import numpy as np
 
 from ..utils import cal_field_transition,operator_reflectivity,operator_transmissivity
 from ..gain_calculation import propagation_within_gain
-from free_cavity_trans import free_cavity_trans
-from main_cavity_trans import main_cavity_trans
+from .free_cavity_trans import free_cavity_trans
+from .main_cavity_trans import main_cavity_trans
 
 
 

@@ -17,6 +17,7 @@ def generate_jwt_token(uuid, algorithm='HS256'):
 def verify_jwt_token(token):
     # 验证现有Token
     try:
+        #设置时间容错
         leeway = datetime.timedelta(minutes=5)
         payload = jwt.decode(token, config.Config.SECRET_KEY, algorithms='HS256', leeway = leeway)
         uuid = payload['uuid']
@@ -34,6 +35,11 @@ def verify_jwt_token(token):
         print(f"Invalid token: {e}")
         return False
     
-
+#从token中提取uuid
+def get_uuid_from_token(token):
+    leeway = datetime.timedelta(minutes=5)
+    payload = jwt.decode(token, config.Config.SECRET_KEY, algorithms='HS256', leeway = leeway)
+    uuid = payload['uuid']
+    return uuid
       
    

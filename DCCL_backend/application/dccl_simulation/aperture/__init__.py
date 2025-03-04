@@ -1,5 +1,5 @@
-from aperture_cateye import aperture_cateye
-from aperture_gain import aperture_gain
+from .aperture_cateye import aperture_cateye
+from .aperture_gain import aperture_gain
 import cupy as cp
 import numpy as np
 def cal_all_aperture(data,r_max,angle_1,angle_2):

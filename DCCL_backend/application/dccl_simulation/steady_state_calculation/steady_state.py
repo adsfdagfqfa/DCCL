@@ -3,7 +3,7 @@ import time
 
 from ..utils import cal_overlap
 from ..utils import cal_trans_factor
-from one_roundtrip_distribution import one_roundtrip_distribution
+from .one_roundtrip_distribution import one_roundtrip_distribution
 from ..utils import para_FFT
 
 
