@@ -36,7 +36,7 @@ var jp = require('jsonpath');
 const data={};
 const store = useThreeInstanceStore();
 //selectedElement为数组，记录选中的元素的路径
-const selectedElement = ref([])
+const selectedElement = ref()
 const vectors=ref([])
 const jsonpath=ref([
   {
@@ -156,6 +156,7 @@ async function onSimulation(){
   
   //判断是否设置参数
   const param={}
+  
   if(selectedElement.value!==undefined){
     let length=selectedElement.value.length;
     param.path=selectedElement.value[length-1]
