@@ -1,5 +1,6 @@
 <template>
   <div>
+  <div>
     <div class="flex items-center">
       <el-icon size="20"><List/></el-icon>
       <span> 模型列表 </span>
@@ -47,13 +48,14 @@
     </div>
     <div class="flex" v-if="store.selectedElement"> 
       <el-button class="mx-2" type="primary" link>X 轴</el-button>
-      <el-slider class="mx-2" v-model="position.x"/>   
+      <el-slider class="mx-2" :max="300" v-model="position.x" show-input />   
     </div>
     <div class="flex" v-if="store.selectedElement">
       <el-button class="mx-2" type="primary" link>Y 轴</el-button>
-      <el-slider class="mx-2" v-model="position.y"/> 
+      <el-slider class="mx-2" :max="300" v-model="position.y" show-input /> 
     </div>
   </div>
+</div>
   <!-- <el-button  @click="handleInput">输出数据</el-button> -->
 </template>
   
@@ -111,12 +113,11 @@ watch(()=>store.selectedElement,(newVal)=>{
   
 })
 
-watch([()=>position.value.x,()=>position.value.y],()=>{
+watch([()=>position.value.x,()=>position.y],()=>{
   console.log("位置变化")
   if(modelList){
     // modelList.value.sort((a, b) => {
     //   return a.position.x-b.position.x ; // 从小到大排序
-      
     // });
     const sortedIndices = modelList.value
       .map((item, index) => ({ item, index })) // 将每个 item 和它的索引绑定
@@ -124,40 +125,69 @@ watch([()=>position.value.x,()=>position.value.y],()=>{
       .map(item => item.index); // 提取排序后的索引
     console.log(sortedIndices)
   
-    // 2. 使用索引映射更新两个数组
+    // 使用索引映射更新两个数组
     modelList.value.splice(0, modelList.value.length, ...sortedIndices.map(index => modelList.value[index]));
     modelAttributeList.value.splice(0, modelAttributeList.value.length, ...sortedIndices.map(index => modelAttributeList.value[index]));
-    updateDistance()
   }
 })
 
+//删除元素时更新角度与距离
+function updateDistance(name){
+  //获取索引
+  let index=0
+  
+  for (let i = modelAttributeList.value.length - 1; i >= 0; i--) {
+    
+    if (modelAttributeList.value[i].model === name) {
+      index=i;
+      break
+    }
+  }
+  let factor=Math.PI/180
+  if(index==0){
+    store.distance.splice(index,1)
+    store.angle.splice(index,1)
+  }
+  else if(index==modelAttributeList.value.length-1){
+    let l=store.distance.length-1
+    store.distance.splice(l,1)
+    store.angle.splice(l,1)
+  }
+  else{
+    let newDistance=store.distance[index-1]+store.distance[index]
+    let newAngle=Math.atan((store.distance[index-1]*Math.tan(store.angle[index-1]*factor)+
+                            store.distance[index]*Math.tan(store.angle[index]*factor))/newDistance)/factor
+    newAngle=isNaN(newAngle)?0:newAngle.toFixed(3)//保留三位小数
+    store.angle[index-1]=newAngle
+    store.distance[index-1]=newDistance
+    store.distance.splice(index,1)
+    store.angle.splice(index,1)
+  }
 
-function updateDistance(){
-  console.log("更新距离")
-  store.distance.forEach((item,index)=>{
-      store.distance[index]=modelList.value[index+1].position.x-modelList.value[index].position.x
-    })
-  console.log("更新角度")
-  store.angle.forEach((item,index)=>{
-    let result=Math.atan((modelList.value[index+1].position.y-modelList.value[index].position.y)/store.distance[index])*180/Math.PI
-    store.angle[index]=isNaN(result)?0:result.toFixed(3)//保留三位小数
-    })
+  // console.log("更新距离")
+  // store.distance.forEach((item,index)=>{
+  //     store.distance[index]=modelList.value[index+1].position.x-modelList.value[index].position.x
+  //   })
+  // console.log("更新角度")
+  // store.angle.forEach((item,index)=>{
+  //   let result=Math.atan((modelList.value[index+1].position.y-modelList.value[index].position.y)/
+  //   (modelList.value[index+1].position.x-modelList.value[index].position.x))*180/Math.PI
+  //   store.angle[index]=isNaN(result)?0:result.toFixed(3)//保留三位小数
+  //   })
 }
 function deleteModel(name){
   console.log("删除模型",name)
-  if(name){
+ 
+  if(name){ 
+    updateDistance(name)
     store.threeInstance.deleteModel(name)
   
     // store.threeInstance.modelList=store.threeInstance.modelList.filter(v => v.userData.attribute.model !== name);
     if(store.selectedElement===name){
       store.selectedElement=""
     }
-    store.distance.pop()
-    store.angle.pop()
-    console.log(modelAttributeList.value)
-    // console.log(store.modelAttributeList)
-    // console.log(store.threeInstance.modelAttributeList)
-    updateDistance()
+    // store.distance.pop()
+    // store.angle.pop() 
   }
 }
 function handleInput(){

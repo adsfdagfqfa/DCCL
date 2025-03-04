@@ -59,8 +59,11 @@ const onDragDrop= (e) => {
     //结束后设置dragModel为空
     store.threeInstance.dragModel=null;
     if(store.threeInstance?.modelAttributeList.length>1){
-      store.distance.push(0)
-      store.angle.push(0)
+      // store.distance.push(0)
+      // store.angle.push(0)
+      //默认在数组头部插入元素
+      store.distance.unshift(0)
+      store.angle.unshift(0)
     }
   }
 }

@@ -88,7 +88,7 @@ export default class threeInstance {
         //渲染的尺寸大小
         this.renderer.setSize(this.dom.offsetWidth, this.dom.offsetHeight);
         // 设置为浅灰色
-        this.renderer.setClearColor(0xeeeeee); 
+        this.renderer.setClearColor(0xcfcfcf); 
         this.dom.appendChild(this.renderer.domElement);
     }
 
