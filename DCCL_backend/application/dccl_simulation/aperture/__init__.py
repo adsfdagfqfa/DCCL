@@ -6,8 +6,8 @@ def cal_all_aperture(data,r_max,angle_1,angle_2):
 
     aperture_all=[]
 
-    for (index,item) in data['modelAttributeList']:
-        
+    # for (index,item) in data['modelAttributeList']:
+    for index, item in enumerate(data['modelAttributeList']):
         angle = angle_1 if index<=4 else angle_2
         #判断是镜子还是介质
         if item['type']=='lens' :

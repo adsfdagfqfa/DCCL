@@ -29,7 +29,7 @@ def simulation():
 
     if not param:
         data = json.loads(redis_client.get(user_id))
-
+        print(data)
         dccl_simulation(data)
 
         return "no param"
