@@ -10,8 +10,14 @@ def dccl_simulation(data):
     aperture_all=cal_all_aperture(data,r_max,angle_1,angle_2)
     matrix_all=cal_all_matrix(data,r_max,angle_1,angle_2)
     
-    return  cal_final_output(matrix_all,aperture_all,data)
-
+    generator= cal_final_output(matrix_all,aperture_all,data)
+    try:
+        while True:
+            value = next(generator)
+            yield value
+    except StopIteration as e:
+        # 捕获steay_state最终返回值
+        yield e.value
 
     
    

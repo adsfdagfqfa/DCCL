@@ -1,7 +1,7 @@
 from datetime import datetime
-import uuid
+import uuid,time
 import jwt,json
-from flask import request, make_response
+from flask import Response, request, make_response
 from .base import routes
 from application.utils.utilityFunction import generate_jwt_token, verify_jwt_token,get_uuid_from_token
 from application.extensions import redis_client
@@ -30,7 +30,7 @@ def simulation():
     if not param:
         data = json.loads(redis_client.get(user_id))
         print(data)
-        dccl_simulation(data)
+        return Response(dccl_simulation(data),mimetype='text/event-stream')
 
         return "no param"
     else:
@@ -77,4 +77,15 @@ def upload_parameter():
         redis_client.set(user_id, json.dumps(data))
         print("用户",user_id,'更新参数')
         resp = make_response('参数更新成功')
-        return "参数更新成功"   
+        return "参数更新成功"
+
+def generate_events():
+    """生成事件数据"""
+    while True:
+        time.sleep(2)  # 每2秒发送一次事件
+        yield f"data: The current time is: {time.ctime()}\n\n"
+
+@routes.route('/sse')
+def sse():
+    """SSE 路由"""
+    return Response(generate_events(), mimetype='text/event-stream')
