@@ -72,6 +72,7 @@ export const useThreeInstanceStore = defineStore("threeInstance", {
       })
     },
     async simulation(param){
+      this.simulationResult=[]
       console.log(param)
       const encodedJsonString = encodeURIComponent(param);
       
@@ -79,9 +80,10 @@ export const useThreeInstanceStore = defineStore("threeInstance", {
       // 创建 EventSource 实例
       const eventSource = new EventSource(sseUrl);
        // 监听消息事件
+      var that=this//保存上下文 
       eventSource.onmessage = function(event) {
         console.log("Received data:", event.data);
-        simulationResult.push(event.data)
+        that.simulationResult.push(event.data)
         //更新数据
       };
 
