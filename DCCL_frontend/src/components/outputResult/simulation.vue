@@ -12,15 +12,24 @@
           <RangeGenerator @get-result-array="getResultArray"  ref="rangeGenerator"/>
           <el-button type="primary" @click="onUploadParameter">上传参数</el-button>
           <el-button type="primary" @click="onSimulation">开始仿真</el-button>
-        
+          <el-button type="primary" @click="onTest">测试yield</el-button>
       </el-card>
     
     
     </div>
     <div class="flex-1">
-      <el-scrollbar >
-
-      </el-scrollbar>
+      <!-- <el-scrollbar >
+        
+      </el-scrollbar> -->
+      <RecycleScroller
+        class="list"
+        :items="resultList"
+        :item-size="50"
+        v-slot="{ item }">
+        <div class="list-item">
+          <span>{{item}}</span>
+        </div>
+      </RecycleScroller>
     </div>
   </div>
 </template>
@@ -75,7 +84,9 @@ const jsonpath=ref([
   },
 ])
 
-
+const resultList = computed(() => {
+  return store.simulationResult;
+});
 
 async function getAllParameter() {
   data.distance=store.distance;
@@ -182,8 +193,38 @@ function handleClear(){
     rangeGenerator.value.clearInput();
   }
 }
+const onTest=()=>{
+  
+  const sseUrl = `/flask/api/v1/sse`;
+  // 创建 EventSource 实例
+  const eventSource = new EventSource(sseUrl);
+    // 监听消息事件
+  eventSource.onmessage = function(event) {
+    console.log("Received data:", event.data);
+    //更新数据
+  };
+
+  // 监听错误事件
+  eventSource.onerror = function(err) {
+    console.error("EventSource failed:", err);
+    eventSource.close(); // 关闭连接
+  };
+}
 </script>
 
 <style scoped>
 /* Your component-specific styles go here */
+.list {
+  height: 400px;
+  border: 5px solid #eeeeeee9;
+  border-radius: 8px;
+}
+
+.list-item {
+  height:50px;
+  padding: 12px;
+  border-bottom: 1px dashed #020817;
+  display: flex;
+  align-items: center;
+}
 </style>
