@@ -4,7 +4,8 @@ from scipy.special import lambertw
 import time
 
 
-def fun_of_gain(in_U, lm, P_in, lambda_):
+def fun_of_gain(in_U, lm, P_in, lambda_,eta_c):
+    #eta_c泵浦效率
     # 开始计时
     start_time = time.time()
     # 常数
@@ -27,7 +28,7 @@ def fun_of_gain(in_U, lm, P_in, lambda_):
     # eta_a = 0.91
     # eta_c = eta_Q * eta_S * eta_B * eta_P * eta_T * eta_a  # 从泵浦到存储功率的效率，不包括重叠效率 eta_B
     # eta_c类似泵浦效率
-    eta_c = 0.72
+    #eta_c = 0.72
     a_m = 0.003  # 泵浦光束半径
     V = np.pi * a_m ** 2 * lm
     # deltaT = 0.3e-6 / 200
