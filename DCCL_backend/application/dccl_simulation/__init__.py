@@ -2,6 +2,7 @@ import numpy as np
 from .aperture import cal_all_aperture
 from .transfer_matrix import cal_all_matrix
 from .steady_state_calculation import cal_final_output
+from .utils import format_string
 def dccl_simulation(data):
     #这里直接写死的，针对dccl结构的
     angle_2=np.abs(data['angle'][5])
@@ -14,10 +15,8 @@ def dccl_simulation(data):
     try:
         while True:
             value = next(generator)
-            yield value
+            yield format_string(str(value))
     except StopIteration as e:
         # 捕获steay_state最终返回值
-        yield e.value
-
-    
+        yield format_string(str(e.value))
    

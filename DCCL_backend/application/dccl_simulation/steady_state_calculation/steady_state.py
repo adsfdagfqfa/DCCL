@@ -52,9 +52,8 @@ def steady_state(H_fsdf, H_fsf, B_aper, B_CatEye1, B_CatEye2, B_CatEye3, r1, r2,
         Iten_out = R * 0.5 * (epsilon * c0) * np.abs(U) ** 2  # 电场的振幅分布转化为光强分布
         Pout = np.sum(Iten_out)
 
-        print(
-            f'迭代次数: {t} 传输系数main: {v1} 传输系数free: {v2} 输出功率: {Pout * delta * delta} 终止判定1: {c} 终止判定2: {c2}')
-        yield f'data:迭代次数: {t} 传输系数main: {v1} 传输系数free: {v2} 输出功率: {Pout * delta * delta} 终止判定1: {c} 终止判定2: {c2}\n\n'
+        print(f'迭代次数: {t} 传输系数main: {v1} 传输系数free: {v2} 输出功率: {Pout * delta * delta}')
+        yield f'迭代次数: {t} 主共振腔传输系数: {v1} 自由空间腔传输系数: {v2} 输出光功率: {Pout * delta * delta} \n\n'
         # if t % 20 == 0:
         #     # 计算从开始到现在经过的时间
         #     elapsed_time = time.time() - start_time

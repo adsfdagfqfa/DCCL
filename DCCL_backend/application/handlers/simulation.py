@@ -29,22 +29,30 @@ def simulation():
     
     user_id=get_uuid_from_token(token)
     print('当前用户:',user_id)
-    
+    data = json.loads(redis_client.get(user_id))
     if not json_data:
-        data = json.loads(redis_client.get(user_id))
+        # data = json.loads(redis_client.get(user_id))
         print(data)
+        print("not json_data")
         return Response(dccl_simulation(data),mimetype='text/event-stream')
 
         
     else:
         #暂定
-        print(param)
+        path = json_data.get('jsonpath')
+        vectors = json_data.get('vectors')
+        print("json_data:",json_data)
 
+        def generate_events(data):
+            from jsonpath_ng import parse
+            jsonpath_expr = parse(path)
+            for i in vectors:
+                jsonpath_expr.update(data,i)
+                print('updatedData',data)
+                for item in dccl_simulation(data):
+                    yield item 
+        return Response(generate_events(data),mimetype='text/event-stream')
         # return request.args.get('param')
-
-
-    
-    return datetime.today().strftime('%Y-%m-%d %H:%M:%S')   
 
 
 @routes.route("/uploadParameter",methods=['POST'])
