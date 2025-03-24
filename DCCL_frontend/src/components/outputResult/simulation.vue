@@ -21,24 +21,31 @@
       <!-- <el-scrollbar >
         
       </el-scrollbar> -->
-      <RecycleScroller
+      <DynamicScroller
+        ref="virtualScroller"
         class="list"
         :items="resultList"
-        :item-size="50"
-        v-slot="{ item }">
-        <div class="list-item">
+        :min-item-size="50">
+        <template v-slot="{ item }">
+          <div class="list-item">
+            <span>{{item}}</span>
+          </div>
+        </template>
+        
+        <!-- <div class="list-item">
           <span>{{item}}</span>
-        </div>
-      </RecycleScroller>
+        </div> -->
+      </DynamicScroller>
     </div>
   </div>
 </template>
 
 <script setup>
 // import {JSONPath} from 'jsonpath-plus';
-import { onMounted,onBeforeMount, ref ,computed} from 'vue';
+import { onMounted,getCurrentInstance,onBeforeMount, ref ,computed} from 'vue';
 import { useThreeInstanceStore } from '@/store';
 import RangeGenerator from './rangeGenerator.vue';
+import { dateTableEmits } from 'element-plus/es/components/calendar/src/date-table';
 const rangeGenerator = ref();//引用的rangeGenerator组件
 
 var jp = require('jsonpath');
@@ -83,6 +90,7 @@ const jsonpath=ref([
     leaf:true
   },
 ])
+const pageInstance = getCurrentInstance();
 
 const resultList = computed(() => {
   return store.simulationResult;
@@ -111,7 +119,6 @@ function handleExpandChange(activePath){
   try {
     loadChildren(currentNode).then((children) => {
       console.log('加载子节点成功：', children);
-      // 使用 $set 确保响应式
       currentNode.children = children;
     });
   } catch (error) {
@@ -173,7 +180,8 @@ async function onSimulation(){
     param.path=selectedElement.value[length-1]
     param.vectors=vectors.value
   }
-  await store.simulation(JSON.stringify(param))
+  var virtualScroller=pageInstance.refs.virtualScroller;
+  await store.simulation(JSON.stringify(param),virtualScroller)
   // console.log(data)
   console.log('开始仿真')
  
@@ -209,14 +217,20 @@ const onTest=()=>{
   //   console.error("EventSource failed:", err);
   //   eventSource.close(); // 关闭连接
   // };
-  console.log(resultList)
+  const now=new Date();
+  resultList.value.push(now.toLocaleTimeString())
+  console.log(resultList.value)
+  var virtualScroller=pageInstance.refs.virtualScroller;
+  console.log(virtualScroller)
+  virtualScroller.scrollToBottom();
+  // virtualScroller.scrollToItem(resultList.value.length-1);
 }
 </script>
 
 <style scoped>
 /* Your component-specific styles go here */
 .list {
-  height: 400px;
+  height: 300px;
   border: 5px solid #eeeeeee9;
   border-radius: 8px;
 }
