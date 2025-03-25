@@ -9,10 +9,11 @@ def cal_final_output(matrix_all, aperture_all, data):
     # t: 迭代终止条件
     # s_it1 和 s_it2 分别是迭代终止时 M1 和 M2 上的场分布
     #部分参数写死
+    lambda_ = data['resonatorParam']['lambda']*1e-9
     generator = steady_state(matrix_all[0], matrix_all[1], aperture_all[1], aperture_all[0], aperture_all[2]*aperture_all[3],
                                             aperture_all[4], data['modelAttributeList'][0]['reflectivity'],
                                             data['modelAttributeList'][4]['reflectivity'],data['modelAttributeList'][7]['reflectivity'],
-                                            data['resonatorParam']['pumpWatt'],data['resonatorParam']['lambda'] ,
+                                            data['resonatorParam']['pumpWatt'],lambda_,
                                             data['resonatorParam']['pumpEfficiency'])
     # Iten_out, t, s_it1, s_it2 = steady_state(H_fsdf, H_fsf, B_aper, B_CatEye1, B_CatEye2, B_CatEye3, r1, r2,
     #                                                   r3, P_in, lambda_)
@@ -30,7 +31,7 @@ def cal_final_output(matrix_all, aperture_all, data):
                                             aperture_all[2]*aperture_all[3],
                                             aperture_all[4], data['modelAttributeList'][0]['reflectivity'],
                                             data['modelAttributeList'][4]['reflectivity'],data['modelAttributeList'][7]['reflectivity'],
-                                            data['resonatorParam']['pumpWatt'],data['resonatorParam']['lambda'] ,
+                                            data['resonatorParam']['pumpWatt'],lambda_ ,
                                             data['resonatorParam']['pumpEfficiency'])
     # U_M1, _, _ = one_roundtrip_distribution(s_it1, s_it2, H_fsdf, H_fsf, B_aper, B_CatEye1, B_CatEye2, B_CatEye3, r1, r2,
     #                                      r3, P_in, lambda_)
