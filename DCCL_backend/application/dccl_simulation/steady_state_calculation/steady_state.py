@@ -60,7 +60,7 @@ def steady_state(H_fsdf, H_fsf, B_aper, B_CatEye1, B_CatEye2, B_CatEye3, r1, r2,
         #     print(elapsed_time)
 
         # 终止条件
-        if t > 300:  # 1000
+        if t > 10:  # 改为10测试完整运行
             break
         if P_in < 1e-15:
             break

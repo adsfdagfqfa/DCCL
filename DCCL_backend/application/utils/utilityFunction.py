@@ -42,4 +42,6 @@ def get_uuid_from_token(token):
     uuid = payload['uuid']
     return uuid
       
-   
+#将字符串变量修改为sse的格式
+def format_string(value):
+    return "data: "+str(value)+"\n\n"

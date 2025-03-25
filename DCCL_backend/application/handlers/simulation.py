@@ -3,11 +3,12 @@ import uuid,time
 import jwt,json
 from flask import Response, request, make_response
 from .base import routes
-from application.utils.utilityFunction import generate_jwt_token, verify_jwt_token,get_uuid_from_token
+from application.utils.utilityFunction import generate_jwt_token, verify_jwt_token,get_uuid_from_token,format_string
 from application.extensions import redis_client
 # from application.config import Config
 from application.dccl_simulation import dccl_simulation
 from application.extensions import redis_client
+
 @routes.route("/today",methods=['GET'])
 def test():
     return datetime.today().strftime('%Y-%m-%d %H:%M:%S')
@@ -39,18 +40,22 @@ def simulation():
         
     else:
         #暂定
-        path = json_data.get('jsonpath')
+        path = json_data.get('path')
         vectors = json_data.get('vectors')
         print("json_data:",json_data)
-
+        print(path)
+        print(vectors)
         def generate_events(data):
             from jsonpath_ng import parse
             jsonpath_expr = parse(path)
             for i in vectors:
                 jsonpath_expr.update(data,i)
                 print('updatedData',data)
+                key = jsonpath_expr.find(data)[0].path.fields[-1]#获取键名
                 for item in dccl_simulation(data):
-                    yield item 
+                    str1="此时"+key+":"+str(i)+' '+item
+                    print(str1)
+                    yield format_string(str1) 
         return Response(generate_events(data),mimetype='text/event-stream')
         # return request.args.get('param')
 
