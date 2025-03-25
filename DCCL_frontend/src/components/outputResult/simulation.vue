@@ -85,7 +85,7 @@ const jsonpath=ref([
     leaf:true
   },
   {
-    value:'$.resonatorParam.pumpPower',
+    value:'$.resonatorParam.pumpWatt',
     label:'泵浦功率(W)',
     leaf:true
   },
