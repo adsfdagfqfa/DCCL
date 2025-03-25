@@ -5,5 +5,3 @@ from .operator_reflectivity import operator_reflectivity
 from .operator_transmissivity import operator_transmissivity
 from .para_FFT import para_FFT
 
-def format_string(value):
-    return "data: "+str(value)+"\n\n"
