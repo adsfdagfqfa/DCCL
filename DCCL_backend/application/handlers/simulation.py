@@ -35,7 +35,10 @@ def simulation():
         # data = json.loads(redis_client.get(user_id))
         print(data)
         print("not json_data")
-        return Response(dccl_simulation(data),mimetype='text/event-stream')
+        def generate_events(data):
+            for item in dccl_simulation(data):
+                yield format_string(item) 
+        return Response(generate_events(data),mimetype='text/event-stream')
 
         
     else:

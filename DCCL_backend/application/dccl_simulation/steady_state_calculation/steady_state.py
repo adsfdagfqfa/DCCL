@@ -19,6 +19,8 @@ def steady_state(H_fsdf, H_fsf, B_aper, B_CatEye1, B_CatEye2, B_CatEye3, r1, r2,
                                                        B_CatEye3, r1, r2, r3, P_in, lambda_,eta_c)
     tempU1 = firstU1
     tempU2 = firstU2
+    print(type(tempU1))
+    print(type(tempU2))
     t = 0
     _, _, _, _, delta, _ = para_FFT(0.012)
 

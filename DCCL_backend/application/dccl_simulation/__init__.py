@@ -10,7 +10,20 @@ def dccl_simulation(data):
     r_max = max(item['radius'] for item in data['modelAttributeList'])
     aperture_all=cal_all_aperture(data,r_max,angle_1,angle_2)
     matrix_all=cal_all_matrix(data,r_max,angle_1,angle_2)
-    
+
+    print("传输矩阵与有效反射面计算结束")
+    # for item in aperture_all:
+    #     print(type(item)) 
+    # for item in matrix_all:
+    #     print(type(item)) 
+    # <class 'cupy.ndarray'>
+    # <class 'cupy.ndarray'>
+    # <class 'cupy.ndarray'>
+    # <class 'cupy.ndarray'>
+    # <class 'cupy.ndarray'>
+    # <class 'cupy.ndarray'>
+    # <class 'cupy.ndarray'>
+
     generator= cal_final_output(matrix_all,aperture_all,data)
     try:
         while True:
