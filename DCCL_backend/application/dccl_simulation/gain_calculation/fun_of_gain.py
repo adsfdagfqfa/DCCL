@@ -2,6 +2,7 @@ import numpy as np
 import cupy as cp
 from scipy.special import lambertw
 import time
+import datetime
 
 
 def fun_of_gain(in_U, lm, P_in, lambda_,eta_c):
@@ -12,7 +13,7 @@ def fun_of_gain(in_U, lm, P_in, lambda_,eta_c):
     c = 3e8
     h = 6.626e-34
     epsilon = 8.854187817e-12
-    mu0 = 4 * np.pi * 1e-7
+    mu0 = 4 * cp.pi * 1e-7
 
     # 系统参数,这里分别是sigma吸收/发射截面，tau_f上能级(激发态)粒子寿命
     sigma = 15.6e-23  # Nd:YVO4
@@ -30,7 +31,7 @@ def fun_of_gain(in_U, lm, P_in, lambda_,eta_c):
     # eta_c类似泵浦效率
     #eta_c = 0.72
     a_m = 0.003  # 泵浦光束半径
-    V = np.pi * a_m ** 2 * lm
+    V = cp.pi * a_m ** 2 * lm
     # deltaT = 0.3e-6 / 200
     # tau = 0.3e-6
 
@@ -39,22 +40,29 @@ def fun_of_gain(in_U, lm, P_in, lambda_,eta_c):
     g0 = eta_c * P_in / (I_s * V)
 
     # 计算强度
-    I = 2 * np.abs(in_U) ** 2
-    I = cp.asarray(I, dtype=cp.float32)
-    m = np.where(I != 0)
+    I = 2 * cp.abs(in_U) ** 2
+
+    # I = cp.asarray(I, dtype=cp.float32)
+    # 创建对应的bool掩码
+    m = I != 0
     A = cp.zeros(I.shape, dtype=cp.float32)
     # A = np.zeros_like(I, dtype=np.float32)
     B = A.copy()
     A[m] = V_sat2 / I[m]
-    B[m] = np.log(I[m])
+    B[m] = cp.log(I[m])
     c1 = B + I / V_sat2
 
-    B = 1 / V_sat2 * np.exp(g0 * lm + c1)
+    B = 1 / V_sat2 * cp.exp(g0 * lm + c1)
     # B = lambertw(B)
+    # print("2:", datetime.datetime.now())
+    # 主要的耗时位置
+    
     B_cpu = cp.asnumpy(B)  # 将CuPy数组转换为NumPy数组
     B_lambertw = lambertw(B_cpu)  # 使用SciPy的lambertw函数
     B = cp.asarray(B_lambertw, dtype=cp.complex64)  # 将结果转换回CuPy数组
+
+    # print("2:", datetime.datetime.now())
     C = A * B
-    g_ij = np.sqrt(C)
+    g_ij = cp.sqrt(C)
 
     return g_ij

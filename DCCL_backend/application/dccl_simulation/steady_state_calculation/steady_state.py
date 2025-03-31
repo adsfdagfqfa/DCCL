@@ -1,6 +1,6 @@
 import numpy as np
 import time
-
+import cupy as cp
 from ..utils import cal_overlap
 from ..utils import cal_trans_factor
 from .one_roundtrip_distribution import one_roundtrip_distribution
@@ -19,8 +19,8 @@ def steady_state(H_fsdf, H_fsf, B_aper, B_CatEye1, B_CatEye2, B_CatEye3, r1, r2,
                                                        B_CatEye3, r1, r2, r3, P_in, lambda_,eta_c)
     tempU1 = firstU1
     tempU2 = firstU2
-    print(type(tempU1))
-    print(type(tempU2))
+    # print(type(tempU1))
+    # print(type(tempU2))
     t = 0
     _, _, _, _, delta, _ = para_FFT(0.012)
 
@@ -28,12 +28,13 @@ def steady_state(H_fsdf, H_fsf, B_aper, B_CatEye1, B_CatEye2, B_CatEye3, r1, r2,
     while c > 0.0001:
         [s_it1, s_it2, U2] = one_roundtrip_distribution(tempU1, tempU2, H_fsdf, H_fsf, B_aper, B_CatEye1, B_CatEye2,
                                                         B_CatEye3, r1, r2, r3, P_in, lambda_,eta_c)
-        a1 = np.sum(np.abs(np.abs(s_it1) - np.abs(tempU1)))
-        b1 = np.sum(np.abs(tempU1))
+        
+        a1 = cp.sum(cp.abs(cp.abs(s_it1) - cp.abs(tempU1)))
+        b1 = cp.sum(cp.abs(tempU1))
         c1 = a1 / b1
 
-        a2 = np.sum(np.abs(np.abs(s_it2) - np.abs(tempU2)))
-        b2 = np.sum(np.abs(tempU2))
+        a2 = cp.sum(cp.abs(cp.abs(s_it2) - cp.abs(tempU2)))
+        b2 = cp.sum(cp.abs(tempU2))
         c2 = a2 / b2
 
         v1 = cal_trans_factor(s_it1, tempU1)
@@ -51,8 +52,8 @@ def steady_state(H_fsdf, H_fsf, B_aper, B_CatEye1, B_CatEye2, B_CatEye3, r1, r2,
         R = 1 - r3 ** 2
         epsilon = 8.854187817e-12
         c0 = 3e8
-        Iten_out = R * 0.5 * (epsilon * c0) * np.abs(U) ** 2  # 电场的振幅分布转化为光强分布
-        Pout = np.sum(Iten_out)
+        Iten_out = R * 0.5 * (epsilon * c0) * cp.abs(U) ** 2  # 电场的振幅分布转化为光强分布
+        Pout = cp.sum(Iten_out)
 
         print(f'迭代次数: {t} 传输系数main: {v1} 传输系数free: {v2} 输出功率: {Pout * delta * delta}')
         yield f'迭代次数: {t} 主共振腔传输系数: {v1} 自由空间腔传输系数: {v2} 输出光功率: {Pout * delta * delta} \n\n'
