@@ -21,6 +21,8 @@ def cal_final_output(matrix_all, aperture_all, data):
     try:
         while True:
             value = next(generator)
+            # 这里的value是一个字典，包含了迭代次数、传输系数和输出功率，用来记录每次迭代的数据
+            # 这里可以将value的内容打印出来，或者存储到一个列表中
             yield value
     except StopIteration as e:
         # 捕获steay_state最终返回值
@@ -36,5 +38,11 @@ def cal_final_output(matrix_all, aperture_all, data):
     # U_M1, _, _ = one_roundtrip_distribution(s_it1, s_it2, H_fsdf, H_fsf, B_aper, B_CatEye1, B_CatEye2, B_CatEye3, r1, r2,
     #                                      r3, P_in, lambda_)
     V_round = cal_trans_factor(U_M1, s_it1)  # 一个 roundtrip 的传输系数
+
+    data={}
+    data["iterationCount"] = t
+    data["transmissionCoefficientMain"] = v1
+    data["transmissionCoefficientFree"] = v2
+    data["outputPower"] = Iten_out
 
     return Iten_out, t, s_it1, s_it2, V_round

@@ -23,6 +23,7 @@ def steady_state(H_fsdf, H_fsf, B_aper, B_CatEye1, B_CatEye2, B_CatEye3, r1, r2,
     _, _, _, _, delta, _ = para_FFT(0.012)
 
     c = float('inf')
+    data={}
     while c > 0.0001:
         [s_it1, s_it2, U2] = one_roundtrip_distribution(tempU1, tempU2, H_fsdf, H_fsf, B_aper, B_CatEye1, B_CatEye2,
                                                         B_CatEye3, r1, r2, r3, P_in, lambda_,eta_c)
@@ -53,7 +54,13 @@ def steady_state(H_fsdf, H_fsf, B_aper, B_CatEye1, B_CatEye2, B_CatEye3, r1, r2,
         Pout = np.sum(Iten_out)
 
         print(f'迭代次数: {t} 传输系数main: {v1} 传输系数free: {v2} 输出功率: {Pout * delta * delta}')
-        yield f'迭代次数: {t} 主共振腔传输系数: {v1} 自由空间腔传输系数: {v2} 输出光功率: {Pout * delta * delta} \n\n'
+        # 用字典记录每次的数据
+        data["iterationCount"] = t
+        data["transmissionCoefficientMain"] = v1
+        data["transmissionCoefficientFree"] = v2
+        data["outputPower"] = Pout * delta * delta
+        yield data
+        # yield f'迭代次数: {t} 主共振腔传输系数: {v1} 自由空间腔传输系数: {v2} 输出光功率: {Pout * delta * delta}'
         # if t % 20 == 0:
         #     # 计算从开始到现在经过的时间
         #     elapsed_time = time.time() - start_time
@@ -65,4 +72,4 @@ def steady_state(H_fsdf, H_fsf, B_aper, B_CatEye1, B_CatEye2, B_CatEye3, r1, r2,
         if P_in < 1e-15:
             break
 
-    return Pout, t, s_it1, s_it2  # 迭代终止时M1和M2上的场分布
+    return Pout*delta*delta, t, s_it1, s_it2  # 迭代终止时M1和M2上的场分布

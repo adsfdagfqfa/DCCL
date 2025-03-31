@@ -15,8 +15,8 @@ def dccl_simulation(data):
     try:
         while True:
             value = next(generator)
-            yield str(value)
+            yield value
     except StopIteration as e:
         # 捕获steay_state最终返回值
-        yield str(e.value)
+        yield e.value
    

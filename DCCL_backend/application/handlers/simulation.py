@@ -35,9 +35,7 @@ def simulation():
         # data = json.loads(redis_client.get(user_id))
         print(data)
         print("not json_data")
-        return Response(dccl_simulation(data),mimetype='text/event-stream')
-
-        
+        return Response(dccl_simulation(data),mimetype='text/event-stream')        
     else:
         #暂定
         path = json_data.get('path')
