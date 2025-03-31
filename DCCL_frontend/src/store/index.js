@@ -57,6 +57,7 @@ export const useThreeInstanceStore = defineStore("threeInstance", {
     async simulation(param,dom){
       this.simulationResult=[]
       console.log(param)
+      //将查询参数对象转换为 JSON 字符串
       const encodedJsonString = encodeURIComponent(param);
       
       const sseUrl = `/flask/api/v1/simulation?data=${encodedJsonString}`;
