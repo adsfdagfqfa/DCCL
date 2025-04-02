@@ -4,7 +4,7 @@ from .one_roundtrip_distribution import one_roundtrip_distribution
 from .steady_state import steady_state
 import cupyx.scipy.sparse as cp_sparse
 from scipy.sparse import csr_matrix
-from application.utils.utilityFunction import csr_matrix_to_dict
+from DCCL_backend.application.utils.utility_function import csr_matrix_to_dict
 def cal_final_output(matrix_all, aperture_all, data):
     # Iten_out: 输出平面上的光强分布，可以直接计算输出功率
     # t: 迭代终止条件

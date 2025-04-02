@@ -3,11 +3,11 @@ import uuid,time
 import jwt,json
 from flask import Response, request, make_response
 from .base import routes
-from application.utils.utilityFunction import generate_jwt_token, verify_jwt_token,get_uuid_from_token,format_string
+from DCCL_backend.application.utils.utility_function import generate_jwt_token, verify_jwt_token,get_uuid_from_token,format_string
 from application.extensions import redis_client
+from application.utils.redis_utils import get_redis_data, set_redis_data
 # from application.config import Config
 from application.dccl_simulation import dccl_simulation
-from application.extensions import redis_client
 
 @routes.route("/today",methods=['GET'])
 def test():
@@ -30,9 +30,9 @@ def simulation():
     
     user_id=get_uuid_from_token(token)
     print('当前用户:',user_id)
-    data = json.loads(redis_client.get(user_id))
+    data = json.loads(get_redis_data(user_id))
     if not json_data:
-        # data = json.loads(redis_client.get(user_id))
+        
         print(data)
         print("not json_data")
         def generate_events(data):
@@ -79,7 +79,8 @@ def upload_parameter():
         new_token = generate_jwt_token(user_id)
         print(new_token)
         # 存储基础信息到Redis（示例存储创建时间）
-        redis_client.set(user_id, json.dumps(data))
+        # redis_client.set(user_id, json.dumps(data))
+        set_redis_data(user_id, json.dumps(data))
         print("新用户",user_id)
         
         # 设置Cookie,以便于后续访问直接通过Cookie验证
@@ -97,7 +98,8 @@ def upload_parameter():
         
         user_id = get_uuid_from_token(token)
         # 更新用户信息
-        redis_client.set(user_id, json.dumps(data))
+        # redis_client.set(user_id, json.dumps(data))
+        set_redis_data(user_id, json.dumps(data))
         print("用户",user_id,'更新参数')
         resp = make_response('参数更新成功')
         return "参数更新成功"
