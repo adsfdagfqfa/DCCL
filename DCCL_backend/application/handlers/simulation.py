@@ -37,7 +37,8 @@ def simulation():
         print("not json_data")
         def generate_events(data):
             for item in dccl_simulation(data):
-                yield format_string(item) 
+                str1=json.dumps(item,ensure_ascii=False)
+                yield format_string(str1) 
         return Response(generate_events(data),mimetype='text/event-stream')
 
         
@@ -56,7 +57,8 @@ def simulation():
                 print('updatedData',data)
                 key = jsonpath_expr.find(data)[0].path.fields[-1]#获取键名
                 for item in dccl_simulation(data):
-                    str1="此时"+key+":"+str(i)+' '+item
+                    item['selectedAttribute'] = {key:i}
+                    str1=json.dumps(item,ensure_ascii=False)
                     print(str1)
                     yield format_string(str1) 
         return Response(generate_events(data),mimetype='text/event-stream')
@@ -100,13 +102,14 @@ def upload_parameter():
         resp = make_response('参数更新成功')
         return "参数更新成功"
 
-def generate_events():
-    """生成事件数据"""
-    while True:
-        time.sleep(2)  # 每2秒发送一次事件
-        yield f"data: The current time is: {time.ctime()}\n\n"
+
 
 @routes.route('/sse')
 def sse():
     """SSE 路由"""
+    def generate_events():
+        """生成事件数据"""
+        while True:
+            time.sleep(2)  # 每2秒发送一次事件
+            yield f"data: The current time is: {time.ctime()}\n\n"
     return Response(generate_events(), mimetype='text/event-stream')

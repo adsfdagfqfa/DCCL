@@ -2,8 +2,9 @@ import types
 from ..utils import cal_trans_factor
 from .one_roundtrip_distribution import one_roundtrip_distribution
 from .steady_state import steady_state
-
-
+import cupyx.scipy.sparse as cp_sparse
+from scipy.sparse import csr_matrix
+from application.utils.utilityFunction import csr_matrix_to_dict
 def cal_final_output(matrix_all, aperture_all, data):
     # Iten_out: 输出平面上的光强分布，可以直接计算输出功率
     # t: 迭代终止条件
@@ -39,10 +40,16 @@ def cal_final_output(matrix_all, aperture_all, data):
     #                                      r3, P_in, lambda_)
     V_round = cal_trans_factor(U_M1, s_it1)  # 一个 roundtrip 的传输系数
 
+    #讲s_it1和s_it2用稀疏矩阵的格式储存
+    s_it1_csr = cp_sparse.csr_matrix(s_it1)
+    s_it2_csr = cp_sparse.csr_matrix(s_it2)
+    s_it1_cpu = csr_matrix(s_it1_csr.get())
+    s_it2_cpu = csr_matrix(s_it2_csr.get())
     data={}
     data["iterationCount"] = t
-    data["transmissionCoefficientMain"] = v1
-    data["transmissionCoefficientFree"] = v2
+    data["opticalFieldDistributionMain"] = csr_matrix_to_dict(s_it1_cpu)
+    data["opticalFieldDistributionFree"] = csr_matrix_to_dict(s_it2_cpu)
     data["outputPower"] = Iten_out
 
-    return Iten_out, t, s_it1, s_it2, V_round
+    # return Iten_out, t, s_it1, s_it2, V_round
+    return data

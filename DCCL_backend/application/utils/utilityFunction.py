@@ -45,3 +45,13 @@ def get_uuid_from_token(token):
 #将字符串变量修改为sse的格式
 def format_string(value):
     return "data: "+str(value)+"\n\n"
+
+
+#将CSR格式的稀疏矩阵转换为字典
+def csr_matrix_to_dict(csr):
+    return {
+        "data": csr.data.tolist(),  # 将 NumPy 数组转换为列表
+        "indices": csr.indices.tolist(),
+        "indptr": csr.indptr.tolist(),
+        "shape": csr.shape
+    }
