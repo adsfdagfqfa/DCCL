@@ -18,6 +18,7 @@
     <div>
       <OutputResult></OutputResult>
     </div>
+    <PyPlot></PyPlot>
   </div>
 </template>
 
@@ -28,6 +29,7 @@ import ElementPanel from '@/components/elementPanel/index.vue'
 import OutputResult from '@/components/outputResult/index.vue';
 import Resonator from '@/components/resonator/index.vue';
 import { onMounted } from 'vue';
+import PyPlot from '@/components/pyPlot/index.vue';
 onMounted(async()=>{
   console.log("mainView","挂载")
 })

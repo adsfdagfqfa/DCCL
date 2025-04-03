@@ -8,6 +8,7 @@ from application.extensions import redis_client
 from application.utils.redis_utils import get_redis_data, set_redis_data
 # from application.config import Config
 from application.dccl_simulation import dccl_simulation
+from application.utils.utility_function import compress
 
 @routes.route("/today",methods=['GET'])
 def test():
@@ -36,9 +37,28 @@ def simulation():
         print(data)
         print("not json_data")
         def generate_events(data):
-            for item in dccl_simulation(data):
-                str1=json.dumps(item,ensure_ascii=False)
-                yield format_string(str1) 
+            generator = dccl_simulation(data)
+            try:
+                while True:
+                    item = next(generator)
+                    str1 = json.dumps(item, ensure_ascii=False)
+                    yield format_string(str1)
+            except StopIteration as e:
+                final_value = e.value  # 获取最终返回值,包含光场的最终分布
+                #先储存最终光场分布的csr矩阵
+                key1=user_id+uuid.uuid4().hex[:6]
+                set_redis_data(key1, final_value['fieldDistributionMain'])
+                final_value['fieldDistributionMain']=key1
+                key2=user_id+uuid.uuid4().hex[:6]
+                set_redis_data(key2, final_value['fieldDistributionFree'])
+                final_value['fieldDistributionMain']=key2
+                yield format_string(json.dumps(final_value, ensure_ascii=False))
+                # print(f"Final value from dccl_simulation: {final_value}")
+            # for item in dccl_simulation(data):
+            #     str1=json.dumps(item,ensure_ascii=False)
+            #     yield format_string(str1) 
+
+
         return Response(generate_events(data),mimetype='text/event-stream')
 
         

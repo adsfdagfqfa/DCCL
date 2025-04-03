@@ -31,5 +31,5 @@ def dccl_simulation(data):
             yield value
     except StopIteration as e:
         # 捕获steay_state最终返回值
-        yield e.value
+        return e.value
    

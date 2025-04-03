@@ -1,4 +1,4 @@
-import types
+import types,io,scipy as sio
 from ..utils import cal_trans_factor
 from .one_roundtrip_distribution import one_roundtrip_distribution
 from .steady_state import steady_state
@@ -41,14 +41,20 @@ def cal_final_output(matrix_all, aperture_all, data):
     V_round = cal_trans_factor(U_M1, s_it1)  # 一个 roundtrip 的传输系数
 
     #讲s_it1和s_it2用稀疏矩阵的格式储存
-    s_it1_csr = cp_sparse.csr_matrix(s_it1)
-    s_it2_csr = cp_sparse.csr_matrix(s_it2)
-    s_it1_cpu = csr_matrix(s_it1_csr.get())
-    s_it2_cpu = csr_matrix(s_it2_csr.get())
+    # s_it1_csr = cp_sparse.csr_matrix(s_it1)
+    # s_it2_csr = cp_sparse.csr_matrix(s_it2)
+    # s_it1_cpu = csr_matrix(s_it1_csr.get())
+    # s_it2_cpu = csr_matrix(s_it2_csr.get())
+    s_it1_buffer = io.BytesIO()
+    sio.savemat( s_it1_buffer, {'matrix': s_it1}, format='5',docompress=True)
+    
+    s_it2_buffer = io.BytesIO()
+    sio.savemat( s_it2_buffer, {'matrix': s_it2}, format='5',docompress=True)
+    
     data={}
     data["iterationCount"] = t
-    data["opticalFieldDistributionMain"] = csr_matrix_to_dict(s_it1_cpu)
-    data["opticalFieldDistributionFree"] = csr_matrix_to_dict(s_it2_cpu)
+    data["fieldDistributionMain"] = s_it1_buffer.getvalue()
+    data["fieldDistributionFree"] = s_it2_buffer.getvalue()
     data["outputPower"] = Iten_out
 
     # return Iten_out, t, s_it1, s_it2, V_round
