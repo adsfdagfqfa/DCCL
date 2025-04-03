@@ -1,7 +1,7 @@
 
 from .base import routes
 
-from application.handlers import simulation
+from application.handlers import simulation,result
 from application.handlers import *
 @routes.route('/test1',methods=['GET'])
 def t():

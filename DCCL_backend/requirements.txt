@@ -7,5 +7,4 @@ PyJWT
 jsonpath-ng
 matplotlib
 msgpack
-zlib
 mpld3

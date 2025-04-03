@@ -3,7 +3,7 @@ import uuid,time
 import jwt,json
 from flask import Response, request, make_response
 from .base import routes
-from DCCL_backend.application.utils.utility_function import generate_jwt_token, verify_jwt_token,get_uuid_from_token,format_string
+from application.utils.utility_function import generate_jwt_token, verify_jwt_token,get_uuid_from_token,format_string
 from application.extensions import redis_client
 from application.utils.redis_utils import get_redis_data, set_redis_data
 # from application.config import Config
@@ -49,9 +49,13 @@ def simulation():
                 key1=user_id+uuid.uuid4().hex[:6]
                 set_redis_data(key1, final_value['fieldDistributionMain'])
                 final_value['fieldDistributionMain']=key1
+                print(key1)
                 key2=user_id+uuid.uuid4().hex[:6]
                 set_redis_data(key2, final_value['fieldDistributionFree'])
-                final_value['fieldDistributionMain']=key2
+                final_value['fieldDistributionFree']=key2
+                print(key2)
+                for key in final_value:
+                    print(key,type(final_value[key]))
                 yield format_string(json.dumps(final_value, ensure_ascii=False))
                 # print(f"Final value from dccl_simulation: {final_value}")
             # for item in dccl_simulation(data):
@@ -78,6 +82,8 @@ def simulation():
                 key = jsonpath_expr.find(data)[0].path.fields[-1]#获取键名
                 for item in dccl_simulation(data):
                     item['selectedAttribute'] = {key:i}
+                    for key in item:
+                        print(key,type(item[key]))
                     str1=json.dumps(item,ensure_ascii=False)
                     print(str1)
                     yield format_string(str1) 
