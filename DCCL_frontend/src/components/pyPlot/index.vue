@@ -17,8 +17,9 @@ const pageInstance = getCurrentInstance();
 
 async function loadPlot() {
     loading.value = true
+    const key=`2073ac21-f515-4123-8826-c63ae55dc9171c2c3c`
     try{
-        await axios.get('/flask/api/plot').then((response) => {
+        await axios.get(`/flask/api/v1/picture/${key}`).then((response) => {
             console.log("plot","请求成功")
             pageInstance.refs.plotContainer.innerHTML = response.data.html
             //执行html中的脚本
