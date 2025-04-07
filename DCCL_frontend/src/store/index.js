@@ -29,6 +29,7 @@ export const useThreeInstanceStore = defineStore("threeInstance", {
     ,'迭代次数: 11115 传输系数main: 0.904157280921936 传输系数free: 4.078216552734375 输出功率: 2.8363040804890716e-09 终止判定1: 0.09057203680276871 终止判定2: 0.8563631176948547'
     ,
   ]//输出结果
+  ,result:{"iterationCount": 8, "transmissionCoefficientMain": 0.5153212898815251, "transmissionCoefficientFree": 2.0110368935962777, "outputPower": 3.3249547716356245e-09, "selectedAttribute": {"selectedAttribute": 100}}
   }),
   getters: {
     
@@ -67,6 +68,7 @@ export const useThreeInstanceStore = defineStore("threeInstance", {
       var that=this//保存上下文 
       eventSource.onmessage = function(event) {
         console.log("Received data:", event.data);
+        console.log(event.data);
         that.simulationResult.push(event.data)
         dom.scrollToBottom()
         //更新数据

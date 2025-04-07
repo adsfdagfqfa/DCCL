@@ -16,9 +16,34 @@
       <!-- <test></test> -->
     </div>
     <div>
-      <OutputResult></OutputResult>
+      <!-- <OutputResult></OutputResult> -->
+      <ElementDistancePanel/>
+      <el-tabs v-model="activeName" @tab-click="handleClick">
+        <el-tab-pane label="常数" name="constant">
+          <ConstantPanel/>
+        </el-tab-pane>
+        <el-tab-pane label="参数" name="parameter">
+          <ParameterPanel/>
+        </el-tab-pane>
+        <el-tab-pane label="仿真" name="simulation">
+          <SimulationPanel/>
+        </el-tab-pane>
+      </el-tabs>
     </div>
-    <PyPlot></PyPlot>
+    <el-button plain @click="dialogVisible = true">
+      Open the event Dialog
+    </el-button>
+
+  <el-dialog v-model="dialogVisible" >
+    <span>It's a event Dialog</span>
+    <template #title>
+      <div class="dialog-footer">
+        <el-button @click="dialogVisible = false">Cancel</el-button>
+        <el-button type="primary" @click="dialogVisible = false">Confirm</el-button>
+      </div>
+    </template>
+  </el-dialog>
+    <!-- <PyPlot></PyPlot> -->
   </div>
 </template>
 
@@ -26,11 +51,22 @@
 import Menu from '@/components/menu/index.vue'
 import ElementList from '@/components/elementList/index.vue'
 import ElementPanel from '@/components/elementPanel/index.vue'
-import OutputResult from '@/components/outputResult/index.vue';
+// import OutputResult from '@/components/outputResult/index.vue';
 import Resonator from '@/components/resonator/index.vue';
 import { onMounted } from 'vue';
-import PyPlot from '@/components/pyPlot/index.vue';
+import PlotViewer from '@/components/plotViewer/index.vue';
+import ElementDistancePanel from '@/components/elementDistancePanel/index.vue';
+import ConstantPanel from '@/components/constantPanel/index.vue';
+import ParameterPanel from '@/components/parameterPanel/index.vue';
+import SimulationPanel from '@/components/simulationPanel/index.vue';
 onMounted(async()=>{
   console.log("mainView","挂载")
 })
+const tabs=[]
+function handleClick(tab, event) {
+  console.log(tab, event);
+}
+import { ref } from 'vue'
+
+const dialogVisible = ref(false)
 </script>

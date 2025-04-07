@@ -1,5 +1,5 @@
 <template>
-    <div class="plot-container">
+    <div class="relative w-full min-h-100">
     <!-- 动态插入HTML内容 -->
         <div ref="plotContainer"></div>
 
@@ -17,8 +17,9 @@ const pageInstance = getCurrentInstance();
 
 async function loadPlot() {
     loading.value = true
+    const key=`2073ac21-f515-4123-8826-c63ae55dc9171c2c3c`
     try{
-        await axios.get('/flask/api/plot').then((response) => {
+        await axios.get(`/flask/api/v1/picture/${key}`).then((response) => {
             console.log("plot","请求成功")
             pageInstance.refs.plotContainer.innerHTML = response.data.html
             //执行html中的脚本
@@ -54,11 +55,6 @@ onMounted(async()=>{
 
 
 <style scoped>
-.plot-container {
-    position: relative;
-    width: 100%;
-    min-height: 400px;
-}
 
 .loading {
     position: absolute;
