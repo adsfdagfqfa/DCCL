@@ -6,7 +6,7 @@ from .steady_state import steady_state
 import cupyx.scipy.sparse as cp_sparse
 from flask import g
 from scipy.sparse import csr_matrix
-from DCCL_backend.application.utils.utility_function import csr_matrix_to_dict
+from application.utils.utility_function import csr_matrix_to_dict
 from application.utils.redis_utils import set_redis_data
 def cal_final_output(matrix_all, aperture_all, data):
     # Iten_out: 输出平面上的光强分布，可以直接计算输出功率
