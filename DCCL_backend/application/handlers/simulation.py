@@ -32,6 +32,7 @@ def simulation():
     user_id=g.user_id
     if not user_id:
         resp = make_response('没有在token中找到用户id,请重新上传参数')
+        print('没有在token中找到用户id,请重新上传参数')
         return resp
     print('当前用户:',user_id)
     data = json.loads(get_redis_data(user_id))
@@ -40,7 +41,7 @@ def simulation():
         print(data)
         print("not json_data")
         def generate_events(data):
-            generator = dccl_simulation(data)
+            generator = dccl_simulation(data,user_id)
             try:
                 while True:
                     item = next(generator)
@@ -48,11 +49,7 @@ def simulation():
                     yield format_string(str1)
             except StopIteration as e:
                 final_value = e.value  # 获取最终返回值
-                yield format_string(json.dumps(final_value, ensure_ascii=False))
-                # print(f"Final value from dccl_simulation: {final_value}")
-            # for item in dccl_simulation(data):
-            #     str1=json.dumps(item,ensure_ascii=False)
-            #     yield format_string(str1) 
+                yield format_string(json.dumps(final_value, ensure_ascii=False)) 
 
 
         return Response(generate_events(data),mimetype='text/event-stream')
@@ -73,7 +70,7 @@ def simulation():
                 print('updatedData',data)
                 key = jsonpath_expr.find(data)[0].path.fields[-1]#获取键名
                 try:
-                    for item in dccl_simulation(data):
+                    for item in dccl_simulation(data,user_id):
                         item['selectedAttribute'] = {key:i}
                         str1=json.dumps(item,ensure_ascii=False)
                         print(str1)

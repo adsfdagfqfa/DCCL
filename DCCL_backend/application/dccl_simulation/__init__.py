@@ -3,7 +3,7 @@ from .aperture import cal_all_aperture
 from .transfer_matrix import cal_all_matrix
 from .steady_state_calculation import cal_final_output
 
-def dccl_simulation(data):
+def dccl_simulation(data,user_id):
     #这里直接写死的，针对dccl结构的
     angle_2=np.abs(data['angle'][5])
     angle_1=np.arctan(data['modelAttributeList'][5]['focalLength']/data['modelAttributeList'][3]['focalLength']*np.tan(angle_2))
@@ -24,7 +24,7 @@ def dccl_simulation(data):
     # <class 'cupy.ndarray'>
     # <class 'cupy.ndarray'>
 
-    generator= cal_final_output(matrix_all,aperture_all,data)
+    generator= cal_final_output(matrix_all,aperture_all,data,user_id)
     try:
         while True:
             value = next(generator)

@@ -1,14 +1,14 @@
-import types,io,scipy as sio
+import types,io,scipy.io as sio
 import uuid
 from ..utils import cal_trans_factor
 from .one_roundtrip_distribution import one_roundtrip_distribution
 from .steady_state import steady_state
 import cupyx.scipy.sparse as cp_sparse
-from flask import g
+
 from scipy.sparse import csr_matrix
 from application.utils.utility_function import csr_matrix_to_dict
 from application.utils.redis_utils import set_redis_data
-def cal_final_output(matrix_all, aperture_all, data):
+def cal_final_output(matrix_all, aperture_all, data,user_id):
     # Iten_out: 输出平面上的光强分布，可以直接计算输出功率
     # t: 迭代终止条件
     # s_it1 和 s_it2 分别是迭代终止时 M1 和 M2 上的场分布
@@ -50,14 +50,15 @@ def cal_final_output(matrix_all, aperture_all, data):
     # s_it2_cpu = csr_matrix(s_it2_csr.get())
 
     #使用mat格式来储存s_it1和s_it2,相比于直接储存csr_matrix格式，mat格式不用额外处理
+   
     s_it1_buffer = io.BytesIO()
-    sio.savemat( s_it1_buffer, {'matrix': s_it1}, format='5',docompress=True)
-    key1=g.user_id+uuid.uuid4().hex[:6]
+    sio.savemat( s_it1_buffer, {'matrix': s_it1.get()}, format='5',do_compression=True)
+    key1=user_id+uuid.uuid4().hex[:6]
     set_redis_data(key1, s_it1_buffer.getvalue())
     
     s_it2_buffer = io.BytesIO()
-    sio.savemat( s_it2_buffer, {'matrix': s_it2}, format='5',docompress=True)
-    key2=g.user_id+uuid.uuid4().hex[:6]
+    sio.savemat( s_it2_buffer, {'matrix': s_it2.get()}, format='5',do_compression=True)
+    key2=user_id+uuid.uuid4().hex[:6]
     set_redis_data(key2, s_it2_buffer.getvalue())
     
     data={}
