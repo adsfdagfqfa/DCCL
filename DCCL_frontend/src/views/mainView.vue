@@ -17,16 +17,16 @@
     </div>
     <div>
       <!-- <OutputResult></OutputResult> -->
-      <Element/>
+      <ElementDistancePanel/>
       <el-tabs v-model="activeName" @tab-click="handleClick">
         <el-tab-pane label="常数" name="constant">
-          <Constant/>
+          <ConstantPanel/>
         </el-tab-pane>
         <el-tab-pane label="参数" name="parameter">
-          <Parameter/>
+          <ParameterPanel/>
         </el-tab-pane>
         <el-tab-pane label="仿真" name="simulation">
-          <Simulation/>
+          <SimulationPanel/>
         </el-tab-pane>
       </el-tabs>
     </div>
@@ -38,14 +38,14 @@
 import Menu from '@/components/menu/index.vue'
 import ElementList from '@/components/elementList/index.vue'
 import ElementPanel from '@/components/elementPanel/index.vue'
-import OutputResult from '@/components/outputResult/index.vue';
+// import OutputResult from '@/components/outputResult/index.vue';
 import Resonator from '@/components/resonator/index.vue';
 import { onMounted } from 'vue';
-import PyPlot from '@/components/pyPlot/index.vue';
-import Element from '@/components/element/index.vue';
-import Constant from '@/components/outputResult/constant.vue';
-import Parameter from '@/components/outputResult/parameter.vue';
-import Simulation from '@/components/outputResult/simulation.vue';
+import PlotViewer from '@/components/plotViewer/index.vue';
+import ElementDistancePanel from '@/components/elementDistancePanel/index.vue';
+import ConstantPanel from '@/components/constantPanel/index.vue';
+import ParameterPanel from '@/components/parameterPanel/index.vue';
+import SimulationPanel from '@/components/simulationPanel/index.vue';
 onMounted(async()=>{
   console.log("mainView","挂载")
 })
