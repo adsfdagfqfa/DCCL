@@ -1,5 +1,5 @@
 <template>
-    <div class="plot-container">
+    <div class="relative w-full min-h-100">
     <!-- 动态插入HTML内容 -->
         <div ref="plotContainer"></div>
 
@@ -55,11 +55,6 @@ onMounted(async()=>{
 
 
 <style scoped>
-.plot-container {
-    position: relative;
-    width: 100%;
-    min-height: 400px;
-}
 
 .loading {
     position: absolute;

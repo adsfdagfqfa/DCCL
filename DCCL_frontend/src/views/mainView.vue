@@ -30,6 +30,19 @@
         </el-tab-pane>
       </el-tabs>
     </div>
+    <el-button plain @click="dialogVisible = true">
+      Open the event Dialog
+    </el-button>
+
+  <el-dialog v-model="dialogVisible" >
+    <span>It's a event Dialog</span>
+    <template #title>
+      <div class="dialog-footer">
+        <el-button @click="dialogVisible = false">Cancel</el-button>
+        <el-button type="primary" @click="dialogVisible = false">Confirm</el-button>
+      </div>
+    </template>
+  </el-dialog>
     <!-- <PyPlot></PyPlot> -->
   </div>
 </template>
@@ -53,4 +66,7 @@ const tabs=[]
 function handleClick(tab, event) {
   console.log(tab, event);
 }
+import { ref } from 'vue'
+
+const dialogVisible = ref(false)
 </script>
