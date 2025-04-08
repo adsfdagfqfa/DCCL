@@ -66,6 +66,7 @@ def steady_state(H_fsdf, H_fsf, B_aper, B_CatEye1, B_CatEye2, B_CatEye3, r1, r2,
         data["transmissionCoefficientMain"] = v1.item()
         data["transmissionCoefficientFree"] = v2.item()
         data["outputPower"] = Pout.item() * delta * delta
+        data["isEnd"]=False
         yield data
         # yield f'迭代次数: {t} 主共振腔传输系数: {v1} 自由空间腔传输系数: {v2} 输出光功率: {Pout * delta * delta}'
         t += 1
