@@ -45,10 +45,12 @@ def simulation():
             try:
                 while True:
                     item = next(generator)
+                    item['selectedAttribute'] = {}
                     str1 = json.dumps(item, ensure_ascii=False)
                     yield format_string(str1)
             except StopIteration as e:
                 final_value = e.value  # 获取最终返回值
+                print('final_value:',final_value)
                 yield format_string(json.dumps(final_value, ensure_ascii=False)) 
 
 
@@ -69,14 +71,17 @@ def simulation():
                 jsonpath_expr.update(data,i)
                 print('updatedData',data)
                 key = jsonpath_expr.find(data)[0].path.fields[-1]#获取键名
+                generator = dccl_simulation(data,user_id)
                 try:
-                    for item in dccl_simulation(data,user_id):
+                    while True:
+                        item = next(generator)
                         item['selectedAttribute'] = {key:i}
                         str1=json.dumps(item,ensure_ascii=False)
                         print(str1)
                         yield format_string(str1) 
                 except StopIteration as e:
                     final_value = e.value  # 捕获最后返回的数据
+                    print('final_value:',final_value)
                     yield format_string(json.dumps(final_value, ensure_ascii=False))
         return Response(generate_events(data),mimetype='text/event-stream')
         # return request.args.get('param')
