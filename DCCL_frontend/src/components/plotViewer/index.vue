@@ -11,17 +11,37 @@
 <script setup>
 import axios from "axios";
 import { ref,onMounted,getCurrentInstance } from 'vue';
+import { useThreeInstanceStore } from '@/store';
+import { storeToRefs } from "pinia";
+const store=useThreeInstanceStore();
 const loading=ref(false);
 const pageInstance = getCurrentInstance();
   
 
 async function loadPlot() {
+    // loading.value = true
+    // const key=store.key
+    // try{
+    //     await axios.get(`/flask/api/v1/picture/${key}`).then((response) => {
+    //         console.log("plot","请求成功")
+    //         pageInstance.refs.plotContainer.innerHTML = response.data.html
+    //         //执行html中的脚本
+    //         executeScript(pageInstance.refs.plotContainer);
+    //     })
+    // }catch (error) {    
+    //     error => console.error('加载失败:', error)
+    // }
+    // finally {
+    //     loading.value = false
+    // }
+    // console.log("plot","加载完成")
+
     loading.value = true
-    const key=`2073ac21-f515-4123-8826-c63ae55dc9171c2c3c`
+    store.getPicture()
     try{
-        await axios.get(`/flask/api/v1/picture/${key}`).then((response) => {
+        await store.getPicture().then((data) => {
             console.log("plot","请求成功")
-            pageInstance.refs.plotContainer.innerHTML = response.data.html
+            pageInstance.refs.plotContainer.innerHTML = data.html
             //执行html中的脚本
             executeScript(pageInstance.refs.plotContainer);
         })
@@ -32,6 +52,7 @@ async function loadPlot() {
         loading.value = false
     }
     console.log("plot","加载完成")
+
 }
 function executeScript(container){
     const scripts = container.getElementsByTagName('script');

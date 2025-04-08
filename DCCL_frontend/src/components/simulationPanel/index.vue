@@ -25,17 +25,19 @@
           ref="virtualScroller"
           class="list"
           :items="resultList"
-          :min-item-size="50">
+          :min-item-size="150">
           <template v-slot="{ item }">
             <div class="list-item">
-              <span>{{item}}</span>
+              <ResultItem :item="item" ></ResultItem>
             </div>
           </template>
-          
-          <!-- <div class="list-item">
-            <span>{{item}}</span>
-          </div> -->
         </DynamicScroller>
+        <!-- <div v-for="(item,index) in resultList" :key="index" >
+          <div class="list-item">
+            <ResultItem :item="item" ></ResultItem>
+          </div>
+          
+        </div> -->
       </div>
     </div>
   </template>
@@ -46,6 +48,7 @@
   import { useThreeInstanceStore } from '@/store';
   import RangeGenerator from './rangeGenerator.vue';
   import { dateTableEmits } from 'element-plus/es/components/calendar/src/date-table';
+  import ResultItem from './resultItem.vue'; 
   const rangeGenerator = ref();//引用的rangeGenerator组件
   
   var jp = require('jsonpath');
@@ -227,19 +230,20 @@
   }
   </script>
   
-  <style scoped>
-  /* Your component-specific styles go here */
-  .list {
-    height: 300px;
-    border: 5px solid #eeeeeee9;
-    border-radius: 8px;
-  }
-  
-  .list-item {
-    height:50px;
-    padding: 12px;
-    border-bottom: 1px dashed #020817;
-    display: flex;
-    align-items: center;
-  }
-  </style>
+<style scoped>
+/* Your component-specific styles go here */
+.list {
+  height: 300px;
+  border: 5px solid #eeeeeee9;
+  border-radius: 8px;
+}
+
+.list-item {
+  height:150px;
+  padding: 12px;
+  border-bottom: 1px dashed #020817;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+</style>

@@ -34,10 +34,12 @@
       Open the event Dialog
     </el-button>
 
-  <el-dialog v-model="dialogVisible" >
-    <span>It's a event Dialog</span>
-    <template #title>
-      <div class="dialog-footer">
+  <el-dialog v-model="store.dialogVisible" >
+
+      <PlotViewer/>
+    
+    <template #footer>
+      <div >
         <el-button @click="dialogVisible = false">Cancel</el-button>
         <el-button type="primary" @click="dialogVisible = false">Confirm</el-button>
       </div>
@@ -48,17 +50,22 @@
 </template>
 
 <script setup>
+import { ref } from 'vue'
 import Menu from '@/components/menu/index.vue'
 import ElementList from '@/components/elementList/index.vue'
 import ElementPanel from '@/components/elementPanel/index.vue'
 // import OutputResult from '@/components/outputResult/index.vue';
 import Resonator from '@/components/resonator/index.vue';
-import { onMounted } from 'vue';
+import { computed, onMounted } from 'vue';
 import PlotViewer from '@/components/plotViewer/index.vue';
 import ElementDistancePanel from '@/components/elementDistancePanel/index.vue';
 import ConstantPanel from '@/components/constantPanel/index.vue';
 import ParameterPanel from '@/components/parameterPanel/index.vue';
 import SimulationPanel from '@/components/simulationPanel/index.vue';
+
+import { useThreeInstanceStore } from '@/store';
+const store = useThreeInstanceStore();
+
 onMounted(async()=>{
   console.log("mainView","挂载")
 })
@@ -66,7 +73,5 @@ const tabs=[]
 function handleClick(tab, event) {
   console.log(tab, event);
 }
-import { ref } from 'vue'
 
-const dialogVisible = ref(false)
 </script>
