@@ -19,7 +19,7 @@ def one_roundtrip_distribution(U_M1pre, U_M2pre, H_fsdf, H_fsf, B_aper, B_CatEye
 
     U_gain1 = cal_field_transition(U, H_fsf, B_CatEye2, B_aper)
     U5 = operator_transmissivity(U1, t2)
-    
+    del U1
 
     U2 = free_cavity_trans(U_M2pre, H_fsdf, B_CatEye2, B_CatEye3)
     U = operator_reflectivity(U2, r3)
@@ -28,16 +28,21 @@ def one_roundtrip_distribution(U_M1pre, U_M2pre, H_fsdf, H_fsf, B_aper, B_CatEye
     U8 = free_cavity_trans(U, H_fsdf, B_CatEye3, B_CatEye2)
     U9 = operator_reflectivity(U8, r2)
     U = operator_transmissivity(U8, t2)
-    
+    del U8
 
     U_gain2 = cal_field_transition(U, H_fsf, B_CatEye2, B_aper)
     U = U_gain1 + U_gain2
-    
+    del U_gain1
+    del U_gain2
     
     U = propagation_within_gain(U, lm, P_in, lambda_,eta_c)  # 所有光场在通过增益介质前应该被加在一起以一起放大
 
     U = cal_field_transition(U, H_fsf, B_aper, B_CatEye1)
     U_M1 = operator_reflectivity(U, r1)
     U_M2 = U5 + U9
-    
+    del U5
+    del U9
+    del U
+    # 强制释放显存
+    cp.get_default_memory_pool().free_all_blocks()
     return U_M1, U_M2, U2

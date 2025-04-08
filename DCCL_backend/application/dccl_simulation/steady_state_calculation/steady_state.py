@@ -27,6 +27,7 @@ def steady_state(H_fsdf, H_fsf, B_aper, B_CatEye1, B_CatEye2, B_CatEye3, r1, r2,
     c = float('inf')
     data={}
     while c > 0.0001:
+
         [s_it1, s_it2, U2] = one_roundtrip_distribution(tempU1, tempU2, H_fsdf, H_fsf, B_aper, B_CatEye1, B_CatEye2,
                                                         B_CatEye3, r1, r2, r3, P_in, lambda_,eta_c)
         
@@ -37,7 +38,7 @@ def steady_state(H_fsdf, H_fsf, B_aper, B_CatEye1, B_CatEye2, B_CatEye3, r1, r2,
         a2 = cp.sum(cp.abs(cp.abs(s_it2) - cp.abs(tempU2)))
         b2 = cp.sum(cp.abs(tempU2))
         c2 = a2 / b2
-
+        del a1, a2, b1, b2
         v1 = cal_trans_factor(s_it1, tempU1)
         v2 = cal_trans_factor(s_it2, tempU2)
         # phase_shift = np.exp(-1j * np.angle(cal_overlap(s_it1, tempU1, delta)))
@@ -55,7 +56,7 @@ def steady_state(H_fsdf, H_fsf, B_aper, B_CatEye1, B_CatEye2, B_CatEye3, r1, r2,
         c0 = 3e8
         Iten_out = R * 0.5 * (epsilon * c0) * cp.abs(U) ** 2  # 电场的振幅分布转化为光强分布
         Pout = cp.sum(Iten_out)
-
+        del U, U2, Iten_out
         print(f'迭代次数: {t} 传输系数main: {v1} 传输系数free: {v2} 输出功率: {Pout * delta * delta}')
         # 用字典记录每次的数据
         data["iterationCount"] = t
@@ -74,5 +75,10 @@ def steady_state(H_fsdf, H_fsf, B_aper, B_CatEye1, B_CatEye2, B_CatEye3, r1, r2,
             break
         if P_in < 1e-15:
             break
+        del s_it1, s_it2
+        # 强制释放显存
+        cp.get_default_memory_pool().free_all_blocks()
+        
+        
 
     return Pout.item() *delta*delta, t, s_it1, s_it2  # 迭代终止时M1和M2上的场分布
