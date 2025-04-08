@@ -21,7 +21,7 @@ def steady_state(H_fsdf, H_fsf, B_aper, B_CatEye1, B_CatEye2, B_CatEye3, r1, r2,
     tempU2 = firstU2
     # print(type(tempU1))
     # print(type(tempU2))
-    t = 0
+    t = 1
     _, _, _, _, delta, _ = para_FFT(0.012)
 
     c = float('inf')
@@ -48,7 +48,7 @@ def steady_state(H_fsdf, H_fsf, B_aper, B_CatEye1, B_CatEye2, B_CatEye3, r1, r2,
         # tempU2 = s_it2 * phase_shift
         tempU2=s_it2
         c = c1
-        t += 1
+       
 
         U = U2
         R = 1 - r3 ** 2
@@ -68,7 +68,7 @@ def steady_state(H_fsdf, H_fsf, B_aper, B_CatEye1, B_CatEye2, B_CatEye3, r1, r2,
         data["outputPower"] = Pout.item() * delta * delta
         yield data
         # yield f'迭代次数: {t} 主共振腔传输系数: {v1} 自由空间腔传输系数: {v2} 输出光功率: {Pout * delta * delta}'
-       
+        t += 1
         # 终止条件
         if t > 10:  # 改为10测试完整运行
             break
