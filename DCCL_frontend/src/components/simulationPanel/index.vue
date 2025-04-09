@@ -27,9 +27,14 @@
           :items="resultList"
           :min-item-size="150">
           <template v-slot="{ item }">
-            <div class="list-item">
+            <!-- <div class="list-item">
               <ResultItem :item="item" ></ResultItem>
-            </div>
+            </div> -->
+            <DynamicScrollerItem :item="item" :active="true" :size-dependencies="[item]">
+              <div class="list-item" :key="item.id">
+                <ResultItem :item="item.content" />
+              </div>
+            </DynamicScrollerItem>
           </template>
         </DynamicScroller>
         <!-- <div v-for="(item,index) in resultList" :key="index" >

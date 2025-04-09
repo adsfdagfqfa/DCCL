@@ -1,10 +1,12 @@
 <template>
     <div class="relative w-full min-h-100">
-    <!-- 动态插入HTML内容 -->
         <div ref="plotContainer"></div>
-
         <!-- 加载状态 -->
-        <div v-if="loading" class="loading">Loading...</div>
+        <!-- <div v-if="loading" class="loading">Loading...</div> -->
+        <!-- <el-icon class="is-loading"> -->
+        <el-icon v-if="loading" class="is-loading absolute inset-x-1/2" >
+            <Loading />
+        </el-icon>
     </div>
 </template>
   
@@ -13,38 +15,20 @@ import axios from "axios";
 import { ref,onMounted,getCurrentInstance } from 'vue';
 import { useThreeInstanceStore } from '@/store';
 import { storeToRefs } from "pinia";
+import { Loading } from '@element-plus/icons-vue'
 const store=useThreeInstanceStore();
 const loading=ref(false);
 const pageInstance = getCurrentInstance();
-  
 
 async function loadPlot() {
-    // loading.value = true
-    // const key=store.key
-    // try{
-    //     await axios.get(`/flask/api/v1/picture/${key}`).then((response) => {
-    //         console.log("plot","请求成功")
-    //         pageInstance.refs.plotContainer.innerHTML = response.data.html
-    //         //执行html中的脚本
-    //         executeScript(pageInstance.refs.plotContainer);
-    //     })
-    // }catch (error) {    
-    //     error => console.error('加载失败:', error)
-    // }
-    // finally {
-    //     loading.value = false
-    // }
-    // console.log("plot","加载完成")
-
     loading.value = true
-    store.getPicture()
+    // store.getPicture()
     try{
-        await store.getPicture().then((data) => {
-            console.log("plot","请求成功")
-            pageInstance.refs.plotContainer.innerHTML = data.html
-            //执行html中的脚本
-            executeScript(pageInstance.refs.plotContainer);
-        })
+        const data = await store.getPicture();
+        pageInstance.refs.plotContainer.innerHTML = data.html
+        //执行html中的脚本
+        executeScript(pageInstance.refs.plotContainer);
+        console.log("plot","请求成功")
     }catch (error) {    
         error => console.error('加载失败:', error)
     }

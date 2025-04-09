@@ -30,19 +30,24 @@
         </el-tab-pane>
       </el-tabs>
     </div>
-    <el-button plain @click="dialogVisible = true">
+    <el-button plain @click="store.dialogVisible=true">
       Open the event Dialog
     </el-button>
 
-  <el-dialog v-model="store.dialogVisible" >
-
-      <PlotViewer/>
-    
+  <el-dialog v-model="store.dialogVisible">
+    <OpticalFieldViewer/>
     <template #footer>
-      <div >
-        <el-button @click="dialogVisible = false">Cancel</el-button>
-        <el-button type="primary" @click="dialogVisible = false">Confirm</el-button>
-      </div>
+      <el-button type="primary">
+        Download<el-icon class="el-icon--right"><Download /></el-icon>
+      </el-button>
+    </template>
+  </el-dialog>
+  <el-dialog v-model="store.dialogVisible">
+    <OpticalFieldViewer/>
+    <template #footer>
+      <el-button type="primary">
+        Download<el-icon class="el-icon--right"><Download /></el-icon>
+      </el-button>
     </template>
   </el-dialog>
     <!-- <PyPlot></PyPlot> -->
@@ -57,12 +62,13 @@ import ElementPanel from '@/components/elementPanel/index.vue'
 // import OutputResult from '@/components/outputResult/index.vue';
 import Resonator from '@/components/resonator/index.vue';
 import { computed, onMounted } from 'vue';
-import PlotViewer from '@/components/plotViewer/index.vue';
+import OpticalFieldViewer from '@/components/opticalFieldViewer/index.vue';
 import ElementDistancePanel from '@/components/elementDistancePanel/index.vue';
 import ConstantPanel from '@/components/constantPanel/index.vue';
 import ParameterPanel from '@/components/parameterPanel/index.vue';
 import SimulationPanel from '@/components/simulationPanel/index.vue';
 
+import { Upload,Download } from '@element-plus/icons-vue'
 import { useThreeInstanceStore } from '@/store';
 const store = useThreeInstanceStore();
 

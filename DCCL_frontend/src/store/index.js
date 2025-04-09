@@ -3,6 +3,7 @@ import { opticalModelList } from "@/utils/constant/model";
 import threeInstance from "@/utils/threeInstance";
 import { defineStore } from "pinia";
 import axios from "axios";
+import { v4 as uuidv4 } from 'uuid'; // 引入 uuid 库
 export const useThreeInstanceStore = defineStore("threeInstance", {
   state: () => ({
     threeInstance: null,//threejs的实例
@@ -20,17 +21,17 @@ export const useThreeInstanceStore = defineStore("threeInstance", {
       sampleNumber:8192,//采样点数量
       windowExpandFactor:3//窗口扩展因子
     },
-    pictureKey:"",
+    pictureKey:"4d26940b-fb2e-4773-a039-a332830954fd79faca",
     dialogVisible:false,//是否显示modal
-    simulationResult:['{"iterationCount": 1, "transmissionCoefficientMain": 0.12488810380845108, "transmissionCoefficientFree": 1.3597301688242887, "outputPower": 1.3844463502127228e-08, "selectedAttribute": {"pumpWatt": 100}}',
-      '{"iterationCount": 2, "transmissionCoefficientMain": 4.394131158750255, "transmissionCoefficientFree": 0.28927424014929864, "outputPower": 1.889652435807665e-08, "selectedAttribute": {"pumpWatt": 100}}',
-      '{"iterationCount": 3, "transmissionCoefficientMain": 1.6079267344310049, "transmissionCoefficientFree": 0.3671436057957992, "outputPower": 5.457417415780011e-09, "selectedAttribute": {"pumpWatt": 100}}',
-      '{"iterationCount": 4, "transmissionCoefficientMain": 0.4587180653843628, "transmissionCoefficientFree": 4.697790443555496, "outputPower": 1.995544242408198e-09, "selectedAttribute": {"pumpWatt": 100}}',
-      '{"iterationCount": 5, "transmissionCoefficientMain": 0.5116639631999548, "transmissionCoefficientFree": 0.8729980650419275, "outputPower": 9.441116321692685e-09, "selectedAttribute": {"pumpWatt": 100}}',
-      '{"iterationCount": 6, "transmissionCoefficientMain": 2.6011093223635466, "transmissionCoefficientFree": 0.2333651375509338, "outputPower": 8.241264818278385e-09, "selectedAttribute": {"pumpWatt": 100}}',
-      '{"iterationCount": 6, "fieldDistributionMain": "ef83f993-f5f2-4e87-885b-c88d3413023efe13be", "fieldDistributionFree": "ef83f993-f5f2-4e87-885b-c88d3413023e03e54a", "outputPower": 8.241264818278385e-09, "isEnd": true}',
-  ]//输出结果
-  ,result:{"iterationCount": 8, "transmissionCoefficientMain": 0.5153212898815251, "transmissionCoefficientFree": 2.0110368935962777, "outputPower": 3.3249547716356245e-09, "selectedAttribute": {"selectedAttribute": 100}}
+    // simulationResult:['{"iterationCount": 1, "transmissionCoefficientMain": 0.12488810380845108, "transmissionCoefficientFree": 1.3597301688242887, "outputPower": 1.3844463502127228e-08, "selectedAttribute": {"pumpWatt": 100}}',
+    //   '{"iterationCount": 2, "transmissionCoefficientMain": 4.394131158750255, "transmissionCoefficientFree": 0.28927424014929864, "outputPower": 1.889652435807665e-08, "selectedAttribute": {"pumpWatt": 100}}',
+    //   '{"iterationCount": 3, "transmissionCoefficientMain": 1.6079267344310049, "transmissionCoefficientFree": 0.3671436057957992, "outputPower": 5.457417415780011e-09, "selectedAttribute": {"pumpWatt": 100}}',
+    //   '{"iterationCount": 4, "transmissionCoefficientMain": 0.4587180653843628, "transmissionCoefficientFree": 4.697790443555496, "outputPower": 1.995544242408198e-09, "selectedAttribute": {"pumpWatt": 100}}',
+    //   '{"iterationCount": 5, "transmissionCoefficientMain": 0.5116639631999548, "transmissionCoefficientFree": 0.8729980650419275, "outputPower": 9.441116321692685e-09, "selectedAttribute": {"pumpWatt": 100}}',
+    //   '{"iterationCount": 6, "transmissionCoefficientMain": 2.6011093223635466, "transmissionCoefficientFree": 0.2333651375509338, "outputPower": 8.241264818278385e-09, "selectedAttribute": {"pumpWatt": 100}}',
+    //   '{"iterationCount": 6, "fieldDistributionMain": "ef83f993-f5f2-4e87-885b-c88d3413023efe13be", "fieldDistributionFree": "ef83f993-f5f2-4e87-885b-c88d3413023e03e54a", "outputPower": 8.241264818278385e-09, "isEnd": true}',
+    // ]
+    simulationResult:[],
   }),
   getters: {
     
@@ -70,19 +71,14 @@ export const useThreeInstanceStore = defineStore("threeInstance", {
       eventSource.onmessage = function(event) {
         console.log("Received data:", event.data);
         console.log(event.data);
-        that.simulationResult.push(event.data)
+        that.simulationResult.push({
+          id: uuidv4(),
+          content: event.data
+        })
         dom.scrollToBottom()
         //更新数据
       };
-      async function getPicture(key) {
-        try {
-          const response = await axios.get(`/flask/api/v1/picture/${this.key}`);
-          return response.data; // 返回数据，供组件使用
-        } catch (error) {
-          console.error('Request failed:', error);
-          throw error; // 重新抛出错误，让调用者知道请求失败
-        }
-      }
+     
       // 监听错误事件
       eventSource.onerror = function(err) {
         console.error("EventSource failed:", err);
@@ -90,6 +86,15 @@ export const useThreeInstanceStore = defineStore("threeInstance", {
       };
       
     },
-    
+    async getPicture() {
+      console.log("getPicture")
+      try {
+        const response = await axios.get(`/flask/api/v1/picture/${this.pictureKey}`);
+        return response.data; // 返回数据，供组件使用
+      } catch (error) {
+        console.error('Request failed:', error);
+        throw error; // 重新抛出错误，让调用者知道请求失败
+      }
+    }
   }
 });
