@@ -11,13 +11,14 @@
 </template>
   
 <script setup>
-import axios from "axios";
+
 import { ref,onMounted,getCurrentInstance } from 'vue';
 import { useThreeInstanceStore } from '@/store';
 import { storeToRefs } from "pinia";
 import { Loading } from '@element-plus/icons-vue'
 const store=useThreeInstanceStore();
 const loading=ref(false);
+//获取当前组件实例
 const pageInstance = getCurrentInstance();
 
 async function loadPlot() {
@@ -52,7 +53,7 @@ function executeScript(container){
     });
 }
 onMounted(async()=>{
-  console.log("plot","挂载")
+  console.log("opticalFieldViewer","挂载")
   await loadPlot()
 })
 

@@ -30,11 +30,13 @@
         </el-tab-pane>
       </el-tabs>
     </div>
-    <el-button plain @click="store.dialogVisible=true">
-      Open the event Dialog
+    <el-button plain @click="store.opticalFieldDialogVisible=true">
+      Open the optical field Dialog
     </el-button>
-
-  <el-dialog v-model="store.dialogVisible">
+    <el-button plain @click="store.plotDialogVisible=true">
+      Open the plot Dialog
+    </el-button>
+  <el-dialog v-model="store.opticalFieldDialogVisible">
     <OpticalFieldViewer/>
     <template #footer>
       <el-button type="primary">
@@ -42,13 +44,8 @@
       </el-button>
     </template>
   </el-dialog>
-  <el-dialog v-model="store.dialogVisible">
-    <OpticalFieldViewer/>
-    <template #footer>
-      <el-button type="primary">
-        Download<el-icon class="el-icon--right"><Download /></el-icon>
-      </el-button>
-    </template>
+  <el-dialog v-model="store.plotDialogVisible">
+    <PLotViewer/>
   </el-dialog>
     <!-- <PyPlot></PyPlot> -->
   </div>
@@ -67,7 +64,7 @@ import ElementDistancePanel from '@/components/elementDistancePanel/index.vue';
 import ConstantPanel from '@/components/constantPanel/index.vue';
 import ParameterPanel from '@/components/parameterPanel/index.vue';
 import SimulationPanel from '@/components/simulationPanel/index.vue';
-
+import PLotViewer from '@/components/plotViewer/index.vue'
 import { Upload,Download } from '@element-plus/icons-vue'
 import { useThreeInstanceStore } from '@/store';
 const store = useThreeInstanceStore();
@@ -76,6 +73,7 @@ onMounted(async()=>{
   console.log("mainView","挂载")
 })
 const tabs=[]
+const activeName=ref("")
 function handleClick(tab, event) {
   console.log(tab, event);
 }

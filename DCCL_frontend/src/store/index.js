@@ -22,7 +22,8 @@ export const useThreeInstanceStore = defineStore("threeInstance", {
       windowExpandFactor:3//窗口扩展因子
     },
     pictureKey:"4d26940b-fb2e-4773-a039-a332830954fd79faca",
-    dialogVisible:false,//是否显示modal
+    opticalFieldDialogVisible:false,//是否显示光场图的modal
+    plotDialogVisible:false,//是否展示统计图的modal
     // simulationResult:['{"iterationCount": 1, "transmissionCoefficientMain": 0.12488810380845108, "transmissionCoefficientFree": 1.3597301688242887, "outputPower": 1.3844463502127228e-08, "selectedAttribute": {"pumpWatt": 100}}',
     //   '{"iterationCount": 2, "transmissionCoefficientMain": 4.394131158750255, "transmissionCoefficientFree": 0.28927424014929864, "outputPower": 1.889652435807665e-08, "selectedAttribute": {"pumpWatt": 100}}',
     //   '{"iterationCount": 3, "transmissionCoefficientMain": 1.6079267344310049, "transmissionCoefficientFree": 0.3671436057957992, "outputPower": 5.457417415780011e-09, "selectedAttribute": {"pumpWatt": 100}}',
@@ -31,7 +32,8 @@ export const useThreeInstanceStore = defineStore("threeInstance", {
     //   '{"iterationCount": 6, "transmissionCoefficientMain": 2.6011093223635466, "transmissionCoefficientFree": 0.2333651375509338, "outputPower": 8.241264818278385e-09, "selectedAttribute": {"pumpWatt": 100}}',
     //   '{"iterationCount": 6, "fieldDistributionMain": "ef83f993-f5f2-4e87-885b-c88d3413023efe13be", "fieldDistributionFree": "ef83f993-f5f2-4e87-885b-c88d3413023e03e54a", "outputPower": 8.241264818278385e-09, "isEnd": true}',
     // ]
-    simulationResult:[],
+    simulationResult:[{id:'asdgaka',content:'{"iterationCount": 1, "transmissionCoefficientMain": 0.12488810380845108, "transmissionCoefficientFree": 1.3597301688242887, "outputPower": 1.3844463502127228e-08, "selectedAttribute": {"pumpWatt": 100}}',
+    }],
   }),
   getters: {
     
