@@ -43,7 +43,7 @@ onMounted(async () => {
     data.value = [
         { x: 0, y: 10 },
         { x: 1, y: 20 },
-        { x: 2, y: 30 },
+        { x: 2, y: 30},
         { x: 3, y: 40 },
         { x: 4, y: 50 },
         { x: 5, y: 60 }
@@ -52,10 +52,11 @@ onMounted(async () => {
 });
 onUnmounted(() => {
   // 清理资源
-  d3.select(pageInstance.refs.plotContainer.value).selectAll('*').remove();
+  d3.select(pageInstance.refs.plotContainer).selectAll('*').remove();
 });
 
 function drawPlot(){
+    d3.select(pageInstance.refs.plotContainer).selectAll('*').remove();
     const width = 600;
     const height = 400;
     console.log("plot","绘图")
@@ -91,11 +92,25 @@ function drawPlot(){
     // 添加 X 轴
     svg.append('g')
         .attr('transform', `translate(0,${height - 50})`)
-        .call(d3.axisBottom(xScale));
+        .call(d3.axisBottom(xScale))
+        .append('text')//添加文本元素
+        .attr('x', width / 2)
+        .attr('y', 40) 
+        .attr('text-anchor', 'middle') //文本居中对齐
+        .attr('fill','black') //文本颜色
+        .style('font-size', '16px') //文本大小
+        .text(xLabel.value); //X 轴标签的文本内容
 
     // 添加 Y 轴
     svg.append('g')
         .attr('transform', `translate(50,0)`)
-        .call(d3.axisLeft(yScale));
+        .call(d3.axisLeft(yScale))
+        .append('text')
+        .attr('x', 0)
+        .attr('y', 40)
+        .attr('text-anchor', 'middle')
+        .attr('fill','black') //文本颜色
+        .style('font-size', '16px') //文本大小
+        .text(yLabel.value);
 }
 </script>
