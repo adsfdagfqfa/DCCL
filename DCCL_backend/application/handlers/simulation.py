@@ -51,6 +51,7 @@ def simulation():
             except StopIteration as e:
                 final_value = e.value  # 获取最终返回值
                 print('final_value:',final_value)
+                final_value['selectedAttribute']={}
                 yield format_string(json.dumps(final_value, ensure_ascii=False)) 
 
 
@@ -82,6 +83,7 @@ def simulation():
                 except StopIteration as e:
                     final_value = e.value  # 捕获最后返回的数据
                     print('final_value:',final_value)
+                    final_value['selectedAttribute'] = {key:i}
                     yield format_string(json.dumps(final_value, ensure_ascii=False))
         return Response(generate_events(data),mimetype='text/event-stream')
         # return request.args.get('param')
