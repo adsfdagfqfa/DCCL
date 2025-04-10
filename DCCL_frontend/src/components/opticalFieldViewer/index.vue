@@ -57,6 +57,11 @@ onMounted(async()=>{
   await loadPlot()
 })
 
+
+defineExpose({
+      loadPlot, // 将 loadPlot 方法暴露给父组件
+});
+
 </script>
 
 

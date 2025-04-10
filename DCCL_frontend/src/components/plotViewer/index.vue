@@ -23,39 +23,48 @@ const yLabels=ref(["outputPower"])
 const xLabel=ref('')
 const yLabel=ref('')
 const data=ref([])
+const parsedData=ref([])
 //绘图使用的是d3库，在index.html中以CDN形式引入
-onMounted(async () => {
+onMounted(() => {
     //获取xLabels的数据
     // 一次性解析整个数组
-    const parsedData = store.simulationResult.map(item => JSON.parse(item.content));
-    console.log(parsedData)
-    // const parsedContent = JSON.parse(store.simulationResult[0].content);
-    xLabels.value=Object.keys(parsedData[0].selectedAttribute)
-
-    for (const item of parsedData) {
-        if(item.isEnd){
-            data.value.push({
-                x:item.selectedAttribute[xLabel.value],
-                y:item[yLabel.value]
-            })
-        }
-    }
-    data.value = [
-        { x: 0, y: 10 },
-        { x: 1, y: 20 },
-        { x: 2, y: 30},
-        { x: 3, y: 40 },
-        { x: 4, y: 50 },
-        { x: 5, y: 60 }
-    ];
+    getData()
     console.log('plot','挂载')
 });
+
+function getData(){
+    //获取xLabels的数据
+    // 一次性解析整个数组
+    parsedData.value = store.simulationResult.map(item => JSON.parse(item.content));
+    console.log(parsedData.value)
+    // const parsedContent = JSON.parse(store.simulationResult[0].content);
+    xLabels.value=Object.keys(parsedData.value[0].selectedAttribute)
+}
+
 onUnmounted(() => {
   // 清理资源
   d3.select(pageInstance.refs.plotContainer).selectAll('*').remove();
 });
 
 function drawPlot(){
+    for (const item of parsedData.value) {
+        if(item.isEnd){
+            console.log(item.selectedAttribute)
+            data.value.push({
+                x:item.selectedAttribute[xLabel.value],
+                y:item[yLabel.value]
+            })
+        }
+    } 
+    console.log(data.value)
+    // data.value = [
+    //     { x: 0, y: 10 },
+    //     { x: 1, y: 20 },
+    //     { x: 2, y: 30},
+    //     { x: 3, y: 40 },
+    //     { x: 4, y: 50 },
+    //     { x: 5, y: 60 }
+    // ];
     d3.select(pageInstance.refs.plotContainer).selectAll('*').remove();
     const width = 600;
     const height = 400;
@@ -69,11 +78,11 @@ function drawPlot(){
 
     // 设置坐标轴范围
     const xScale = d3.scaleLinear()
-        .domain([0, data.value.length-1])
+        .domain([d3.min(data.value, d => d.x), d3.max(data.value, d => d.x)])
         .range([50, width - 50]);
 
     const yScale = d3.scaleLinear()
-        .domain([0, d3.max(data.value,d=>d.y)])
+        .domain([ d3.min(data.value,d=>d.y), d3.max(data.value,d=>d.y)])
         .range([height - 50, 50]);
 
     // 创建折线生成器
@@ -113,4 +122,7 @@ function drawPlot(){
         .style('font-size', '16px') //文本大小
         .text(yLabel.value);
 }
+defineExpose({
+    getData, // 将 getData 方法暴露给父组件
+});
 </script>

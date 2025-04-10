@@ -36,16 +36,16 @@
     <el-button plain @click="store.plotDialogVisible=true">
       Open the plot Dialog
     </el-button>
-  <el-dialog v-model="store.opticalFieldDialogVisible">
-    <OpticalFieldViewer/>
+  <el-dialog v-model="store.opticalFieldDialogVisible" destroy-on-close>
+    <OpticalFieldViewer ref="opticalFieldViewer"/>
     <template #footer>
       <el-button type="primary">
         Download<el-icon class="el-icon--right"><Download /></el-icon>
       </el-button>
     </template>
   </el-dialog>
-  <el-dialog v-model="store.plotDialogVisible">
-    <PLotViewer/>
+  <el-dialog v-model="store.plotDialogVisible" destroy-on-close> 
+    <PLotViewer ref="plotViewer"/>
   </el-dialog>
     <!-- <PyPlot></PyPlot> -->
   </div>
