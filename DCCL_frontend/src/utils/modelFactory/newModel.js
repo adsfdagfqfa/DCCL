@@ -36,11 +36,9 @@ export function newLens(){
   const sphereMesh2=new THREE.Mesh(sphere2,glassMaterial)
   // 移动第二个球体以形成凸透镜
   sphereMesh2.position.set(distance,0,0)
-  
   sphereMesh1.updateMatrix();
   sphereMesh2.updateMatrix();
   const lens =  CSG.intersect(sphereMesh1, sphereMesh2);
-  
   const geometry = lens.geometry;
   geometry.translate(-distance/2, 0, 0); // 将几何体沿 x 轴负方向移动,修改其重心位置
   

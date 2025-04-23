@@ -91,13 +91,11 @@ export default class threeInstance {
         this.renderer.setClearColor(0xcfcfcf); 
         this.dom.appendChild(this.renderer.domElement);
     }
-
     //创建控制器
     initControls(){
         this.controls = new OrbitControls(this.currentCamera, this.renderer.domElement);
         //this.controls.target.set(0, 0, 0);
     }
-    
     //创建坐标
     initaxesHelper(){
         // 坐标轴辅助线
@@ -111,7 +109,6 @@ export default class threeInstance {
         // this.addLenses(20);
         // this.addGainMedium(30);
     }
-
     addLight() {
         const ambientLight = new THREE.AmbientLight(0x404040);
         this.scene.add(ambientLight);
