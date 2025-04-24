@@ -58,7 +58,7 @@ import ElementList from '@/components/elementList/index.vue'
 import ElementPanel from '@/components/elementPanel/index.vue'
 // import OutputResult from '@/components/outputResult/index.vue';
 import Resonator from '@/components/resonator/index.vue';
-import { computed, onMounted } from 'vue';
+import { onMounted } from 'vue';
 import OpticalFieldViewer from '@/components/opticalFieldViewer/index.vue';
 import ElementDistancePanel from '@/components/elementDistancePanel/index.vue';
 import ConstantPanel from '@/components/constantPanel/index.vue';
