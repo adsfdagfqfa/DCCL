@@ -10,7 +10,7 @@
       <ElementList></ElementList>
       <div class="col-span-5">
         <Resonator></Resonator>
-        <router-view/>
+        <!-- <router-view/> -->
       </div>
       <ElementPanel class="col-span-2"/>
       <!-- <test></test> -->
@@ -39,7 +39,7 @@
   <el-dialog v-model="store.opticalFieldDialogVisible" destroy-on-close>
     <OpticalFieldViewer ref="opticalFieldViewer"/>
     <template #footer>
-      <el-button type="primary">
+      <el-button type="primary" @click="downloadData">
         Download<el-icon class="el-icon--right"><Download /></el-icon>
       </el-button>
     </template>
@@ -76,6 +76,11 @@ const tabs=[]
 const activeName=ref("")
 function handleClick(tab, event) {
   console.log(tab, event);
+}
+function downloadData() {
+  // 处理下载逻辑
+  console.log("下载文件")
+  store.downloadData()
 }
 
 </script>

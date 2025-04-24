@@ -95,7 +95,30 @@ export const useThreeInstanceStore = defineStore("threeInstance", {
         return response.data; // 返回数据，供组件使用
       } catch (error) {
         console.error('Request failed:', error);
-        throw error; // 重新抛出错误，让调用者知道请求失败
+        throw error; 
+      }
+    },
+    async downloadData(){
+      console.log("downloadData")
+      try {
+        const response = await axios.get(`/flask/api/v1/download/${this.pictureKey}`, {
+          responseType: 'blob', // 设置响应类型为 blob
+          headers: {
+            'Content-Type': 'application/json'  // 显式指定内容类型为 JSON
+          },
+          'withCredentials':true //携带cookie
+        });
+        const blob = new Blob([response.data], { type: 'application/octet-stream' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'file.mat'; // 设置下载的文件名
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url); // 释放 URL 对象
+      } catch (error) {
+        console.error('Request failed:', error);
       }
     }
   }
