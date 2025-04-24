@@ -19,7 +19,7 @@
           </el-col>
         </el-row>
       </el-collapse-item>
-      <el-collapse-item title="Feedback" name="1111">
+      <!-- <el-collapse-item title="Feedback" name="1111">
         <div>
           Operation feedback: enable the users to clearly perceive their
           operations by style updates and interactive effects;
@@ -28,7 +28,7 @@
           Visual feedback: reflect current state by updating or rearranging
           elements of the page.
         </div>
-      </el-collapse-item>
+      </el-collapse-item> -->
       
       
     </el-collapse>
