@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { ModelFactory } from "@/utils/modelFactory/modelFactory"
 import { onlyKey } from './utilityFunction';
+import { set } from 'mpld3';
 
 export default class threeInstance {
     constructor(id) {
@@ -22,7 +23,6 @@ export default class threeInstance {
         this.renderer=null;
         // 创建一个组，用于管理模型
         this.group = new THREE.Group();
-        this.model=null;
         this.modelList=[]
         this.initialModelPosition=new THREE.Vector3(0,0,0);
         // 坐标轴辅助线
@@ -177,16 +177,12 @@ export default class threeInstance {
             mesh.userData.attribute.model=model.type + "_" + onlyKey(4,10)
 
             this.group.add(mesh);
-            this.model = this.group;
+            
             //获取模型的数组
             this.setModelList(mesh);
             // console.log(this.modelAttributeList)
             //储存对应的名字
-            this.scene.add(this.model);
-            // //计算控制器缩放大小
-            // const box = new THREE.Box3().setFromObject(this.model);
-            // const size = box.getSize(new THREE.Vector3());
-            // this.controls.maxDistance = size.length() * 10;
+            this.scene.add(this.group);
             console.log(mesh.userData)
             resolve(true);
         });
@@ -272,7 +268,25 @@ export default class threeInstance {
         //直接赋值[]不会被响应式更新
         this.modelList.splice(0, this.modelList.length); // 清空数组
         this.modelAttributeList.splice(0, this.modelAttributeList.length); // 清空数组
+        
         //this.scene.remove(this.group);
+    }
+    addGroupFromJson(modelList){
+        this.clearAllModel()
+        //从json对象中添加模型
+        console.log(modelList)
+        // 使用 ObjectLoader 解析每个 JSON 对象
+        const loader = new THREE.ObjectLoader();
+        modelList.forEach((json) => {
+            console.log(json)
+            // const mesh = new THREE.Mesh();
+          
+            const mesh=loader.parse(json);
+            console.log(Object.prototype.toString.call(mesh))
+            this.setModelList(mesh);
+            this.group.add(mesh);
+        });
+        this.scene.add(this.group);
     }
     // 动画循环
     animate = () => {

@@ -12,5 +12,7 @@ const {title} = props;
 </script>
 
 <style scoped>
-
+.menu-item:hover  {
+  background-color: #aaa;
+}
 </style>
