@@ -60,7 +60,7 @@ def steady_state(H_fsdf, H_fsf, B_aper, B_CatEye1, B_CatEye2, B_CatEye3, r1, r2,
         
         
         
-        print(f'迭代次数: {t} 传输系数main: {v1} 传输系数free: {v2} 输出功率: {Pout * delta * delta}')
+        print(f'迭代次数: {t} 传输系数main: {v1} 传输系数free: {v2} 输出功率: {Pout * delta * delta} 终止判定1: {c} 终止判定2: {c2}')
         # 用字典记录每次的数据
         data["iterationCount"] = t
         data["transmissionCoefficientMain"] = v1.item()
@@ -71,14 +71,12 @@ def steady_state(H_fsdf, H_fsf, B_aper, B_CatEye1, B_CatEye2, B_CatEye3, r1, r2,
         # yield f'迭代次数: {t} 主共振腔传输系数: {v1} 自由空间腔传输系数: {v2} 输出光功率: {Pout * delta * delta}'
         t += 1
         # 终止条件
-        if t > 10:  # 改为10测试完整运行
+        if t > 1000:  # 改为10测试完整运行
             break
         if P_in < 1e-15:
             break
-        del s_it1, s_it2
-        # 强制释放显存
-        cp.get_default_memory_pool().free_all_blocks()
-        
-        
-
+        if c > 0.0001:
+            del s_it1, s_it2
+            # 强制释放显存
+            cp.get_default_memory_pool().free_all_blocks()
     return Pout.item() *delta*delta, t-1, s_it1, s_it2  # 迭代终止时M1和M2上的场分布
