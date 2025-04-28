@@ -7,7 +7,6 @@ import { v4 as uuidv4 } from 'uuid'; // 引入 uuid 库
 export const useThreeInstanceStore = defineStore("threeInstance", {
   state: () => ({
     threeInstance: null,//threejs的实例
-    components:[],//储存的元素属性
     selectedElement: "",//当前选择的元素的名称
     distance:[],//储存的元素之间的距离
     angle:[],//储存的元素之间的角度，具体而言是其连线与主光轴的夹角
@@ -21,7 +20,7 @@ export const useThreeInstanceStore = defineStore("threeInstance", {
       sampleNumber:8192,//采样点数量
       windowExpandFactor:3//窗口扩展因子
     },
-    pictureKey:"4d26940b-fb2e-4773-a039-a332830954fd79faca",
+    pictureKey:"5281bd60-6d64-4ee4-9f11-25948f8e5da4276dbd",
     opticalFieldDialogVisible:false,//是否显示光场图的modal
     plotDialogVisible:false,//是否展示统计图的modal
     // simulationResult:['{"iterationCount": 1, "transmissionCoefficientMain": 0.12488810380845108, "transmissionCoefficientFree": 1.3597301688242887, "outputPower": 1.3844463502127228e-08, "selectedAttribute": {"pumpWatt": 100}}',
@@ -101,22 +100,13 @@ export const useThreeInstanceStore = defineStore("threeInstance", {
     async downloadData(){
       console.log("downloadData")
       try {
-        const response = await axios.get(`/flask/api/v1/download/${this.pictureKey}`, {
-          responseType: 'blob', // 设置响应类型为 blob
-          headers: {
-            'Content-Type': 'application/json'  // 显式指定内容类型为 JSON
-          },
-          'withCredentials':true //携带cookie
-        });
-        const blob = new Blob([response.data], { type: 'application/octet-stream' });
-        const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
-        a.href = url;
-        a.download = 'file.mat'; // 设置下载的文件名
+        a.href = `/flask/api/v1/download/${this.pictureKey}`;
+        a.download = 'file.mat'; // 可选，但服务器设置的 filename 优先级更高
+        a.style.display = 'none';
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
-        window.URL.revokeObjectURL(url); // 释放 URL 对象
       } catch (error) {
         console.error('Request failed:', error);
       }
