@@ -13,11 +13,18 @@
           <el-switch v-model="modelType" size="large" active-text="2D" inactive-text="3D" @click="switchType"/>
         </el-tooltip>
       </div>  
+      <div class ="absolute bottom-2.5 left-2.5">
+        <el-tooltip effect="dark" content="清空内容" placement="top">
+          <el-icon :size="24" color="#ff0000" @click="clearAllModel">
+            <CircleCloseFilled/>
+          </el-icon>
+        </el-tooltip>
+      </div>  
     </div>
 </template>
     
 <script setup>
-import {Aim} from '@element-plus/icons-vue'
+import {Aim ,CircleCloseFilled} from '@element-plus/icons-vue'
 import threeInstance from "@/utils/threeInstance";
 import { onMounted } from 'vue';
 import {useThreeInstanceStore} from '@/store/index'
@@ -66,6 +73,13 @@ const onDragDrop= (e) => {
       store.angle.unshift(0)
     }
   }
+}
+function clearAllModel(){
+  
+  store.distance.splice(0,store.distance.length)
+  store.angle.splice(0,store.angle.length)
+  store.selectedElement=""
+  store.threeInstance.clearAllModel()
 }
 </script>
     

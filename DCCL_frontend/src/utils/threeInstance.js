@@ -182,9 +182,6 @@ export default class threeInstance {
             this.setModelList(mesh);
             // console.log(this.modelAttributeList)
             //储存对应的名字
-           
-          
-            
             this.scene.add(this.model);
             // //计算控制器缩放大小
             // const box = new THREE.Box3().setFromObject(this.model);
@@ -252,6 +249,30 @@ export default class threeInstance {
       }
       console.log("删除元素",this.modelList)
       console.log("删除元素",this.modelAttributeList)
+    }
+    clearAllModel(){
+        //清除所有模型
+        this.modelList.forEach(model => {
+            if (model.geometry) {
+                model.geometry.dispose();
+            }
+            if (model.material) {
+                if (Array.isArray(model.material)) {
+                    model.material.forEach(mat => {
+                        mat.dispose();
+                        if (mat.map) mat.map.dispose();
+                    });
+                } else {
+                    model.material.dispose();
+                    if (model.material.map) model.material.map.dispose();
+                }
+            }
+            this.group.remove(model);
+        });
+        //直接赋值[]不会被响应式更新
+        this.modelList.splice(0, this.modelList.length); // 清空数组
+        this.modelAttributeList.splice(0, this.modelAttributeList.length); // 清空数组
+        //this.scene.remove(this.group);
     }
     // 动画循环
     animate = () => {

@@ -102,7 +102,7 @@ export const useThreeInstanceStore = defineStore("threeInstance", {
       try {
         const a = document.createElement('a');
         a.href = `/flask/api/v1/download/${this.pictureKey}`;
-        a.download = 'file.mat'; // 可选，但服务器设置的 filename 优先级更高
+        a.download = 'file.mat';
         a.style.display = 'none';
         document.body.appendChild(a);
         a.click();
