@@ -2,8 +2,8 @@ import numpy as np
 import cupy as cp
 from scipy.special import lambertw
 import time
-import datetime
-
+import datetime 
+from cupyx.scipy.special import lambertw as cupyx_lambertw
 
 def fun_of_gain(in_U, lm, P_in, lambda_,eta_c):
     #eta_c泵浦效率
@@ -57,11 +57,13 @@ def fun_of_gain(in_U, lm, P_in, lambda_,eta_c):
     # print("2:", datetime.datetime.now())
     # 主要的耗时位置
     
-    B_cpu = cp.asnumpy(B)  # 将CuPy数组转换为NumPy数组
-    B_lambertw = lambertw(B_cpu)  # 使用SciPy的lambertw函数
-    B = cp.asarray(B_lambertw, dtype=cp.complex64)  # 将结果转换回CuPy数组
+    # B_cpu = cp.asnumpy(B)  # 将CuPy数组转换为NumPy数组
+    # B_lambertw = lambertw(B_cpu)  # 使用SciPy的lambertw函数
+    # B = cp.asarray(B_lambertw, dtype=cp.complex64)  # 将结果转换回CuPy数组
+    #使用cupy仓库的14.0版本，含有GPU加速的lambertw函数
+    B=cupyx_lambertw(B)
 
-    # print("2:", datetime.datetime.now())
+    # print("3:", datetime.datetime.now())
     C = A * B
     g_ij = cp.sqrt(C)
 
