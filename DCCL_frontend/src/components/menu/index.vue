@@ -48,7 +48,7 @@ import MenuBar from '@/components/menu/menuBar.vue';
 import MenuItem from '@/components/menu/menuItem.vue';
 import SubMenu from '@/components/menu/subMenu.vue';
 import { useThreeInstanceStore } from '@/store';
-import {saveStateToJson,saveDataFromJson} from '@/utils/utilityFunction'
+import {saveStateToJson} from '@/utils/utilityFunction'
 const store = useThreeInstanceStore();
 const fileInput=ref(null)
 function handleClick(title) {
@@ -82,8 +82,14 @@ function handleFileChange(event){
       try {
         const jsonData = JSON.parse(fileContent); // 将文本内容解析为 JSON 对象
         console.log("解析后的 JSON 数据：", jsonData);
-        saveDataFromJson(jsonData,store)//将数据传入store
-      
+        store.selectedElement=""
+        store.$patch({
+          angle: jsonData.angle,
+          distance: jsonData.distance,
+          resonatorParam: jsonData.resonatorParam,
+          fastFourierTransformParam: jsonData.fastFourierTransformParam
+        });
+        store.threeInstance.addGroupFromJson(jsonData.modelList)
         fileInput.value.value = null; // 清空文件输入框的值
       } catch (error) {
         console.error("解析 JSON 文件时出错：", error);

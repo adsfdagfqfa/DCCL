@@ -57,7 +57,13 @@
   const rangeGenerator = ref();//引用的rangeGenerator组件
   
   var jp = require('jsonpath');
-  const data={};
+  const data = computed(() => ({
+    distance: store.distance,
+    angle: store.angle,
+    resonatorParam: store.resonatorParam,
+    fastFTParam: store.fastFourierTransformParam,
+    modelAttributeList: store.threeInstance.modelAttributeList
+  }));
   const store = useThreeInstanceStore();
   //selectedElement为数组，记录选中的元素的路径
   const selectedElement = ref()
@@ -104,15 +110,15 @@
     return store.simulationResult;
   });
   
-  async function getAllParameter() {
-    data.distance=store.distance;
-    data.angle=store.angle;
-    data.resonatorParam=store.resonatorParam;
-    data.fastFTParam=store.fastFourierTransformParam;
-    data.modelAttributeList=store.threeInstance.modelAttributeList;
-    // var nodes=jp.nodes(data,'$..focalLength');
-    // console.log(nodes)
-  }
+  // async function getAllParameter() {
+  //   data.distance=store.distance;
+  //   data.angle=store.angle;
+  //   data.resonatorParam=store.resonatorParam;
+  //   data.fastFTParam=store.fastFourierTransformParam;
+  //   data.modelAttributeList=store.threeInstance.modelAttributeList;
+  //   // var nodes=jp.nodes(data,'$..focalLength');
+  //   // console.log(nodes)
+  // }
   
   function handleExpandChange(activePath){
     if(activePath.length==0){
@@ -120,7 +126,7 @@
       return
     } 
     console.log('当前展开的路径：', activePath);
-    console.log('当前数据：',data );
+    console.log('当前数据：',data.value );
     // 获取当前展开的节点
     const currentNode = getNodeByPath(jsonpath.value, activePath);
     // 动态加载子节点数据
@@ -144,7 +150,7 @@
     // 模拟异步加载,如果有需要可以使用await
     // await  new Promise((resolve) => setTimeout(resolve, 1000));
     console.log('加载子节点：', node.value);
-    var dataList=jp.nodes(data, node.value);
+    var dataList=jp.nodes(data.value, node.value);
     console.log(dataList)
     //生成children结点数组
     var nodes = Array.from(dataList).map((item) => ({
@@ -162,7 +168,7 @@
     let length=item.path.length;
     switch(item.path[1]){
       case 'modelAttributeList':
-        let a=jp.query(data,jp.stringify(item.path.slice(0,length-1)));
+        let a=jp.query(data.value,jp.stringify(item.path.slice(0,length-1)));
         return a[0].model+"_"+item.path[length-1];
       case 'angle':
         return item.path[1]+'_'+item.path[length-1];
@@ -172,7 +178,7 @@
     return jp.stringify(item.path);
   }
   onMounted(async () => {
-    await getAllParameter();
+    // await getAllParameter();
     console.log('Component is mounted');
   })
   async function onSimulation(){
@@ -195,7 +201,9 @@
    
   }
   async function onUploadParameter(){
-    await store.uploadParameter(JSON.stringify(data))
+    console.log(store.distance)
+    console.log(data.value)
+    await store.uploadParameter(JSON.stringify(data.value))
     console.log('上传参数')
   }
   function getResultArray(value){

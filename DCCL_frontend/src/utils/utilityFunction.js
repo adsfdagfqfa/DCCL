@@ -32,13 +32,13 @@ export function saveStateToJson(store) {
   console.log(jsonString)
   return jsonString
 }
-export function saveDataFromJson(jsonObject,store){
-  store.selectedElement=""
-  store.$patch({
-    angle: jsonObject.angle,
-    distance: jsonObject.distance,
-    resonatorParam: jsonObject.resonatorParam,
-    fastFourierTransformParam: jsonObject.fastFourierTransformParam
-  });
-  store.threeInstance.addGroupFromJson(jsonObject.modelList)
-}
+// export function saveDataFromJson(jsonObject,store){
+//   store.selectedElement=""
+//   store.$patch({
+//     angle: jsonObject.angle,
+//     distance: jsonObject.distance,
+//     resonatorParam: jsonObject.resonatorParam,
+//     fastFourierTransformParam: jsonObject.fastFourierTransformParam
+//   });
+//   store.threeInstance.addGroupFromJson(jsonObject.modelList)
+// }
