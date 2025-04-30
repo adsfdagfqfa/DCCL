@@ -45,7 +45,6 @@ export const useThreeInstanceStore = defineStore("threeInstance", {
       this.selectedElement=name
     },
     async uploadParameter(data){
-      
       //上传参数
       await axios.post('/flask/api/v1/uploadParameter',data,{
         headers: {
@@ -73,6 +72,7 @@ export const useThreeInstanceStore = defineStore("threeInstance", {
         console.log("Received data:", event.data);
         console.log(event.data);
         that.simulationResult.push({
+          //vue-virtual-scroller组件需要一个不重复的id用来表示各项
           id: uuidv4(),
           content: event.data
         })

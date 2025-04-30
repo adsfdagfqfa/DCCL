@@ -30,12 +30,12 @@
         </el-tab-pane>
       </el-tabs>
     </div>
-    <el-button plain @click="store.opticalFieldDialogVisible=true">
+    <!-- <el-button plain @click="store.opticalFieldDialogVisible=true">
       Open the optical field Dialog
     </el-button>
     <el-button plain @click="store.plotDialogVisible=true">
       Open the plot Dialog
-    </el-button>
+    </el-button> -->
   <el-dialog v-model="store.opticalFieldDialogVisible" destroy-on-close>
     <OpticalFieldViewer ref="opticalFieldViewer"/>
     <template #footer>

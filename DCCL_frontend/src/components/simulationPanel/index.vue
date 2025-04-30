@@ -12,7 +12,7 @@
             <RangeGenerator @get-result-array="getResultArray"  ref="rangeGenerator"/>
             <el-button type="primary" @click="onUploadParameter">上传参数</el-button>
             <el-button type="primary" @click="onSimulation">开始仿真</el-button>
-            <el-button type="primary" @click="onTest">测试</el-button>
+            <el-button type="primary" @click="store.plotDialogVisible=true">分析结果</el-button>
         </el-card>
       
       
