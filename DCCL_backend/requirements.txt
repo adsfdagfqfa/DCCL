@@ -1,5 +1,4 @@
 numpy
-cupy-cuda11x
 scipy
 flask
 flask-redis
