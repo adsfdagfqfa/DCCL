@@ -70,6 +70,5 @@ def cal_final_output(matrix_all, aperture_all, data,user_id):
     data['fieldDistributionFree'] = key2
     data["outputPower"] = Iten_out
     data["isEnd"]=True
-
     # return Iten_out, t, s_it1, s_it2, V_round
     return data
