@@ -15,7 +15,7 @@ def cal_final_output(matrix_all, aperture_all, data,user_id):
     #部分参数写死
     print("2:", datetime.datetime.now())
     lambda_ = data['resonatorParam']['lambda']*1e-9
-    generator = steady_state(matrix_all[0], matrix_all[1], aperture_all[1], aperture_all[0], aperture_all[2]*aperture_all[3],
+    generator = steady_state(matrix_all[0], matrix_all[1], aperture_all[1], aperture_all[0], aperture_all[2].multiply(aperture_all[3]),
                                             aperture_all[4], data['modelAttributeList'][0]['reflectivity'],
                                             data['modelAttributeList'][4]['reflectivity'],data['modelAttributeList'][7]['reflectivity'],
                                             data['resonatorParam']['pumpWatt'],lambda_,

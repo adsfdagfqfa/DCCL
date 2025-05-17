@@ -12,11 +12,12 @@ def steady_state(H_fsdf, H_fsf, B_aper, B_CatEye1, B_CatEye2, B_CatEye3, r1, r2,
     start_time = time.time()
     # 经过的时间
     elapsed_time = 0
-
+    print('运行到此1')
     U_M1pre = 1  # M1初始场分布
     U_M2pre = 0  # M2初始场分布
     [firstU1, firstU2, _] = one_roundtrip_distribution(U_M1pre, U_M2pre, H_fsdf, H_fsf, B_aper, B_CatEye1, B_CatEye2,
                                                        B_CatEye3, r1, r2, r3, P_in, lambda_,eta_c)
+    print('运行到此2')
     tempU1 = firstU1
     tempU2 = firstU2
     # print(type(tempU1))
