@@ -5,7 +5,7 @@ from ..gain_calculation import propagation_within_gain
 from .free_cavity_trans import free_cavity_trans
 from .main_cavity_trans import main_cavity_trans
 import datetime
-
+from application.utils.utility_function import log_gpu_memory
 
 def one_roundtrip_distribution(U_M1pre, U_M2pre, H_fsdf, H_fsf, B_aper, B_CatEye1, B_CatEye2, B_CatEye3, r1, r2, r3,
                                P_in, lambda_,eta_c):
