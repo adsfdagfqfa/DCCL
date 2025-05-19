@@ -44,17 +44,20 @@ def one_roundtrip_distribution(U_M1pre, U_M2pre, H_fsdf, H_fsf, B_aper, B_CatEye
     # del U
     # # 强制释放显存
     # cp.get_default_memory_pool().free_all_blocks()
+    log_gpu_memory("111")
     U_gain1, U5 = process_main_cavity(U_M1pre, H_fsf, B_CatEye1, B_aper, B_CatEye2, P_in, lambda_, eta_c, r2, t2)
     # 第二阶段：自由腔传输
-    log_gpu_memory("After process_gain_and_merge1")
+    log_gpu_memory("222")
     U_gain2, U9,U2 = process_free_cavity(U_M2pre , H_fsf, H_fsdf,B_aper, B_CatEye2, B_CatEye3, r2, r3, t2)
-    U = U5 + U9
-    del U5,U9
+    U5 = U5 + U9
+    del U9
+    U=U5
     # 第三阶段：增益介质与合并
-    log_gpu_memory("After process_gain_and_merge2")
-    U_M1 = process_gain_and_merge(U_gain1,U_gain2 ,H_fsf, B_aper, B_CatEye1, r1, lm, P_in, lambda_, eta_c)
-    del U_gain1,U_gain2
-    log_gpu_memory("After process_gain_and_merge3")
+    U_gain1= U_gain1 + U_gain2
+    del U_gain2
+    log_gpu_memory("333")
+    U_M1 = process_gain_and_merge(U_gain1 ,H_fsf, B_aper, B_CatEye1, r1, lm, P_in, lambda_, eta_c)
+    del U_gain1
     # 显存清理
     cp.get_default_memory_pool().free_all_blocks()
     return U_M1, U, U2
@@ -70,24 +73,21 @@ def process_main_cavity(U_M1pre, H_fsf, B_CatEye1, B_aper, B_CatEye2, P_in, lamb
 
 def process_free_cavity(U_M2pre, H_fsf,H_fsdf,B_aper, B_CatEye2, B_CatEye3, r2, r3, t2):
     
-    U2 = free_cavity_trans(U_M2pre, H_fsdf, B_CatEye2, B_CatEye3)
-    U = operator_reflectivity(U2, r3)
-    U8 = free_cavity_trans(U, H_fsdf, B_CatEye3, B_CatEye2)
-    U9 = operator_reflectivity(U8, r2) 
-    U = operator_transmissivity(U8, t2) 
-    U_gain2 = cal_field_transition(U, H_fsf, B_CatEye2, B_aper)
-    del U,U8
+    U2 = cal_field_transition(U_M2pre, H_fsdf, B_CatEye2, B_CatEye3)
+    U8 = cal_field_transition(operator_reflectivity(U2, r3), H_fsdf, B_CatEye3, B_CatEye2)
+    U_gain2 = cal_field_transition(operator_transmissivity(U8, t2) , H_fsf, B_CatEye2, B_aper)
     cp.get_default_memory_pool().free_all_blocks()
     # log_gpu_memory("After process_free_cavity")
-    return U_gain2, U9, U2  # U8 显存在子函数结束时释放
+    return U_gain2, operator_reflectivity(U8, r2) , U2  # U8 显存在子函数结束时释放
 
-def process_gain_and_merge(U_gain1,U_gain2, H_fsf, B_aper, B_CatEye1, r1, lm, P_in, lambda_, eta_c):
+def process_gain_and_merge(U_gain1, H_fsf, B_aper, B_CatEye1, r1, lm, P_in, lambda_, eta_c):
     
-    U_combined = U_gain1 + U_gain2  
+    U_combined = U_gain1
+   
     U_combined = propagation_within_gain(U_combined, lm, P_in, lambda_, eta_c)
-    log_gpu_memory("1111111111111111")
+    
     U = cal_field_transition(U_combined, H_fsf, B_aper, B_CatEye1)
-    U= operator_reflectivity(U, r1)
     del U_combined
+    U= operator_reflectivity(U, r1)
     cp.get_default_memory_pool().free_all_blocks()
     return U

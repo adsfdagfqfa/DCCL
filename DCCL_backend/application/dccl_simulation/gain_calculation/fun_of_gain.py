@@ -4,7 +4,7 @@ from scipy.special import lambertw
 import time
 import datetime 
 from cupyx.scipy.special import lambertw as cupyx_lambertw
-
+from application.utils.utility_function import log_gpu_memory
 def fun_of_gain(in_U, lm, P_in, lambda_,eta_c):
     #eta_c泵浦效率
     # 开始计时
@@ -40,19 +40,27 @@ def fun_of_gain(in_U, lm, P_in, lambda_,eta_c):
     g0 = eta_c * P_in / (I_s * V)
 
     # 计算强度
+
     I = 2 * cp.abs(in_U) ** 2
 
     # I = cp.asarray(I, dtype=cp.float32)
     # 创建对应的bool掩码
     m = I != 0
-    A = cp.zeros(I.shape, dtype=cp.float32)
-    # A = np.zeros_like(I, dtype=np.float32)
-    B = A.copy()
-    A[m] = V_sat2 / I[m]
-    B[m] = cp.log(I[m])
-    c1 = B + I / V_sat2
+    # A = cp.zeros(I.shape, dtype=cp.float32)
+    # # A = np.zeros_like(I, dtype=np.float32)
+    # B = A.copy()
+    # A[m] = V_sat2 / I[m]
+    # B[m] = cp.log(I[m])
 
-    B = 1 / V_sat2 * cp.exp(g0 * lm + c1)
+    A = cp.where(m, V_sat2 / I, 0.0)
+    B = cp.where(m, cp.log(I), 0.0)
+    c1 = B + I / V_sat2
+    del I, B, m
+    # B = 1 / V_sat2 * cp.exp(g0 * lm + c1)
+    B_new = cp.exp(g0 * lm + c1)
+    del c1
+    log_gpu_memory("fun_of_gain4")
+    B_new *= cp.reciprocal(V_sat2)
     # B = lambertw(B)
     # print("2:", datetime.datetime.now())
     # 主要的耗时位置
@@ -61,10 +69,16 @@ def fun_of_gain(in_U, lm, P_in, lambda_,eta_c):
     # B_lambertw = lambertw(B_cpu)  # 使用SciPy的lambertw函数
     # B = cp.asarray(B_lambertw, dtype=cp.complex64)  # 将结果转换回CuPy数组
     #使用cupy仓库的14.0版本，含有GPU加速的lambertw函数
-    B=cupyx_lambertw(B)
+    # B=cupyx_lambertw(B)
 
     # print("3:", datetime.datetime.now())
-    C = A * B
-    g_ij = cp.sqrt(C)
+    # g_ij = cp.sqrt(A * B)
+    # del A, B,c1
 
-    return g_ij
+    B_new = cupyx_lambertw(B_new)
+    log_gpu_memory("fun_of_gain6")
+    cp.multiply(A, B_new, out=B_new)
+    del A
+    cp.sqrt(B_new,out=B_new)
+    log_gpu_memory("fun_of_gain7")
+    return B_new

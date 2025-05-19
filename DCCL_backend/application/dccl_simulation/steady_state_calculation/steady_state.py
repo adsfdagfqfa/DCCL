@@ -15,11 +15,11 @@ def steady_state(H_fsdf, H_fsf, B_aper, B_CatEye1, B_CatEye2, B_CatEye3, r1, r2,
     print('运行到此1')
     U_M1pre = 1  # M1初始场分布
     U_M2pre = 0  # M2初始场分布
-    [firstU1, firstU2, _] = one_roundtrip_distribution(U_M1pre, U_M2pre, H_fsdf, H_fsf, B_aper, B_CatEye1, B_CatEye2,
+    [tempU1, tempU2, _] = one_roundtrip_distribution(U_M1pre, U_M2pre, H_fsdf, H_fsf, B_aper, B_CatEye1, B_CatEye2,
                                                        B_CatEye3, r1, r2, r3, P_in, lambda_,eta_c)
     print('运行到此2')
-    tempU1 = firstU1
-    tempU2 = firstU2
+    # tempU1 = firstU1
+    # tempU2 = firstU2
     # print(type(tempU1))
     # print(type(tempU2))
     t = 1
@@ -79,5 +79,5 @@ def steady_state(H_fsdf, H_fsf, B_aper, B_CatEye1, B_CatEye2, B_CatEye3, r1, r2,
         if c > 0.0001:
             del s_it1, s_it2
             # 强制释放显存
-            cp.get_default_memory_pool().free_all_blocks()
+            # cp.get_default_memory_pool().free_all_blocks()
     return Pout.item() *delta*delta, t-1, s_it1, s_it2  # 迭代终止时M1和M2上的场分布
