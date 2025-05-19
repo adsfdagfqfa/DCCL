@@ -10,8 +10,6 @@ def cal_all_matrix(data,r_max,angle_1,angle_2):
     lambda_=data['resonatorParam']['lambda']*1e-9
     H_fsdf = cal_transfer_matrix(d, lambda_, r_max)
     H_fsf = cal_transfer_matrix(f, lambda_, r_max)
-    # print(type(H_fsdf))
-    # print(type(H_fsf))
     #complex64为单精度复数,保留数据中的虚部与实部
     matrix_all.append(H_fsdf.astype(cp.complex64))
     matrix_all.append(H_fsf.astype(cp.complex64))    

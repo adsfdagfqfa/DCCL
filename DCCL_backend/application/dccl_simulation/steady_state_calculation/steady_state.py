@@ -5,23 +5,18 @@ from ..utils import cal_overlap
 from ..utils import cal_trans_factor
 from .one_roundtrip_distribution import one_roundtrip_distribution
 from ..utils import para_FFT
-
+import logging
+logger= logging.getLogger(__name__)
 
 def steady_state(H_fsdf, H_fsf, B_aper, B_CatEye1, B_CatEye2, B_CatEye3, r1, r2, r3, P_in, lambda_,eta_c):
     # 开始计时
     start_time = time.time()
     # 经过的时间
     elapsed_time = 0
-    print('运行到此1')
     U_M1pre = 1  # M1初始场分布
     U_M2pre = 0  # M2初始场分布
     [tempU1, tempU2, _] = one_roundtrip_distribution(U_M1pre, U_M2pre, H_fsdf, H_fsf, B_aper, B_CatEye1, B_CatEye2,
                                                        B_CatEye3, r1, r2, r3, P_in, lambda_,eta_c)
-    print('运行到此2')
-    # tempU1 = firstU1
-    # tempU2 = firstU2
-    # print(type(tempU1))
-    # print(type(tempU2))
     t = 1
     _, _, _, _, delta, _ = para_FFT(0.012)
 
@@ -61,7 +56,7 @@ def steady_state(H_fsdf, H_fsf, B_aper, B_CatEye1, B_CatEye2, B_CatEye3, r1, r2,
         
         
         
-        print(f'迭代次数: {t} 传输系数main: {v1} 传输系数free: {v2} 输出功率: {Pout * delta * delta} 终止判定1: {c} 终止判定2: {c2}')
+        logger.info(f'迭代次数: {t} 传输系数main: {v1} 传输系数free: {v2} 输出功率: {Pout * delta * delta} 终止判定1: {c} 终止判定2: {c2}')
         # 用字典记录每次的数据
         data["iterationCount"] = t
         data["transmissionCoefficientMain"] = v1.item()

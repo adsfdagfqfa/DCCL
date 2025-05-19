@@ -8,11 +8,7 @@ from cupyx.scipy.sparse import csr_matrix
 from application.utils.utility_function import log_gpu_memory
 
 def cal_field_transition(U_pre, H, B_aper, B_lens):
-    # if isinstance(U_pre, csr_matrix):
-    #     print("U_pre 是 CSR 格式的稀疏矩阵")
-    # else:
-    #     print("U_pre 不是 CSR 格式的稀疏矩阵")
-
+  
     # # 原始光场的FFT变换
     # B = fftshift(fft2(ifftshift(U_pre * B_aper)))
     # # 到达面光场
@@ -32,6 +28,6 @@ def cal_field_transition(U_pre, H, B_aper, B_lens):
     # temp = cufft.ifft2(temp)
     # temp = cufft.fftshift(temp)
     # U = temp * B_lens
-    cp.get_default_memory_pool().free_all_blocks()  # 确保所有GPU操作完成
+    # cp.get_default_memory_pool().free_all_blocks()  # 确保所有GPU操作完成
     # log_gpu_memory("cal_field_transition")
     return U

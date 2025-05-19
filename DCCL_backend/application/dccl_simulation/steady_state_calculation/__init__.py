@@ -8,12 +8,14 @@ import datetime
 from scipy.sparse import csr_matrix
 from application.utils.utility_function import csr_matrix_to_dict
 from application.utils.redis_utils import set_redis_data
+import logging
+logger = logging.getLogger(__name__)
 def cal_final_output(matrix_all, aperture_all, data,user_id):
     # Iten_out: 输出平面上的光强分布，可以直接计算输出功率
     # t: 迭代终止条件
     # s_it1 和 s_it2 分别是迭代终止时 M1 和 M2 上的场分布
     #部分参数写死
-    print("2:", datetime.datetime.now())
+    logger.info("时间:%s", datetime.datetime.now())
     lambda_ = data['resonatorParam']['lambda']*1e-9
     generator = steady_state(matrix_all[0], matrix_all[1], aperture_all[1], aperture_all[0], aperture_all[2]*aperture_all[3],
                                             aperture_all[4], data['modelAttributeList'][0]['reflectivity'],
@@ -32,7 +34,7 @@ def cal_final_output(matrix_all, aperture_all, data,user_id):
     except StopIteration as e:
         # 捕获steay_state最终返回值
         Iten_out, t, s_it1, s_it2 = e.value
-    print("2:", datetime.datetime.now())
+    logger.info("时间:%s", datetime.datetime.now())
     #部分参数写死
     U_M1, _, _ = one_roundtrip_distribution(s_it1, s_it2, matrix_all[0], matrix_all[1], aperture_all[1], aperture_all[0], 
                                             aperture_all[2]*aperture_all[3],

@@ -6,6 +6,8 @@ import application.config as config
 from application.extensions import redis_client
 import msgpack,zlib,numpy as np
 from scipy.sparse import csr_matrix
+import logging
+logger = logging.getLogger(__name__)
 def generate_jwt_token(uuid, algorithm='HS256'):
 
     payload = {
@@ -32,11 +34,11 @@ def verify_jwt_token(token):
         return True
     except jwt.ExpiredSignatureError:
         # Token过期
-        print("Token has expired")
+        # print("Token has expired")
         return False
     except jwt.InvalidTokenError as e:
         # 非法Token
-        print(f"Invalid token: {e}")
+        # print(f"Invalid token: {e}")
         return False
     
 #从token中提取uuid
@@ -112,4 +114,4 @@ def log_gpu_memory(label="", file=None):
         with open(file, "a") as f:
             f.write(log_msg + "\n")
     else:
-        print(log_msg)
+        logger.info(log_msg)

@@ -61,8 +61,6 @@ def fun_of_gain(in_U, lm, P_in, lambda_,eta_c):
     del c1
     # log_gpu_memory("fun_of_gain4")
     B_new *= cp.reciprocal(V_sat2)
-    # B = lambertw(B)
-    # print("2:", datetime.datetime.now())
     # 主要的耗时位置
     
     # B_cpu = cp.asnumpy(B)  # 将CuPy数组转换为NumPy数组
@@ -70,11 +68,6 @@ def fun_of_gain(in_U, lm, P_in, lambda_,eta_c):
     # B = cp.asarray(B_lambertw, dtype=cp.complex64)  # 将结果转换回CuPy数组
     #使用cupy仓库的14.0版本，含有GPU加速的lambertw函数
     # B=cupyx_lambertw(B)
-
-    # print("3:", datetime.datetime.now())
-    # g_ij = cp.sqrt(A * B)
-    # del A, B,c1
-
     B_new = cupyx_lambertw(B_new)
     # log_gpu_memory("fun_of_gain6")
     cp.multiply(A, B_new, out=B_new)
