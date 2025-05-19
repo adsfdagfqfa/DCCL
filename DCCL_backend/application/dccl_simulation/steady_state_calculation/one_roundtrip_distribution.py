@@ -44,10 +44,10 @@ def one_roundtrip_distribution(U_M1pre, U_M2pre, H_fsdf, H_fsf, B_aper, B_CatEye
     # del U
     # # 强制释放显存
     # cp.get_default_memory_pool().free_all_blocks()
-    log_gpu_memory("111")
+    # log_gpu_memory("111")
     U_gain1, U5 = process_main_cavity(U_M1pre, H_fsf, B_CatEye1, B_aper, B_CatEye2, P_in, lambda_, eta_c, r2, t2)
     # 第二阶段：自由腔传输
-    log_gpu_memory("222")
+    # log_gpu_memory("222")
     U_gain2, U9,U2 = process_free_cavity(U_M2pre , H_fsf, H_fsdf,B_aper, B_CatEye2, B_CatEye3, r2, r3, t2)
     U5 = U5 + U9
     del U9
@@ -55,7 +55,7 @@ def one_roundtrip_distribution(U_M1pre, U_M2pre, H_fsdf, H_fsf, B_aper, B_CatEye
     # 第三阶段：增益介质与合并
     U_gain1= U_gain1 + U_gain2
     del U_gain2
-    log_gpu_memory("333")
+    # log_gpu_memory("333")
     U_M1 = process_gain_and_merge(U_gain1 ,H_fsf, B_aper, B_CatEye1, r1, lm, P_in, lambda_, eta_c)
     del U_gain1
     # 显存清理

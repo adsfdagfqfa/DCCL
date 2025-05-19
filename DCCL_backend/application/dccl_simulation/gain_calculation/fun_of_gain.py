@@ -59,7 +59,7 @@ def fun_of_gain(in_U, lm, P_in, lambda_,eta_c):
     # B = 1 / V_sat2 * cp.exp(g0 * lm + c1)
     B_new = cp.exp(g0 * lm + c1)
     del c1
-    log_gpu_memory("fun_of_gain4")
+    # log_gpu_memory("fun_of_gain4")
     B_new *= cp.reciprocal(V_sat2)
     # B = lambertw(B)
     # print("2:", datetime.datetime.now())
@@ -76,9 +76,9 @@ def fun_of_gain(in_U, lm, P_in, lambda_,eta_c):
     # del A, B,c1
 
     B_new = cupyx_lambertw(B_new)
-    log_gpu_memory("fun_of_gain6")
+    # log_gpu_memory("fun_of_gain6")
     cp.multiply(A, B_new, out=B_new)
     del A
     cp.sqrt(B_new,out=B_new)
-    log_gpu_memory("fun_of_gain7")
+    # log_gpu_memory("fun_of_gain7")
     return B_new

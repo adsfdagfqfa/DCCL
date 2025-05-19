@@ -52,7 +52,7 @@ def simulation():
                 final_value = e.value  # 获取最终返回值
                 print('final_value:',final_value)
                 final_value['selectedAttribute']={}
-                # cp.get_default_memory_pool().free_all_blocks()
+                cp.get_default_memory_pool().free_all_blocks()
                 yield format_string(json.dumps(final_value, ensure_ascii=False)) 
                 
 
@@ -86,7 +86,7 @@ def simulation():
                     final_value = e.value  # 捕获最后返回的数据
                     print('final_value:',final_value)
                     final_value['selectedAttribute'] = {key:i}
-                    # cp.get_default_memory_pool().free_all_blocks()#释放现存
+                    cp.get_default_memory_pool().free_all_blocks()#释放现存
                     yield format_string(json.dumps(final_value, ensure_ascii=False))
         return Response(generate_events(data),mimetype='text/event-stream')
         # return request.args.get('param')
