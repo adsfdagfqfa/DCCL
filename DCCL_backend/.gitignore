@@ -6,7 +6,7 @@
 
 # 忽略 SQLite 数据库文件
 *.db
-*.out
+
 # 忽略 IDE 自动生成的文件和文件夹
 .vscode/
 .idea/
@@ -15,3 +15,4 @@
 __pycache__/
 
 *.whl
+*.out
