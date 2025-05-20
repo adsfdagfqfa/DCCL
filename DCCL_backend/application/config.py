@@ -10,6 +10,7 @@ class Config:
     
     #Redis数据库的URL，格式为redis://:password@localhost:6379/0
     REDIS_URL = "redis://:2151767@127.0.0.1:6379/0"
+    REDIS_DEFAULT_EXPIRE = 18000  # 5 小时
     #REDIS_URL = "redis://:2151767@127.0.0.1:6379/0"
      # 日志配置
     LOG_TO_CONSOLE = True   # 开发环境输出到控制台
