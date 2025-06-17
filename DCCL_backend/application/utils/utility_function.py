@@ -7,6 +7,7 @@ from application.extensions import redis_client
 import msgpack,zlib,numpy as np
 from scipy.sparse import csr_matrix
 import logging
+from scipy.io import savemat
 logger = logging.getLogger(__name__)
 def generate_jwt_token(uuid, algorithm='HS256'):
 
@@ -115,3 +116,14 @@ def log_gpu_memory(label="", file=None):
             f.write(log_msg + "\n")
     else:
         logger.info(log_msg)
+
+
+def save_mat(cupy_matrix):
+
+
+    numpy_matrix = cp.asnumpy(cupy_matrix)
+
+    # 将 numpy 矩阵保存为 .mat 文件
+    savemat("matrix.mat", {"matrix": numpy_matrix})
+
+    print("矩阵已成功保存为 matrix.mat 文件")

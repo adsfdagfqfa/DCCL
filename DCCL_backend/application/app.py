@@ -20,6 +20,7 @@ def create_app(config_class=current_config):
         
     return app
 def configure_logger(app):
+
     log_level = logging.DEBUG if app.debug else logging.INFO
 
     # 移除默认的 StreamHandler
