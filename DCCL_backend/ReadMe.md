@@ -12,3 +12,8 @@ pip install -r requirements.txt
 ```
 pip install cupy_cuda11x-14.0.0a1-cp310-cp310-manylinux2014_x86_64.whl
 ```
+
+运行以下代码去运行flask服务
+```
+nohup gunicorn -c gunicorn.conf.py run:app &
+```

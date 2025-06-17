@@ -7,8 +7,10 @@ import logging
 logger = logging.getLogger(__name__)
 def dccl_simulation(data,user_id):
     #这里直接写死的，针对dccl结构的
-    angle_2=np.abs(data['angle'][5])
+    angle_2=np.abs(data['angle'][5])*np.pi/180
     angle_1=np.arctan(data['modelAttributeList'][5]['focalLength']/data['modelAttributeList'][3]['focalLength']*np.tan(angle_2))
+    print(angle_1)
+    print(angle_2)
     r_max = max(item['radius'] for item in data['modelAttributeList'])
     # log_gpu_memory('1')
     aperture_all=cal_all_aperture(data,r_max,angle_1,angle_2)

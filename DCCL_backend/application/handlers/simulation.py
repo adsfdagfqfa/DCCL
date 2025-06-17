@@ -56,7 +56,11 @@ def simulation():
                 
 
 
-        return Response(generate_events(data),mimetype='text/event-stream')
+        return Response(generate_events(data),mimetype='text/event-stream',headers={
+            "Connection": "keep-alive",  # 强制启用长连接
+            "Cache-Control": "no-cache",
+            "X-Accel-Buffering": "no"
+        })
 
         
     else:
@@ -85,7 +89,11 @@ def simulation():
                     final_value['selectedAttribute'] = {key:i}
                     cp.get_default_memory_pool().free_all_blocks()#释放现存
                     yield format_string(json.dumps(final_value, ensure_ascii=False))
-        return Response(generate_events(data),mimetype='text/event-stream')
+        return Response(generate_events(data),mimetype='text/event-stream',headers={
+            "Connection": "keep-alive",  # 强制启用长连接
+            "Cache-Control": "no-cache",
+            "X-Accel-Buffering": "no"
+        })
         # return request.args.get('param')
 
 
