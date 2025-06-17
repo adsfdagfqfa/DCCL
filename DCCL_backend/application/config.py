@@ -27,7 +27,7 @@ class DevelopmentConfig(Config):
 
 # 显式指定当前环境
 current_env = 'development'  # 'production'
-current_env = 'production'
+
 
 # 根据指定的环境加载对应的配置
 if current_env == 'development':
