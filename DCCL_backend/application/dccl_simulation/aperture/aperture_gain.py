@@ -14,7 +14,7 @@ def aperture_gain(sigma, f, radius, r_CatEye):
     # 计算角锥棱镜对应圆面位置
     # i = np.where((m1 + a) ** 2 * delta ** 2 + (m2 + b) ** 2 * delta ** 2 <= radius ** 2)
     # T[i] = 1
-    condition = ((m1 + a) ** 2 * delta ** 2 + (m2 + b) ** 2 * delta ** 2 <= radius ** 2)
+    condition = ((m1 + a) ** 2 * delta ** 2 + ((m2 + b)  * delta-D/2 )** 2 <= radius ** 2)
     T[condition] = 1
     return T
     # rows, cols = cp.where(condition)
