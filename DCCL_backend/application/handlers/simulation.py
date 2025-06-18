@@ -7,8 +7,8 @@ from application.utils.utility_function import generate_jwt_token, verify_jwt_to
 from application.extensions import redis_client
 from application.utils.redis_utils import get_redis_data, set_redis_data
 # from application.config import Config
-from application.dccl_simulation import dccl_simulation
-from application.utils.utility_function import compress
+from application.services.dccl_simulation import dccl_simulation
+
 import logging
 logger = logging.getLogger(__name__)
 @routes.route("/today",methods=['GET'])
