@@ -1,6 +1,6 @@
 import numpy as np
 import cupy as cp
-from ..utils.para_FFT import para_FFT
+from .utils import calculate_fft_parameters
 # from cupyx.scipy.sparse import coo_matrix
 
 def aperture_cateye(sigma, f, radius, r_MAX):
