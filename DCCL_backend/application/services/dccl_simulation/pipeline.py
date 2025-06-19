@@ -1,6 +1,7 @@
 class SimulationPipeline:
-    def __init__(self, input_data):
+    def __init__(self, input_data,user_id):
         self.input_data = input_data
+        self.user_id = user_id
 
     def run(self):
         elements = self.input_data.elements

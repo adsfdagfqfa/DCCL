@@ -43,7 +43,8 @@ def calculate_fft_parameters(radius, itr=300, sampling_num=8192, window_expand_f
     :param itr: 迭代次数，默认 300
     :param sampling_num: 采样点数量，默认 8192
     :param window_expand_factor: 计算窗口扩展因子，默认 3
-    :return: 字典格式参数
+    :return: delta, delta_f
+    :raises ValueError: 如果输入参数不符合要求
     """
     if radius <= 0:
         raise ValueError("radius must be positive.")
@@ -56,11 +57,4 @@ def calculate_fft_parameters(radius, itr=300, sampling_num=8192, window_expand_f
     delta = window_size / sampling_num               # 空域采样间隔
     delta_f = 1.0 / window_size                      # 频域采样间隔
 
-    return {
-        "itr": itr,
-        "sampling_num": sampling_num,
-        "window_expand_factor": window_expand_factor,
-        "window_size": window_size,
-        "delta": delta,
-        "delta_f": delta_f
-    }
+    return delta,delta_f
