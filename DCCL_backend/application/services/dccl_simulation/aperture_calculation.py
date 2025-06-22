@@ -67,6 +67,10 @@ def cal_all_aperture(data,r_max,angle_1,angle_2):
         #判断是镜子还是介质
         if item['type']=='lens' :
             aperture=aperture_cateye(angle,item['focalLength'],item['radius'],sampling_num,delta)
+            #写死，如果是第五个元素（lens3），则将其孔径与第二个镜子的孔径相乘
+            if index==5:
+               aperture_all[2]=aperture_all[2]*aperture
+               continue
             #计算的结果都放入GPU中去储存
             aperture_all.append(aperture.astype(cp.float32))
 
