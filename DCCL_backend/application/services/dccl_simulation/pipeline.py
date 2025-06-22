@@ -1,23 +1,36 @@
+import numpy as np
+import cupy as cp
+from .aperture_calculation import cal_all_aperture
+from .transfer_matrix_calculation import cal_all_matrix
+from .steady_state_calculation import cal_final_output
+import logging
+logger= logging.getLogger(__name__)
 class SimulationPipeline:
     def __init__(self, input_data,user_id):
         self.input_data = input_data
         self.user_id = user_id
 
     def run(self):
-        elements = self.input_data.elements
-        resonator_param = self.input_data.resonatorParam
-        fft_param = self.input_data.fastFourierTransformParam
-        distance = self.input_data.distance
-        angle = self.input_data.angle
+        angle_2=np.abs(self.input_data['angle'][5])*np.pi/180
+        angle_1=np.arctan(self.input_data['modelAttributeList'][5]['focalLength']/self.input_data['modelAttributeList'][3]['focalLength']*np.tan(angle_2))
+        # print(angle_1)
+        # print(angle_2)
+        r_max = max(item['radius'] for item in self.input_data['modelAttributeList'])
+        # 1.计算所有的孔径函数
+        aperture_all=cal_all_aperture(self.input_data,r_max,angle_1,angle_2)
+        # 2.计算空间传输矩阵
+        matrix_all=cal_all_matrix(self.input_data,r_max,angle_1,angle_2)
+        # log_gpu_memory('3')
+        logger.info("传输矩阵与有效反射面计算结束")
 
-        effective_area = calculate_effective_area(elements, resonator_param)
-        transfer_matrix = calculate_transfer_matrix(elements, distance, angle, effective_area)
-        gain_result = calculate_gain(resonator_param, transfer_matrix)
-        fox_li_result = fox_li_iteration(elements, gain_result, fft_param)
 
-        return {
-            "effective_area": effective_area,
-            "transfer_matrix": transfer_matrix.tolist(),  # 如果是 numpy，要转 list
-            "gain_result": gain_result,
-            "fox_li_result": fox_li_result
-        }
+
+
+        generator= cal_final_output(matrix_all,aperture_all,self.input_data,self.user_id)
+        try:
+            while True:
+                value = next(generator)
+                yield value
+        except StopIteration as e:
+            # 捕获steay_state最终返回值
+            return e.value
