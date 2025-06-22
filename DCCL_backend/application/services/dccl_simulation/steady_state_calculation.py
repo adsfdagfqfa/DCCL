@@ -13,10 +13,10 @@ def free_cavity_trans(U_pre, H_fsdf, B_CatEye2, B_CatEye3):
     U = cal_field_transition(U_pre, H_fsdf, B_CatEye2, B_CatEye3)  # M2-L3入射表面
     return U  # 返回经过自由空间腔传输后的光场分布 
 
-def main_cavity_trans(U_pre, H_fsf, B_CatEye1, B_aper, B_CatEye2, lm,P_in,lambda_,eta_c):
+def main_cavity_trans(U_pre, H_fsf, B_CatEye1, B_aper, B_CatEye2, lm,rm,P_in,lambda_,eta_c):
     # lm = 0.001  # 增益介质长度
     U = cal_field_transition(U_pre, H_fsf, B_CatEye1, B_aper)  # M1-L1入射表面
-    U = propagation_within_gain(U, lm, P_in, lambda_,eta_c)
+    U = propagation_within_gain(U, lm,rm, P_in, lambda_,eta_c)
     U = cal_field_transition(U, H_fsf, B_aper, B_CatEye2)  # L2出射表面-M2
     return U
 
@@ -28,7 +28,8 @@ def one_roundtrip_distribution(U_M1pre, U_M2pre, matrix_all,aperture_all,data,la
     P_in=data['resonatorParam']['pumpWatt']  # 入射功率
     eta_c = data['resonatorParam']['pumpEfficiency']  # 泵浦
     lm = data['modelAttributeList'][2]['length'] # 增益介质长度
-    U_gain1, U5 = process_main_cavity(U_M1pre,  matrix_all[1], aperture_all[0], aperture_all[1], aperture_all[2],lm, P_in, lambda_, eta_c, r2, t2)
+    rm = data['modelAttributeList'][2]['radius']  # 增益介质半径
+    U_gain1, U5 = process_main_cavity(U_M1pre,  matrix_all[1], aperture_all[0], aperture_all[1], aperture_all[2],lm,rm, P_in, lambda_, eta_c, r2, t2)
     # 第二阶段：自由腔传输
     # log_gpu_memory("222")
     U_gain2, U9,U2 = process_free_cavity(U_M2pre , matrix_all[1],matrix_all[0],aperture_all[1], aperture_all[2],aperture_all[3], r2, r3, t2)
@@ -39,14 +40,14 @@ def one_roundtrip_distribution(U_M1pre, U_M2pre, matrix_all,aperture_all,data,la
     U_gain1= U_gain1 + U_gain2
     del U_gain2
     # log_gpu_memory("333")
-    U_M1 = process_gain_and_merge(U_gain1 ,matrix_all[1], aperture_all[1], aperture_all[0], r1, lm, P_in, lambda_, eta_c)
+    U_M1 = process_gain_and_merge(U_gain1 ,matrix_all[1], aperture_all[1], aperture_all[0], r1, lm,rm, P_in, lambda_, eta_c)
     del U_gain1
     # 显存清理
     # cp.get_default_memory_pool().free_all_blocks()
     return U_M1, U, U2
     
-def process_main_cavity(U_M1pre, H_fsf, B_CatEye1, B_aper, B_CatEye2,lm, P_in, lambda_, eta_c, r2, t2):
-    U1 = main_cavity_trans(U_M1pre, H_fsf, B_CatEye1, B_aper, B_CatEye2, lm,P_in, lambda_, eta_c)
+def process_main_cavity(U_M1pre, H_fsf, B_CatEye1, B_aper, B_CatEye2,lm,rm, P_in, lambda_, eta_c, r2, t2):
+    U1 = main_cavity_trans(U_M1pre, H_fsf, B_CatEye1, B_aper, B_CatEye2, lm,rm,P_in, lambda_, eta_c)
     U = operator_reflectivity(U1, r2)
     U_gain1 = cal_field_transition(U, H_fsf, B_CatEye2, B_aper)
     del U
@@ -64,11 +65,11 @@ def process_free_cavity(U_M2pre, H_fsf,H_fsdf,B_aper, B_CatEye2, B_CatEye3, r2, 
     # log_gpu_memory("After process_free_cavity")
     return U_gain2, operator_reflectivity(U8, r2) , U2  # U8 显存在子函数结束时释放
 
-def process_gain_and_merge(U_gain1, H_fsf, B_aper, B_CatEye1, r1, lm, P_in, lambda_, eta_c):
+def process_gain_and_merge(U_gain1, H_fsf, B_aper, B_CatEye1, r1, lm,rm, P_in, lambda_, eta_c):
     
     U_combined = U_gain1
    
-    U_combined = propagation_within_gain(U_combined, lm, P_in, lambda_, eta_c)
+    U_combined = propagation_within_gain(U_combined, lm,rm, P_in, lambda_, eta_c)
     
     U = cal_field_transition(U_combined, H_fsf, B_aper, B_CatEye1)
     del U_combined

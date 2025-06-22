@@ -5,16 +5,16 @@ import time
 import datetime 
 from cupyx.scipy.special import lambertw as cupyx_lambertw
 from application.utils.utility_function import log_gpu_memory
-def propagation_within_gain(U_pre, lm, P_in, lambda_,eta_c):  # lm：增益介质的长度
+def propagation_within_gain(U_pre, lm,rm, P_in, lambda_,eta_c):  # lm：增益介质的长度
     l = 0.001  # 分割粒度
     # U = U_pre.copy()  # 创建U_pre的副本以避免修改原始数组
     for i in range(int(np.ceil(lm / l))):  # 使用np.ceil确保循环次数足够
-        g_ij = fun_of_gain(U_pre, l, P_in, lambda_,eta_c)
+        g_ij = fun_of_gain(U_pre, l,rm, P_in, lambda_,eta_c)
         U_pre *= g_ij
     return U_pre
 
 
-def fun_of_gain(in_U, lm, P_in, lambda_,eta_c):
+def fun_of_gain(in_U, lm,rm, P_in, lambda_,eta_c):
     #eta_c泵浦效率
     # 开始计时
     start_time = time.time()
@@ -39,7 +39,8 @@ def fun_of_gain(in_U, lm, P_in, lambda_,eta_c):
     # eta_c = eta_Q * eta_S * eta_B * eta_P * eta_T * eta_a  # 从泵浦到存储功率的效率，不包括重叠效率 eta_B
     # eta_c类似泵浦效率
     #eta_c = 0.72
-    a_m = 0.003  # 泵浦光束半径
+    # a_m = 0.003  # 泵浦光束半径
+    a_m= rm  # 增益介质半径
     V = cp.pi * a_m ** 2 * lm
     # deltaT = 0.3e-6 / 200
     # tau = 0.3e-6
