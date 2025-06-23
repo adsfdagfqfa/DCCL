@@ -10,12 +10,16 @@
                     @expand-change="handleExpandChange"
                     @clear="handleClear"/>    
             <RangeGenerator @get-result-array="getResultArray"  ref="rangeGenerator"/>
+            <div class="flex items-center mb-5">
+              <label class="whitespace-nowrap min-w-20">迭代次数:</label>
+              <el-input type="number" v-model.number="iterationCount"
+                placeholder="请输入迭代次数"
+                title="" clearable/>
+            </div>
             <el-button type="primary" @click="onUploadParameter">上传参数</el-button>
             <el-button type="primary" @click="onSimulation">开始仿真</el-button>
             <el-button type="primary" @click="store.plotDialogVisible=true">分析结果</el-button>
         </el-card>
-      
-      
       </div>
       <div class="flex-1">
         <!-- <el-scrollbar >
@@ -68,6 +72,7 @@
   //selectedElement为数组，记录选中的元素的路径
   const selectedElement = ref()
   const vectors=ref([])
+  const iterationCount=ref(1000); //迭代次数
   const jsonpath=ref([
     {
       value: '$.modelAttributeList[*].focalLength',
@@ -185,15 +190,20 @@
     // let length=selectedElement.value.length;
     // console.log(selectedElement.value);
     // console.log(jp.query(data,selectedElement.value[length-1]));
-    
+    // console.log(iterationCount.value)
     //判断是否设置参数
+    if(iterationCount.value===undefined || iterationCount.value<=0){
+      alert("请输入有效的迭代次数")
+      return
+    }
     const param={}
-    
-    if(selectedElement.value!==undefined){
+    console.log(vectors.value.length)
+    if(selectedElement.value!==undefined  && vectors.value.length>0){
       let length=selectedElement.value.length;
       param.path=selectedElement.value[length-1]
       param.vectors=vectors.value
     }
+    param.iterationCount=iterationCount.value;
     var virtualScroller=pageInstance.refs.virtualScroller;
     await store.simulation(JSON.stringify(param),virtualScroller)
     // console.log(data)
@@ -203,6 +213,7 @@
   async function onUploadParameter(){
     console.log(store.distance)
     console.log(data.value)
+    // console.log(iterationCount.value)
     await store.uploadParameter(JSON.stringify(data.value))
     console.log('上传参数')
   }

@@ -49,18 +49,19 @@ const step=ref(null)
 const emit = defineEmits(['get-result-array']);
    
 function generateArray() {
-  if (minValue.value === null ||
-    maxValue.value === null ||
-    step.value === null)
+  const resultArray = [];
+  if (minValue.value === null ||maxValue.value === null ||step.value === null){
+    emit('get-result-array', resultArray);
     return;
+  }
   if(minValue.value >= maxValue.value || step.value<= 0) {
     clearInput()
     alert("请输入有效的最小值、最大值和步长！");
-
+    emit('get-result-array', resultArray);  
     return;
   }
 
-  const resultArray = [];
+  // const resultArray = [];
   for(let i = minValue.value; i <= maxValue.value; i += step.value) {
     let rounded_numbers = round(i, 4) 
     resultArray.push(rounded_numbers);
