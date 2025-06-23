@@ -7,7 +7,7 @@ from application.utils.utility_function import generate_jwt_token, verify_jwt_to
 from application.extensions import redis_client
 from application.utils.redis_utils import get_redis_data, set_redis_data
 # from application.config import Config
-from application.services.dccl_simulation import dccl_simulation
+from application.services.dccl_simulation.pipeline import SimulationPipeline
 
 import logging
 logger = logging.getLogger(__name__)
@@ -36,11 +36,14 @@ def simulation():
         logger.info('没有在token中找到用户id,请重新上传参数')
         return resp
     data = json.loads(get_redis_data(user_id))
+
+    simulation_pipeline = SimulationPipeline(data, user_id)
     if not json_data:
         
         logger.info("not json_data")
         def generate_events(data):
-            generator = dccl_simulation(data,user_id)
+            
+            generator = simulation_pipeline.run()
             try:
                 while True:
                     item = next(generator)
@@ -75,7 +78,9 @@ def simulation():
                 jsonpath_expr.update(data,i)
             
                 key = jsonpath_expr.find(data)[0].path.fields[-1]#获取键名
-                generator = dccl_simulation(data,user_id)
+                simulation_pipeline.update_input_data(data)  # 更新输入数据
+
+                generator = simulation_pipeline.run()
                 try:
                     while True:
                         item = next(generator)
