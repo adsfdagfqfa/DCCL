@@ -6,6 +6,7 @@ import axios from "axios";
 import { v4 as uuidv4 } from 'uuid'; // 引入 uuid 库
 export const useThreeInstanceStore = defineStore("threeInstance", {
   state: () => ({
+    tokenInitialized: false, // 是否初始化了token
     threeInstance: null,//threejs的实例
     selectedElement: "",//当前选择的元素的名称
     distance:[],//储存的元素之间的距离
@@ -118,6 +119,17 @@ export const useThreeInstanceStore = defineStore("threeInstance", {
         document.body.removeChild(a);
       } catch (error) {
         console.error('Request failed:', error);
+      }
+    },
+    async initToken() {
+      try {
+        await axios.post('/token/init',null,{
+          'withCredentials':true //携带cookie
+        })
+        this.tokenInitialized = true
+        console.log('Token 初始化成功')
+      } catch (error) {
+        console.error('Token 初始化失败', error)
       }
     }
   }
