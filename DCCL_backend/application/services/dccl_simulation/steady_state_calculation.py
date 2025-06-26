@@ -77,7 +77,7 @@ def process_gain_and_merge(U_gain1, H_fsf, B_aper, B_CatEye1, r1, lm,rm, P_in, l
     cp.get_default_memory_pool().free_all_blocks()
     return U
 
-def cal_final_output(matrix_all, aperture_all, data,user_id):
+def cal_final_output(matrix_all, aperture_all, data,user_id,iterationCount):
     # Iten_out: 输出平面上的光强分布，可以直接计算输出功率
     # t: 迭代终止条件
     # s_it1 和 s_it2 分别是迭代终止时 M1 和 M2 上的场分布
@@ -122,7 +122,7 @@ def cal_final_output(matrix_all, aperture_all, data,user_id):
         U = U2
         R = 1 - data['modelAttributeList'][7]['reflectivity'] ** 2
        
-        Iten_out = R * 0.5 * (const.epsilon_0* const.c) * cp.abs(U) ** 2  # 电场的振幅分布转化为光强分布
+        Iten_out = R * 0.5 * (epsilon* c0) * cp.abs(U) ** 2  # 电场的振幅分布转化为光强分布
         Pout = cp.sum(Iten_out).item()*delta**2  # 输出功率
         del U, U2, Iten_out 
         
@@ -137,8 +137,7 @@ def cal_final_output(matrix_all, aperture_all, data,user_id):
         # yield f'迭代次数: {t} 主共振腔传输系数: {v1} 自由空间腔传输系数: {v2} 输出光功率: {Pout * delta * delta}'
         t += 1
         # 终止条件
-        if t > 1000:  # 改为10测试完整运行
-            t=t-1
+        if t > iterationCount:  # 改为10测试完整运行
             break
         if data['resonatorParam']['pumpWatt'] < 1e-15:
             break
@@ -146,7 +145,7 @@ def cal_final_output(matrix_all, aperture_all, data,user_id):
             del s_it1, s_it2
             # 强制释放显存
             cp.get_default_memory_pool().free_all_blocks()
-
+    t=t-1
     logger.info("时间:%s", datetime.datetime.now())
     #部分参数写死
     U_M1, _, _ = one_roundtrip_distribution(s_it1, s_it2, matrix_all,aperture_all,data,lambda_)
@@ -172,7 +171,7 @@ def cal_final_output(matrix_all, aperture_all, data,user_id):
     result["fieldDistributionMain"] = key1
     # data["fieldDistributionFree"] = s_it2_buffer.getvalue()
     result['fieldDistributionFree'] = key2
-    result["outputPower"] = Iten_out
+    result["outputPower"] = Pout
     result["isEnd"]=True
     # return Iten_out, t, s_it1, s_it2, V_round
     return result

@@ -22,7 +22,7 @@ def simulation():
     # param = request.form.get('param'),对于post请求，参数在body中
     encoded_data = request.args.get('data')
     json_data = json.loads(encoded_data)  # 解码并解析JSON字符串
-    
+    logger.info("json_data:%s",json_data)
     # token = request.cookies.get('token')
     # logger.info('token:%s',token)
     #先检查是否有token
@@ -36,10 +36,10 @@ def simulation():
         logger.info('没有在token中找到用户id,请重新上传参数')
         return resp
     data = json.loads(get_redis_data(user_id))
-
-    simulation_pipeline = SimulationPipeline(data, user_id)
-    if not json_data:
-        
+    logger.info("data:%s",data)
+    simulation_pipeline = SimulationPipeline(data, user_id,json_data['iterationCount'])
+    #查看json_data中是否有'path'和'vectors'字段
+    if 'path' not in json_data or 'vectors' not in json_data:
         logger.info("not json_data")
         def generate_events(data):
             
@@ -56,16 +56,7 @@ def simulation():
                 final_value['selectedAttribute']={}
                 cp.get_default_memory_pool().free_all_blocks()
                 yield format_string(json.dumps(final_value, ensure_ascii=False)) 
-                
-
-
-        return Response(generate_events(data),mimetype='text/event-stream',headers={
-            "Connection": "keep-alive",  # 强制启用长连接
-            "Cache-Control": "no-cache",
-            "X-Accel-Buffering": "no"
-        })
-
-        
+        return Response(generate_events(data),mimetype='text/event-stream')
     else:
         #暂定
         path = json_data.get('path')
@@ -76,17 +67,14 @@ def simulation():
             jsonpath_expr = parse(path)
             for i in vectors:
                 jsonpath_expr.update(data,i)
-            
                 key = jsonpath_expr.find(data)[0].path.fields[-1]#获取键名
                 simulation_pipeline.update_input_data(data)  # 更新输入数据
-
                 generator = simulation_pipeline.run()
                 try:
                     while True:
                         item = next(generator)
                         item['selectedAttribute'] = {key:i}
                         str1=json.dumps(item,ensure_ascii=False)
-            
                         yield format_string(str1) 
                 except StopIteration as e:
                     final_value = e.value  # 捕获最后返回的数据
@@ -94,11 +82,7 @@ def simulation():
                     final_value['selectedAttribute'] = {key:i}
                     cp.get_default_memory_pool().free_all_blocks()#释放现存
                     yield format_string(json.dumps(final_value, ensure_ascii=False))
-        return Response(generate_events(data),mimetype='text/event-stream',headers={
-            "Connection": "keep-alive",  # 强制启用长连接
-            "Cache-Control": "no-cache",
-            "X-Accel-Buffering": "no"
-        })
+        return Response(generate_events(data),mimetype='text/event-stream')
         # return request.args.get('param')
 
 
