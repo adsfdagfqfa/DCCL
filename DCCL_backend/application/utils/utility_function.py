@@ -13,8 +13,8 @@ def generate_jwt_token(uuid, algorithm='HS256'):
 
     payload = {
         'uuid': uuid,  # User ID
-        # 'exp': datetime.datetime.now() + datetime.timedelta(hours=1),  # Token expiration time
         'iat': datetime.datetime.now(datetime.timezone.utc),  # Token issuance time
+        'exp': datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=24),
     }
    
     secret_key = config.Config.SECRET_KEY
