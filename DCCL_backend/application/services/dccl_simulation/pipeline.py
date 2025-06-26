@@ -22,10 +22,6 @@ class SimulationPipeline:
         matrix_all=cal_all_matrix(self.input_data,r_max,angle_1,angle_2)
         # log_gpu_memory('3')
         logger.info("传输矩阵与有效反射面计算结束")
-
-
-
-
         generator= cal_final_output(matrix_all,aperture_all,self.input_data,self.user_id)
         try:
             while True:
