@@ -57,7 +57,6 @@ def process_main_cavity(U_M1pre, H_fsf, B_CatEye1, B_aper, B_CatEye2,lm,rm, P_in
     return U_gain1, U5  # 函数返回后 U1 的显存自动释放
 
 def process_free_cavity(U_M2pre, H_fsf,H_fsdf,B_aper, B_CatEye2, B_CatEye3, r2, r3, t2):
-    
     U2 = cal_field_transition(U_M2pre, H_fsdf, B_CatEye2, B_CatEye3)
     U8 = cal_field_transition(operator_reflectivity(U2, r3), H_fsdf, B_CatEye3, B_CatEye2)
     U_gain2 = cal_field_transition(operator_transmissivity(U8, t2) , H_fsf, B_CatEye2, B_aper)
@@ -66,11 +65,8 @@ def process_free_cavity(U_M2pre, H_fsf,H_fsdf,B_aper, B_CatEye2, B_CatEye3, r2, 
     return U_gain2, operator_reflectivity(U8, r2) , U2  # U8 显存在子函数结束时释放
 
 def process_gain_and_merge(U_gain1, H_fsf, B_aper, B_CatEye1, r1, lm,rm, P_in, lambda_, eta_c):
-    
     U_combined = U_gain1
-   
     U_combined = propagation_within_gain(U_combined, lm,rm, P_in, lambda_, eta_c)
-    
     U = cal_field_transition(U_combined, H_fsf, B_aper, B_CatEye1)
     del U_combined
     U= operator_reflectivity(U, r1)
