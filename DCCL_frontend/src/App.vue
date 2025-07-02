@@ -6,7 +6,7 @@
 import { RouterView, useRoute, useRouter } from 'vue-router';
 import { useThreeInstanceStore } from './store/index.js';
 import { onMounted } from 'vue';
-store = useThreeInstanceStore();
+const store = useThreeInstanceStore();
 const router =useRouter()
 onMounted(() => {
   store.initToken()
