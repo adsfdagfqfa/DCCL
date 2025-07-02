@@ -204,6 +204,10 @@
       param.vectors=vectors.value
     }
     param.iterationCount=iterationCount.value;
+
+    const taskID=await store.uploadParameter(JSON.stringify(data.value))
+    param.taskID=taskID;
+    console.log('上传参数')
     var virtualScroller=pageInstance.refs.virtualScroller;
     await store.simulation(JSON.stringify(param),virtualScroller)
     // console.log(data)
