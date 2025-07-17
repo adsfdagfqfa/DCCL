@@ -9,7 +9,10 @@ import logging
 logger = logging.getLogger(__name__)
 @routes.route('/token/init', methods=['POST'])
 def token_init():
-   # 生成新用户
+   
+    if hasattr(g, 'user_id') and g.user_id:
+        return make_response('用户已存在', 400)
+    # 生成新用户
     user_id = str(uuid.uuid4())
     new_token = generate_jwt_token(user_id)
     logger.info("新用户:%s",user_id)
