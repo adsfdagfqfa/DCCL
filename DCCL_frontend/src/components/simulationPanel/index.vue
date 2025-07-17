@@ -200,14 +200,16 @@
     console.log(vectors.value.length)
     if(selectedElement.value!==undefined  && vectors.value.length>0){
       let length=selectedElement.value.length;
-      param.path=selectedElement.value[length-1]
-      param.vectors=vectors.value
+      param.variable={};
+      param.variable.path=selectedElement.value[length-1]
+      param.variable.vectors=vectors.value
     }
     param.iterationCount=iterationCount.value;
 
     const taskID=await store.uploadParameter(JSON.stringify(data.value))
     param.taskID=taskID;
     console.log('上传参数')
+    
     var virtualScroller=pageInstance.refs.virtualScroller;
     await store.simulation(JSON.stringify(param),virtualScroller)
     // console.log(data)

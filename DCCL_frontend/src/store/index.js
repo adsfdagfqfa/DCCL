@@ -62,18 +62,24 @@ export const useThreeInstanceStore = defineStore("threeInstance", {
         },
         'withCredentials':true //携带cookie
       }).then(res=>{
-        console.log(res)
+        console.log(res.data)
+        return res.data.task_id //返回任务id
       }).catch(err=>{
         console.log(err)
       })
     },
     async simulation(param,dom){
-      this.simulationResult=[]
-      console.log(param)
-      //将查询参数对象转换为 JSON 字符串
-      const encodedJsonString = encodeURIComponent(param);
-      
-      const sseUrl = `/flask/api/v1/simulation?data=${encodedJsonString}`;
+     
+      /**
+       * 仿真计算参数
+       * @typedef {Object} param
+       * @property {Object} variable      - 变量定义
+       * @property {string} variable.path - JSONPath，指向需要扫描/变化的模型属性 例："$.modelAttributeList[0].reflectivity"
+       * @property {number[]} variable.vectors - 该变量要取的离散值序列 例：[1, 2]
+       * @property {number} iterationCount - 总迭代（采样）次数，正整数 例：1000
+       * @property {string} taskID - 任务ID，上传参数时返回的任务ID
+       */
+      const sseUrl = `/flask/api/v1/stream?taskID=${param.taskID}`;
       // 创建 EventSource 实例
       const eventSource = new EventSource(sseUrl);
        // 监听消息事件
@@ -95,7 +101,22 @@ export const useThreeInstanceStore = defineStore("threeInstance", {
         console.error("EventSource failed:", err);
         eventSource.close(); // 关闭连接
       };
-      
+
+      // 清空之前的结果
+      this.simulationResult=[]
+      /** @type {param} */
+      console.log(param)
+      //将查询参数对象转换为 JSON 字符串
+      await axios.post('/flask/api/v1/simulation',param,{
+        headers: {
+          'Content-Type': 'application/json'  // 显式指定内容类型为 JSON
+        },
+        'withCredentials':true //携带cookie
+      }).then(res=>{
+        console.log(res.data)
+      }).catch(err=>{
+        console.log(err)
+      })
     },
     async getPicture() {
       console.log("getPicture")
