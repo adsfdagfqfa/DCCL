@@ -1,3 +1,5 @@
+from pathlib import Path
+from typing import Union
 import jwt  
 import cupy as cp
 import time
@@ -8,6 +10,9 @@ import msgpack,zlib,numpy as np
 from scipy.sparse import csr_matrix
 import logging
 from scipy.io import savemat
+import random
+import string
+
 logger = logging.getLogger(__name__)
 def generate_jwt_token(uuid, algorithm='HS256'):
 
@@ -127,3 +132,33 @@ def save_mat(cupy_matrix):
     savemat("matrix.mat", {"matrix": numpy_matrix})
 
     print("矩阵已成功保存为 matrix.mat 文件")
+
+
+
+def generate_task_id(prefix="task", random_length=6):
+    """
+    生成唯一的任务 ID，格式: task_时间戳_随机串
+    Args:
+        prefix (str): 可选前缀（如 task、sim、job）
+        random_length (int): 随机字符串的长度，建议 4~8 位
+    Returns:
+        str: 格式如 task_1720081234567_a1b2c3
+    """
+    timestamp = int(time.time() * 1000)  # 毫秒时间戳，13 位
+    rand_part = ''.join(random.choices(string.ascii_lowercase + string.digits, k=random_length))
+    return f"{prefix}_{timestamp}_{rand_part}"
+
+def save_bytes_to_file(path: Union[str, Path], data: bytes) -> Path:
+    """
+    将字节流写入指定路径的文件。
+    Args:
+        path : str 或 pathlib.Path 目标文件路径。如果目录不存在会自动创建。
+        data : bytes 待写入的字节流。
+    Returns:
+        pathlib.Path写入后的文件路径（绝对路径）。
+    """
+    path = Path(path).expanduser().resolve()
+    path.parent.mkdir(parents=True, exist_ok=True)  # 递归创建目录
+    with path.open("wb") as f:
+        f.write(data)
+    return path
