@@ -1,75 +1,172 @@
 import uuid
 import json
-import time
 import redis
-
+import time
+from application.utils.utility_function import generate_task_id,save_bytes_to_file
+from application.config import Config
+from pipeline import SimulationPipeline
+import logging
+import threading
+from application.config import Config
+logger = logging.getLogger(__name__)
 class TaskStatus:
     PENDING = 'pending'
     RUNNING = 'running'
     CANCELLED = 'cancelled'
     FINISHED = 'finished'
     ERROR = 'error'
+    PAUSED = 'paused'
 
 
 class Task:
-    def __init__(self, task_id=None, redis_conn=None):
-        self.task_id = task_id or str(uuid.uuid4())  # 默认生成新任务 ID
-        self.redis = redis_conn or redis.StrictRedis(decode_responses=True)
-        self.key = f"task:{self.task_id}"  # Redis 键名
+    def __init__(self, task_id=None, redis_client = None,params={},meta_param={}):
+        self.task_id = task_id or generate_task_id()  # 默认生成新任务 ID
+        self.redis_client = redis_client # Redis 客户端实例
         self.status = TaskStatus.PENDING
-        self.progress = 0.0
-        self.result_path = None
-        self.params = {}
-        self.created_at = time.time()
+        self.result_path =[]  # 结果存储路径
+        self.params = params
+        self.variable= meta_param['variable'] if 'variable' in meta_param else {}
+        self.iteration_count = meta_param['iterationCount'] if 'iterationCount' in meta_param else 1
         self._load()  # 加载任务数据（如果已存在）
 
     def _load(self):
-        """从 Redis 加载任务数据（如果存在）"""
-        if self.redis.exists(self.key):
-            data = self.redis.hgetall(self.key)
+        #从 Redis 加载任务数据（如果存在）"""
+        if self.redis_client.exists(self.task_id):
+            data = self.redis_client.hgetall(self.task_id)
             self.status = data.get("status", TaskStatus.PENDING)
             self.params = json.loads(data.get("params", "{}"))
-            self.progress = float(data.get("progress", 0.0))
             self.result_path = data.get("result_path")
-            self.created_at = float(data.get("created_at", time.time()))
     
     def save(self):
-        """保存任务状态到 Redis"""
-        self.redis.hset(self.key, mapping={
+        #保存任务状态到 Redis
+        self.redis_client.hset(self.task_id, mapping={
             "status": self.status,
             "params": json.dumps(self.params),
-            "progress": self.progress,
-            "result_path": self.result_path or "",
-            "created_at": self.created_at
+            "result_path": self.result_path,
         })
-        self.redis.expire(self.key, 6 * 60 * 60)  # 设置过期时间（例如6小时）
+        self.redis_client.expire(self.task_id, 6 * 60 * 60)  # 设置过期时间（例如6小时）
 
     def start(self, params):
-        """启动任务"""
-        self.status = TaskStatus.RUNNING
-        self.params = params
-        self.progress = 0.0
-        self.created_at = time.time()
+        # self.pipeline = SimulationPipeline(params, self.task_id, self.iteration_count)
+        # self.status = TaskStatus.RUNNING
         self.save()
 
-    def update_progress(self, value):
-        """更新任务的进度"""
-        self.progress = value
-        self.save()
+        # 启动后台线程
+        if self.variable=={}:
+            thread = threading.Thread(target=self._run_pipeline_loop)
+        else:
+            thread = threading.Thread(target=self._run_pipeline_loop_range)
+        thread.daemon = True
+        thread.start()
+
+    def _run_pipeline_loop(self):
+        try:
+            pipeline= SimulationPipeline(self.params, self.task_id, self.iteration_count)
+            generator = pipeline.run()  # 获取生成器
+
+            for value in generator:
+                current_status = self.redis_client.hget(self.task_id, "status")
+                
+                if current_status == TaskStatus.CANCELLED:
+                    logger.info(f"[{self.task_id}] cancelled.")
+                    break
+                elif current_status == TaskStatus.PAUSED:
+                    logger.info(f"[{self.task_id}] paused.")
+                    while self.redis_client.hget(self.task_id, "status") == TaskStatus.PAUSED:
+                        time.sleep(1)
+                    continue  # 继续执行
+                elif current_status != TaskStatus.RUNNING:
+                    logger.info(f"[{self.task_id}] unknown state.")
+                    break
+                #如果value是元组，表示包含了中间结果和两个矩阵的字节流
+                if isinstance(value, tuple):
+                    
+                    file_path_field_distribution_main=Config['RESULT_PATH'] / f"{self.task_id}" / "field_distribution_main.mat"
+                    file_path_field_distribution_free=Config['RESULT_PATH'] / f"{self.task_id}" / "field_distribution_free.mat"
+                    save_bytes_to_file(file_path_field_distribution_main, value[1])
+                    save_bytes_to_file(file_path_field_distribution_free, value[2])
+                    value = value[0]
+                # 推送当前进度
+                # 收到创建redis连接
+                r = redis.from_url(Config['REDIS_URL'])
+                redis_message = {
+                    "task_id": self.task_id,
+                    "status": TaskStatus.RUNNING,
+                }
+                value['selectedAttribute'] = {}
+                redis_message['progress']=value
+                json = json.dumps(redis_message, ensure_ascii=False)
+                r.publish('task_progress',json)
+
+            self.redis_client.hset(self.task_id, "status", TaskStatus.FINISHED)
+            logger.info(f"[{self.task_id}] finished.")
+        except Exception as e:
+            self.redis_client.hset(self.task_id, "status", TaskStatus.ERROR)
+            logger.exception(f"[{self.task_id}] error: {e}")
+
+    def _run_pipeline_loop_range(self):
+        try:
+            from jsonpath_ng import parse
+            pipeline=SimulationPipeline(self.params, self.task_id, self.iteration_count)
+            path= self.variable['path']
+            vectors = self.variable['vectors']
+            jsonpath_expr = parse(path)
+            for i in vectors:
+                jsonpath_expr.update(self.params,i)
+                key = jsonpath_expr.find(self.params)[0].path.fields[-1]#获取键名
+                pipeline.update_input_data(self.params)  # 更新输入数据
+                generator = pipeline.run()
+                for value in generator:
+                    current_status = self.redis_client.hget(self.task_id, "status")
+                    
+                    if current_status == TaskStatus.CANCELLED:
+                        logger.info(f"[{self.task_id}] cancelled.")
+                        break
+                    elif current_status == TaskStatus.PAUSED:
+                        logger.info(f"[{self.task_id}] paused.")
+                        while self.redis_client.hget(self.task_id, "status") == TaskStatus.PAUSED:
+                            time.sleep(1)
+                        continue  # 继续执行
+                    elif current_status != TaskStatus.RUNNING:
+                        logger.info(f"[{self.task_id}] unknown state.")
+                        break
+                    if isinstance(value, tuple):
+                        file_path_field_distribution_main=Config['RESULT_PATH'] / f"{self.task_id}" / "field_distribution_main.mat"
+                        file_path_field_distribution_free=Config['RESULT_PATH'] / f"{self.task_id}" / "field_distribution_free.mat"
+                        save_bytes_to_file(file_path_field_distribution_main, value[1])
+                        save_bytes_to_file(file_path_field_distribution_free, value[2])
+                        value = value[0]
+                    r = redis.from_url(Config['REDIS_URL'])
+                    redis_message = {
+                        "task_id": self.task_id,
+                        "status": TaskStatus.RUNNING,
+                    }
+                    value['selectedAttribute'] = {key:i}
+                    # redis_message.update(value)  # 更新进度信息
+                    redis_message['progress']=value
+                    json = json.dumps(redis_message, ensure_ascii=False)
+                    r.publish('task_progress',json)
+
+            self.redis_client.hset(self.task_id, "status", TaskStatus.FINISHED)
+            logger.info(f"[{self.task_id}] finished.")
+        except Exception as e:
+            self.redis_client.hset(self.task_id, "status", TaskStatus.ERROR)
+            logger.exception(f"[{self.task_id}] error: {e}")
+
 
     def cancel(self):
-        """取消任务"""
+        #取消任务
         self.status = TaskStatus.CANCELLED
         self.save()
 
     def finish(self, result_path):
-        """标记任务完成"""
+        #标记任务完成
         self.status = TaskStatus.FINISHED
         self.result_path = result_path
         self.save()
 
     def to_dict(self):
-        """将任务数据转换为字典（用于返回给前端）"""
+        #将任务数据转换为字典（用于返回给前端）
         return {
             "task_id": self.task_id,
             "status": self.status,
@@ -79,5 +176,11 @@ class Task:
         }
 
     def is_cancelled(self):
-        """检查任务是否已取消"""
+        #检查任务是否已取消
         return self.status == TaskStatus.CANCELLED
+    
+    def pause(self):
+        # 暂停任务
+        if self.status == TaskStatus.RUNNING:
+            self.status = TaskStatus.PENDING
+            self.save()
