@@ -6,10 +6,10 @@ from .steady_state_calculation import cal_final_output
 import logging
 logger= logging.getLogger(__name__)
 class SimulationPipeline:
-    def __init__(self, input_data,user_id,iterationCount):
+    def __init__(self, input_data,task_id,iteration_count):
         self.input_data = input_data
-        self.user_id = user_id
-        self.iterationCount = iterationCount
+        self.task_id = task_id
+        self.iteration_count = iteration_count
 
     def run(self):
         angle_2=np.abs(self.input_data['angle'][5])*np.pi/180
@@ -23,13 +23,13 @@ class SimulationPipeline:
         matrix_all=cal_all_matrix(self.input_data,r_max,angle_1,angle_2)
         # log_gpu_memory('3')
         logger.info("传输矩阵与有效反射面计算结束")
-        generator= cal_final_output(matrix_all,aperture_all,self.input_data,self.user_id,self.iterationCount)
+        generator= cal_final_output(matrix_all,aperture_all,self.input_data,self.task_id,self.iteration_count)
         try:
             while True:
                 value = next(generator)
                 yield value
         except StopIteration as e:
             # 捕获steay_state最终返回值
-            return e.value
+            yield e.value
     def update_input_data(self, new_data):
         self.input_data = new_data

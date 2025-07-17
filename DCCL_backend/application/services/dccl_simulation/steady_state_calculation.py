@@ -73,7 +73,7 @@ def process_gain_and_merge(U_gain1, H_fsf, B_aper, B_CatEye1, r1, lm,rm, P_in, l
     cp.get_default_memory_pool().free_all_blocks()
     return U
 
-def cal_final_output(matrix_all, aperture_all, data,user_id,iterationCount):
+def cal_final_output(matrix_all, aperture_all, data,task_id,iteration_count):
     # Iten_out: 输出平面上的光强分布，可以直接计算输出功率
     # t: 迭代终止条件
     # s_it1 和 s_it2 分别是迭代终止时 M1 和 M2 上的场分布
@@ -133,7 +133,7 @@ def cal_final_output(matrix_all, aperture_all, data,user_id,iterationCount):
         # yield f'迭代次数: {t} 主共振腔传输系数: {v1} 自由空间腔传输系数: {v2} 输出光功率: {Pout * delta * delta}'
         t += 1
         # 终止条件
-        if t > iterationCount:  # 改为10测试完整运行
+        if t > iteration_count:  # 改为10测试完整运行
             break
         if data['resonatorParam']['pumpWatt'] < 1e-15:
             break
@@ -152,22 +152,20 @@ def cal_final_output(matrix_all, aperture_all, data,user_id,iterationCount):
     s_it1_buffer = io.BytesIO()
     sio.savemat( s_it1_buffer, {'matrix': s_it1.get()}, format='5',do_compression=True)
     del s_it1
-    key1=user_id+uuid.uuid4().hex[:6]
-    set_redis_data(key1, s_it1_buffer.getvalue())
+    # key1=task_id+uuid.uuid4().hex[:6]
+    # set_redis_data(key1, s_it1_buffer.getvalue())
     
     s_it2_buffer = io.BytesIO()
     sio.savemat( s_it2_buffer, {'matrix': s_it2.get()}, format='5',do_compression=True)
     del s_it2
-    key2=user_id+uuid.uuid4().hex[:6]
-    set_redis_data(key2, s_it2_buffer.getvalue())
+    # key2=task_id+uuid.uuid4().hex[:6]
+    # set_redis_data(key2, s_it2_buffer.getvalue())
     
     result={}
     result["iterationCount"] = t
-    # data["fieldDistributionMain"] = s_it1_buffer.getvalue()
-    result["fieldDistributionMain"] = key1
-    # data["fieldDistributionFree"] = s_it2_buffer.getvalue()
-    result['fieldDistributionFree'] = key2
+    result["fieldDistributionMain"] = ""
+    result['fieldDistributionFree'] = ""
     result["outputPower"] = Pout
     result["isEnd"]=True
     # return Iten_out, t, s_it1, s_it2, V_round
-    return result
+    return result,s_it1_buffer.getvalue(),s_it2_buffer.getvalue()
