@@ -1,11 +1,19 @@
 import logging
+from pathlib import Path
 class Config:
     # 基本配置
     # DEBUG = False
     # TESTING = False
     #JWT密钥
     SECRET_KEY = 'intracavity_laser_simulation_system'  
-    
+    # RESULT_PATH= 'application/services/dccl_simulation/results'  # 结果存储路径
+   
+
+    # config.py 所在目录 = application/
+    _CONFIG_DIR = Path(__file__).resolve().parent
+
+    # 目标目录：application/services/dccl_simulation/results
+    RESULT_PATH = _CONFIG_DIR / "services" / "dccl_simulation" / "results"
     # 数据库配置
     
     #Redis数据库的URL，格式为redis://:password@localhost:6379/0
