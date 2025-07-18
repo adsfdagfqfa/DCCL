@@ -54,20 +54,22 @@ export const useThreeInstanceStore = defineStore("threeInstance", {
     setSelectedElement(name){
       this.selectedElement=name
     },
-    async uploadParameter(data){
-      //上传参数
-      await axios.post('/flask/api/v1/uploadParameter',data,{
-        headers: {
-          'Content-Type': 'application/json'  // 显式指定内容类型为 JSON
-        },
-        'withCredentials':true //携带cookie
-      }).then(res=>{
-        console.log(res.data)
-        return res.data.task_id //返回任务id
-      }).catch(err=>{
-        console.log(err)
-      })
+    async uploadParameter(data) {
+      try {
+        const res = await axios.post('/flask/api/v1/uploadParameter', data, {
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          withCredentials: true
+        });
+        console.log(res.data);
+        return res.data.task_id; //  正确返回
+      } catch (err) {
+        console.error(err);
+        throw err; // 或者返回 null，取决于你业务逻辑
+      }
     },
+
     async simulation(param,dom){
      
       /**
@@ -79,6 +81,7 @@ export const useThreeInstanceStore = defineStore("threeInstance", {
        * @property {number} iterationCount - 总迭代（采样）次数，正整数 例：1000
        * @property {string} taskID - 任务ID，上传参数时返回的任务ID
        */
+      
       const sseUrl = `/flask/api/v1/stream?taskID=${param.taskID}`;
       // 创建 EventSource 实例
       const eventSource = new EventSource(sseUrl);
@@ -105,7 +108,7 @@ export const useThreeInstanceStore = defineStore("threeInstance", {
       // 清空之前的结果
       this.simulationResult=[]
       /** @type {param} */
-      console.log(param)
+      param=JSON.stringify(param) //将查询参数对象转换为 JSON 字符串
       //将查询参数对象转换为 JSON 字符串
       await axios.post('/flask/api/v1/simulation',param,{
         headers: {
@@ -144,7 +147,7 @@ export const useThreeInstanceStore = defineStore("threeInstance", {
     },
     async initToken() {
       try {
-        await axios.post('/token/init',null,{
+        await axios.post('/flask/api/v1/token/init',null,{
           'withCredentials':true //携带cookie
         })
         this.tokenInitialized = true
