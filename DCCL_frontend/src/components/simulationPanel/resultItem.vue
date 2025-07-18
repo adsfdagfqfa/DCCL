@@ -46,9 +46,11 @@ const props = defineProps({
 const itemJSON=ref({});
 const store = useThreeInstanceStore();
 function init() {
-  // Add your initialization logic here if needed
+    // Add your initialization logic here if needed
+    console.log("item",props.item)
     itemJSON.value = JSON.parse(props.item);
-    console.log("itemJSON",itemJSON.value)
+    // itemJSON.value = props.item;
+    // console.log("itemJSON",itemJSON.value)
 }
 function onGetPicture(value) {
     // 处理获取图片的逻辑

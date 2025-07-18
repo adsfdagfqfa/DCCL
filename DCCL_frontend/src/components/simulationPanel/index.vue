@@ -208,10 +208,12 @@
 
     const taskID=await store.uploadParameter(JSON.stringify(data.value))
     param.taskID=taskID;
+    console.log('taskID', taskID);
+    console.log(param)
     console.log('上传参数')
     
     var virtualScroller=pageInstance.refs.virtualScroller;
-    await store.simulation(JSON.stringify(param),virtualScroller)
+    await store.simulation(param,virtualScroller)
     // console.log(data)
     console.log('开始仿真')
    
