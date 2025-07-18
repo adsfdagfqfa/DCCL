@@ -4,7 +4,7 @@ import redis
 import time
 from application.utils.utility_function import generate_task_id,save_bytes_to_file
 from application.config import Config
-from pipeline import SimulationPipeline
+from .pipeline import SimulationPipeline
 import logging
 import threading
 from application.config import Config
@@ -23,7 +23,7 @@ class Task:
         self.task_id = task_id or generate_task_id()  # 默认生成新任务 ID
         self.redis_client = redis_client # Redis 客户端实例
         self.status = TaskStatus.PENDING
-        self.result_path =[]  # 结果存储路径
+        self.result_path ={}  # 结果存储路径
         self.params = params
         self.variable= meta_param['variable'] if 'variable' in meta_param else {}
         self.iteration_count = meta_param['iterationCount'] if 'iterationCount' in meta_param else 1
@@ -32,23 +32,28 @@ class Task:
     def _load(self):
         #从 Redis 加载任务数据（如果存在）"""
         if self.redis_client.exists(self.task_id):
-            data = self.redis_client.hgetall(self.task_id)
-            self.status = data.get("status", TaskStatus.PENDING)
-            self.params = json.loads(data.get("params", "{}"))
-            self.result_path = data.get("result_path")
+            logger.debug(f"Loading task {self.task_id} from Redis.")
+            status_bytes = self.redis_client.hget(self.task_id, 'status')
+            self.status = status_bytes.decode() if status_bytes else TaskStatus.PENDING
+
+            params_bytes = self.redis_client.hget(self.task_id, 'params')
+            self.params = json.loads(params_bytes.decode()) if params_bytes else {}
+
+            result_path_bytes = self.redis_client.hget(self.task_id, 'result_path')
+            self.result_path = json.loads(result_path_bytes.decode()) if result_path_bytes else {}
     
     def save(self):
         #保存任务状态到 Redis
         self.redis_client.hset(self.task_id, mapping={
             "status": self.status,
             "params": json.dumps(self.params),
-            "result_path": self.result_path,
+            "result_path":  json.dumps(self.result_path),
         })
         self.redis_client.expire(self.task_id, 6 * 60 * 60)  # 设置过期时间（例如6小时）
 
-    def start(self, params):
+    def start(self):
         # self.pipeline = SimulationPipeline(params, self.task_id, self.iteration_count)
-        # self.status = TaskStatus.RUNNING
+        self.status = TaskStatus.RUNNING
         self.save()
 
         # 启动后台线程
@@ -65,8 +70,8 @@ class Task:
             generator = pipeline.run()  # 获取生成器
 
             for value in generator:
-                current_status = self.redis_client.hget(self.task_id, "status")
-                
+                current_status = self.redis_client.hget(self.task_id, "status").decode()
+                logger.debug(f"[{self.task_id}] current status: {current_status}")
                 if current_status == TaskStatus.CANCELLED:
                     logger.info(f"[{self.task_id}] cancelled.")
                     break
@@ -80,23 +85,22 @@ class Task:
                     break
                 #如果value是元组，表示包含了中间结果和两个矩阵的字节流
                 if isinstance(value, tuple):
-                    
-                    file_path_field_distribution_main=Config['RESULT_PATH'] / f"{self.task_id}" / "field_distribution_main.mat"
-                    file_path_field_distribution_free=Config['RESULT_PATH'] / f"{self.task_id}" / "field_distribution_free.mat"
+                    file_path_field_distribution_main=Config.RESULT_PATH / f"{self.task_id}" / "field_distribution_main.mat"
+                    file_path_field_distribution_free=Config.RESULT_PATH / f"{self.task_id}" / "field_distribution_free.mat"
                     save_bytes_to_file(file_path_field_distribution_main, value[1])
                     save_bytes_to_file(file_path_field_distribution_free, value[2])
                     value = value[0]
                 # 推送当前进度
                 # 收到创建redis连接
-                r = redis.from_url(Config['REDIS_URL'])
+                r = redis.from_url(Config.REDIS_URL)
                 redis_message = {
                     "task_id": self.task_id,
                     "status": TaskStatus.RUNNING,
                 }
                 value['selectedAttribute'] = {}
-                redis_message['progress']=value
-                json = json.dumps(redis_message, ensure_ascii=False)
-                r.publish('task_progress',json)
+                redis_message['progress']=json.dumps(value)#确保是字符串
+                data = json.dumps(redis_message, ensure_ascii=False)
+                r.publish('task_progress',data)
 
             self.redis_client.hset(self.task_id, "status", TaskStatus.FINISHED)
             logger.info(f"[{self.task_id}] finished.")
@@ -117,7 +121,7 @@ class Task:
                 pipeline.update_input_data(self.params)  # 更新输入数据
                 generator = pipeline.run()
                 for value in generator:
-                    current_status = self.redis_client.hget(self.task_id, "status")
+                    current_status = self.redis_client.hget(self.task_id, "status").decode()
                     
                     if current_status == TaskStatus.CANCELLED:
                         logger.info(f"[{self.task_id}] cancelled.")
@@ -131,21 +135,21 @@ class Task:
                         logger.info(f"[{self.task_id}] unknown state.")
                         break
                     if isinstance(value, tuple):
-                        file_path_field_distribution_main=Config['RESULT_PATH'] / f"{self.task_id}" / "field_distribution_main.mat"
-                        file_path_field_distribution_free=Config['RESULT_PATH'] / f"{self.task_id}" / "field_distribution_free.mat"
+                        file_path_field_distribution_main=Config.RESULT_PATH / f"{self.task_id}" / "field_distribution_main.mat"
+                        file_path_field_distribution_free=Config.RESULT_PATH / f"{self.task_id}" / "field_distribution_free.mat"
                         save_bytes_to_file(file_path_field_distribution_main, value[1])
                         save_bytes_to_file(file_path_field_distribution_free, value[2])
                         value = value[0]
-                    r = redis.from_url(Config['REDIS_URL'])
+                    r = redis.from_url(Config.REDIS_URL)
                     redis_message = {
                         "task_id": self.task_id,
                         "status": TaskStatus.RUNNING,
                     }
                     value['selectedAttribute'] = {key:i}
                     # redis_message.update(value)  # 更新进度信息
-                    redis_message['progress']=value
-                    json = json.dumps(redis_message, ensure_ascii=False)
-                    r.publish('task_progress',json)
+                    redis_message['progress']=json.dumps(value)
+                    data = json.dumps(redis_message, ensure_ascii=False)
+                    r.publish('task_progress',data)
 
             self.redis_client.hset(self.task_id, "status", TaskStatus.FINISHED)
             logger.info(f"[{self.task_id}] finished.")
