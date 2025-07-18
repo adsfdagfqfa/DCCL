@@ -16,3 +16,4 @@ __pycache__/
 
 *.whl
 *.out
+*.mat
