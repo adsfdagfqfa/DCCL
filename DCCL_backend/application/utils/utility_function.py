@@ -34,9 +34,10 @@ def verify_jwt_token(token):
         payload = jwt.decode(token, config.Config.SECRET_KEY, algorithms='HS256', leeway = leeway)
         uuid = payload['uuid']
         # 检查Redis是否存在用户记录（可选）
-        if not redis_client.exists(uuid):
-            # 数据过期
-            return False
+        # if not redis_client.exists(uuid):
+        #     # 数据过期
+            
+        #     return False
         return True
     except jwt.ExpiredSignatureError:
         # Token过期
