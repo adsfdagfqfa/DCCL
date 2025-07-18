@@ -12,6 +12,7 @@ class SimulationPipeline:
         self.iteration_count = iteration_count
 
     def run(self):
+        logger.debug(str(self.input_data))
         angle_2=np.abs(self.input_data['angle'][5])*np.pi/180
         angle_1=np.arctan(self.input_data['modelAttributeList'][5]['focalLength']/self.input_data['modelAttributeList'][3]['focalLength']*np.tan(angle_2))
         # print(angle_1)
