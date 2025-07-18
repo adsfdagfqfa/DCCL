@@ -93,7 +93,7 @@ def test():
 @routes.route("/simulation",methods=['POST'])
 def simulation():
     json_data = request.json  # 获取JSON数据
-    logger.info("json_data:%s",json_data)
+    logger.info("json_data:%s",str(json_data))
     if not g.user_id:
         resp = make_response('没有在token中找到用户id,请重新上传参数')
         logger.info('没有在token中找到用户id,请重新上传参数')
@@ -129,7 +129,7 @@ def stream():
     task_id = request.args.get('taskID') 
     def result_stream():
         try:
-            r = redis.from_url(Config['REDIS_URL'])
+            r = redis.from_url(Config.REDIS_URL)
             pubsub = r.pubsub()
             # pubsub = conn.pubsub()
             pubsub.subscribe('task_progress')
