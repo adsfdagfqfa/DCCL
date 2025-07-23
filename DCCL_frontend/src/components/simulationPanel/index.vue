@@ -16,7 +16,7 @@
                 placeholder="请输入迭代次数"
                 title="" clearable/>
             </div>
-            <el-button type="primary" @click="onUploadParameter">上传参数</el-button>
+            <!-- <el-button type="primary" @click="onUploadParameter">上传参数</el-button> -->
             <el-button type="primary" @click="onSimulation">开始仿真</el-button>
             <el-button type="primary" @click="store.plotDialogVisible=true">分析结果</el-button>
         </el-card>
@@ -47,7 +47,12 @@
           </div>
           
         </div> -->
+        <div class="flex justify-end items-end p-4">
+          <el-button :type="isPaused?'success':'warning'" @click="onTogglePauseTask">{{ isPaused ? '继续' : '暂停' }}</el-button>
+          <el-button type="danger" @click="onCancelTask">取消</el-button>
+        </div>
       </div>
+
     </div>
   </template>
   
@@ -59,7 +64,8 @@
   import { dateTableEmits } from 'element-plus/es/components/calendar/src/date-table';
   import ResultItem from './resultItem.vue'; 
   const rangeGenerator = ref();//引用的rangeGenerator组件
-  
+  const isPaused = ref(false)
+  const taskID = ref(null);
   var jp = require('jsonpath');
   const data = computed(() => ({
     distance: store.distance,
@@ -206,9 +212,10 @@
     }
     param.iterationCount=iterationCount.value;
 
-    const taskID=await store.uploadParameter(JSON.stringify(data.value))
-    param.taskID=taskID;
-    console.log('taskID', taskID);
+    taskID.value=await store.uploadParameter(JSON.stringify(data.value))
+
+    param.taskID=taskID.value;
+    console.log('taskID', taskID.value);
     console.log(param)
     console.log('上传参数')
     
@@ -232,6 +239,29 @@
   function handleClear(){
     //清除rangeGenerator里面的输入
     console.log("清除输入")
+    if (rangeGenerator.value) {
+      rangeGenerator.value.clearInput();
+    }
+  }
+  function onTogglePauseTask(){
+    //清除rangeGenerator里面的输入
+    if(isPaused.value){
+      isPaused.value=false;
+      store.continueTask(taskID.value);
+    }
+    else{
+      isPaused.value=true;
+      store.pauseTask(taskID.value);
+    }
+  }
+  function onCancelTask(){
+    //清除rangeGenerator里面的输入
+    store.cancelTask(taskID.value);
+    isPaused.value=false;
+    console.log("取消任务")
+    //清空结果列表
+    store.simulationResult=[];
+    //清空rangeGenerator里面的输入
     if (rangeGenerator.value) {
       rangeGenerator.value.clearInput();
     }
