@@ -155,3 +155,45 @@ def sse():
             time.sleep(2)  # 每2秒发送一次事件
             yield f"data: The current time is: {time.ctime()}\n\n"
     return Response(generate_events(), mimetype='text/event-stream')
+
+
+
+@routes.route("/task/pause",methods=['GET'])
+def pause():
+    task_id = request.args.get('taskID') 
+    if not task_id:
+        return make_response('任务ID未提供', 400)
+    try:
+        task = Task(task_id=task_id, redis_client=redis_client)
+        task.pause()
+        return make_response('任务已暂停', 200)
+    except Exception as e:
+        logger.error(f"暂停任务失败: {e}")
+        return make_response('暂停任务失败', 500)
+   
+
+@routes.route("/task/cancel",methods=['GET'])
+def cancel():
+    task_id = request.args.get('taskID') 
+    if not task_id:
+        return make_response('任务ID未提供', 400)
+    try:
+        task = Task(task_id=task_id, redis_client=redis_client)
+        task.cancel()
+        return make_response('任务已取消', 200)
+    except Exception as e:
+        logger.error(f"取消任务失败: {e}")
+        return make_response('取消任务失败', 500)
+
+@routes.route("/task/continue",methods=['GET'])
+def _continue():
+    task_id = request.args.get('taskID') 
+    if not task_id:
+        return make_response('任务ID未提供', 400)
+    try:
+        task = Task(task_id=task_id, redis_client=redis_client)
+        task.continue_task()  
+        return make_response('任务继续', 200)
+    except Exception as e:
+        logger.error(f"继续任务失败: {e}")
+        return make_response('继续任务失败', 500)
