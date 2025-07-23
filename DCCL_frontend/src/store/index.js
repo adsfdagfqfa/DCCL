@@ -155,6 +155,38 @@ export const useThreeInstanceStore = defineStore("threeInstance", {
       } catch (error) {
         console.error('Token 初始化失败', error)
       }
-    }
+    },
+    async continueTask(taskID) {
+      console.log("continueTask", taskID);
+      try {
+        const response = await axios.get(
+          `/flask/api/v1/task/continue?taskID=${encodeURIComponent(taskID)}`
+        );
+        console.log(response.data);
+      } catch (error) {
+        console.error('Request failed:', error);
+        throw error;
+      }
+    },
+    async pauseTask(taskID) {
+      console.log("pauseTask",taskID)
+      try {
+        const response = await axios.get(`/flask/api/v1/task/pause?taskID=${encodeURIComponent(taskID)}`);
+        console.log(response.data); 
+      } catch (error) {
+        console.error('Request failed:', error);
+        throw error; 
+      }
+    },
+    async cancelTask(taskID) {
+      console.log("cancelTask",taskID)
+      try {
+        const response = await axios.get(`/flask/api/v1/task/cancel?taskID=${encodeURIComponent(taskID)}`);
+        console.log(response.data); 
+      } catch (error) {
+        console.error('Request failed:', error);
+        throw error; 
+      }
+    },
   }
 });
