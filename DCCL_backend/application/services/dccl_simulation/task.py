@@ -7,6 +7,7 @@ from application.config import Config
 from .pipeline import SimulationPipeline
 import logging
 import threading
+import gc,cupy as cp
 from application.config import Config
 logger = logging.getLogger(__name__)
 class TaskStatus:
@@ -68,7 +69,7 @@ class Task:
         try:
             pipeline= SimulationPipeline(self.params, self.task_id, self.iteration_count)
             generator = pipeline.run()  # 获取生成器
-
+            r = redis.from_url(Config.REDIS_URL)
             for value in generator:
                 current_status = self.redis_client.hget(self.task_id, "status").decode()
                 logger.debug(f"[{self.task_id}] current status: {current_status}")
@@ -77,9 +78,9 @@ class Task:
                     break
                 elif current_status == TaskStatus.PAUSED:
                     logger.info(f"[{self.task_id}] paused.")
-                    while self.redis_client.hget(self.task_id, "status") == TaskStatus.PAUSED:
+                    while self.redis_client.hget(self.task_id, "status").decode() == TaskStatus.PAUSED:
                         time.sleep(1)
-                    continue  # 继续执行
+                    # continue  # 继续执行
                 elif current_status != TaskStatus.RUNNING:
                     logger.info(f"[{self.task_id}] unknown state.")
                     break
@@ -92,21 +93,27 @@ class Task:
                     value = value[0]
                 # 推送当前进度
                 # 收到创建redis连接
-                r = redis.from_url(Config.REDIS_URL)
-                redis_message = {
-                    "task_id": self.task_id,
-                    "status": TaskStatus.RUNNING,
-                }
+                
+                # redis_message = {
+                #     "task_id": self.task_id,
+                #     "status": TaskStatus.RUNNING,
+                # }
                 value['selectedAttribute'] = {}
-                redis_message['progress']=json.dumps(value)#确保是字符串
-                data = json.dumps(redis_message, ensure_ascii=False)
-                r.publish('task_progress',data)
+                # redis_message['progress']=json.dumps(value)#确保是字符串
+                redis_message = RedisMessage(self.task_id, self.status, value).to_json()
+                # data = json.dumps(redis_message, ensure_ascii=False)
+                
+                # r.publish('task_progress',data)
+                r.publish('task_progress',redis_message)
 
             self.redis_client.hset(self.task_id, "status", TaskStatus.FINISHED)
             logger.info(f"[{self.task_id}] finished.")
         except Exception as e:
             self.redis_client.hset(self.task_id, "status", TaskStatus.ERROR)
             logger.exception(f"[{self.task_id}] error: {e}")
+        finally:
+            # 清理资源
+            self._cleanup_resources()
 
     def _run_pipeline_loop_range(self):
         try:
@@ -115,6 +122,7 @@ class Task:
             path= self.variable['path']
             vectors = self.variable['vectors']
             jsonpath_expr = parse(path)
+            r = redis.from_url(Config.REDIS_URL)
             for i in vectors:
                 jsonpath_expr.update(self.params,i)
                 key = jsonpath_expr.find(self.params)[0].path.fields[-1]#获取键名
@@ -140,22 +148,20 @@ class Task:
                         save_bytes_to_file(file_path_field_distribution_main, value[1])
                         save_bytes_to_file(file_path_field_distribution_free, value[2])
                         value = value[0]
-                    r = redis.from_url(Config.REDIS_URL)
-                    redis_message = {
-                        "task_id": self.task_id,
-                        "status": TaskStatus.RUNNING,
-                    }
+                    
                     value['selectedAttribute'] = {key:i}
+                    redis_message=RedisMessage(self.task_id, self.status, value).to_json()
                     # redis_message.update(value)  # 更新进度信息
-                    redis_message['progress']=json.dumps(value)
-                    data = json.dumps(redis_message, ensure_ascii=False)
-                    r.publish('task_progress',data)
+                    r.publish('task_progress',redis_message)
 
             self.redis_client.hset(self.task_id, "status", TaskStatus.FINISHED)
             logger.info(f"[{self.task_id}] finished.")
         except Exception as e:
             self.redis_client.hset(self.task_id, "status", TaskStatus.ERROR)
             logger.exception(f"[{self.task_id}] error: {e}")
+        finally:
+            # 清理资源
+            self._cleanup_resources()
 
 
     def cancel(self):
@@ -186,5 +192,44 @@ class Task:
     def pause(self):
         # 暂停任务
         if self.status == TaskStatus.RUNNING:
-            self.status = TaskStatus.PENDING
+            self.status = TaskStatus.PAUSED
             self.save()
+
+    def continue_task(self):
+        # 继续任务
+        if self.status == TaskStatus.PAUSED:
+            self.status = TaskStatus.RUNNING
+            self.save()
+    def _cleanup_resources(self):
+        # 让所有缓存的显存块释放回 driver
+        cp.get_default_memory_pool().free_all_blocks()
+        cp.get_default_pinned_memory_pool().free_all_blocks()
+
+        # 如果还用了FFT计划缓存，也顺手清掉
+        cp.fft.config.get_plan_cache().clear()
+
+        # 触发 Python 垃圾回收，确保对象被回收
+        gc.collect()
+
+        logger.info(f"[{self.task_id}] CuPy GPU memory released")
+
+class RedisMessage:
+    """
+    轻量级消息封装：
+    RedisMessage(task_id, status, progress).to_json()
+    """
+
+    def __init__(self, task_id: str, status: str, progress: any):
+        self._data = {
+            "task_id": task_id,
+            "status": status,
+            "progress": json.dumps(progress, ensure_ascii=False)
+        }
+
+    def to_json(self) -> str:
+        """返回可直接写到 Redis 的 JSON 字符串"""
+        return json.dumps(self._data, ensure_ascii=False)
+
+    def to_dict(self) -> dict:
+        """如需直接存 dict，也可调用"""
+        return self._data
