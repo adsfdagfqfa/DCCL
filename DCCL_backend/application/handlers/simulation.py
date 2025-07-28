@@ -138,7 +138,13 @@ def stream():
                     continue
                 data = json.loads(msg['data'])
                 if data.get('task_id') == task_id:   # 手动过滤
-                    yield format_string(data.get('progress', {}))
+                    try:
+                        # yield format_string(data)
+                        yield format_string(data.get('progress', {}))
+                    except (BrokenPipeError, ConnectionError, GeneratorExit):
+                        # 客户端断开,自动取消任务
+                        Task(task_id=task_id, redis_client=redis_client).cancel()
+                        break    
                     if data['status'] in (TaskStatus.FINISHED, TaskStatus.ERROR, TaskStatus.CANCELLED):
                         break
         except redis.ConnectionError:
