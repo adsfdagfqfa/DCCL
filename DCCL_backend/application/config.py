@@ -1,11 +1,11 @@
-import logging
+import logging,os
 from pathlib import Path
 class Config:
     # 基本配置
     # DEBUG = False
     # TESTING = False
     #JWT密钥
-    SECRET_KEY = 'intracavity_laser_simulation_system'  
+    SECRET_KEY = 'W7x9p2k4R8mY3n6qL1t5vC0jX8eF4uS7aB9dG2hN0kP3rQ6wE5yU7iO9zA1bC4dE6fG8hI0jK2lM4nP6qR8sT0uV2wX4yZ6'  
     # RESULT_PATH= 'application/services/dccl_simulation/results'  # 结果存储路径
    
 
@@ -33,15 +33,17 @@ class DevelopmentConfig(Config):
     DEBUG = True
     LOG_LEVEL = logging.DEBUG
 
-# 显式指定当前环境
-current_env = 'development'  # 'production'
+# 映射字符串 → 配置类
+config_map = {
+    'development': DevelopmentConfig,
+    'production':  ProductionConfig,
+}
 
+# 如果环境变量没设置，默认 development
+current_env = os.getenv('FLASK_ENV', 'development')
 
-# 根据指定的环境加载对应的配置
-if current_env == 'development':
-    current_config = DevelopmentConfig()
-else:
-    current_config = ProductionConfig()
+# 导出给应用使用
+current_config = config_map[current_env]()
 
 
     
