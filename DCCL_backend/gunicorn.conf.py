@@ -2,7 +2,7 @@
 # gunicornconf.py
 
 # 绑定的 ip:port
-bind = ["0.0.0.0:8000"]
+bind = ["0.0.0.0:5000"]
 
 # 使用 eventlet 协程 worker
 worker_class = "eventlet"
