@@ -7,4 +7,4 @@ RUN pip install -r requirements.txt
 COPY . .
 
 ENV FLASK_ENV=production
-CMD ["gunicorn", "run:app", "-c", "gunicornconf.py"]
+CMD ["gunicorn", "run:app", "-c", "gunicorn.conf.py"]
