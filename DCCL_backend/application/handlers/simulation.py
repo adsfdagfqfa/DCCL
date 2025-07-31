@@ -141,7 +141,7 @@ def stream():
                     try:
                         # yield format_string(data)
                         yield format_string(data.get('progress', {}))
-                    except (BrokenPipeError, ConnectionError, GeneratorExit):
+                    except (IOError, BrokenPipeError, ConnectionResetError):
                         # 客户端断开,自动取消任务
                         Task(task_id=task_id, redis_client=redis_client).cancel()
                         break    
@@ -149,7 +149,10 @@ def stream():
                         break
         except redis.ConnectionError:
             yield format_string('Connection error')
-    return  Response(result_stream(), mimetype="text/event-stream")
+    # return  Response(result_stream(), mimetype="text/event-stream")
+    # 创建 Response 对象
+    response = Response(result_stream(), mimetype='text/event-stream', direct_passthrough=True)
+    return response
 
 
 @routes.route('/sse')
