@@ -11,3 +11,5 @@ gunicorn
 eventlet
 # CuPy for CUDA 11.x 14.0.0a1
 https://github.com/cupy/cupy/releases/download/v14.0.0a1/cupy_cuda11x-14.0.0a1-cp310-cp310-manylinux2014_x86_64.whl
+# CuPy for CUDA 12.x 14.0.0a1
+# https://github.com/cupy/cupy/releases/download/v14.0.0a1/cupy_cuda12x-14.0.0a1-cp310-cp310-manylinux2014_x86_64.whl
