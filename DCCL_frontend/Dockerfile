@@ -23,8 +23,7 @@ COPY --from=build /app/dist /usr/share/nginx/html
 # 可选：用自己写的 nginx.conf（如项目里有就解开下一行）
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# 暴露 80 端口
-EXPOSE 80
+
 
 # 启动 Nginx
 CMD ["nginx", "-g", "daemon off;"]
