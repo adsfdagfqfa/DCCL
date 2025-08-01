@@ -1,5 +1,5 @@
 # FROM python:3.10-slim
-FROM nvidia/cuda:11.8-devel-ubuntu22.04
+FROM nvidia/cuda:11.8.0-devel-ubuntu22.04
 
 # 安装 Python 3.10
 RUN apt-get update && \
