@@ -57,7 +57,7 @@ def get_uuid_from_token(token):
       
 #将字符串变量修改为sse的格式
 def format_string(value):
-    return "data: "+str(value)+"\n\n"
+    return ("data: "+str(value)+"\n\n").encode()
 
 
 #将CSR格式的稀疏矩阵转换为字典

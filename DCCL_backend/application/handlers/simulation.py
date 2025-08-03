@@ -136,7 +136,7 @@ def stream():
             for msg in pubsub.listen():
                 if msg['type'] != 'message':
                     continue
-                data = json.loads(msg['data'])
+                data = json.loads(msg['data'].decode())
                 if data.get('task_id') == task_id:   # 手动过滤
                     try:
                         # yield format_string(data)

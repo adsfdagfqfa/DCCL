@@ -136,7 +136,7 @@ class Task:
                         break
                     elif current_status == TaskStatus.PAUSED:
                         logger.info(f"[{self.task_id}] paused.")
-                        while self.redis_client.hget(self.task_id, "status") == TaskStatus.PAUSED:
+                        while self.redis_client.hget(self.task_id, "status").decode() == TaskStatus.PAUSED:
                             time.sleep(1)
                         continue  # 继续执行
                     elif current_status != TaskStatus.RUNNING:
