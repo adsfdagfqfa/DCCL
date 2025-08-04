@@ -24,6 +24,7 @@ export const useThreeInstanceStore = defineStore("threeInstance", {
     pictureKey:"5281bd60-6d64-4ee4-9f11-25948f8e5da4276dbd",
     opticalFieldDialogVisible:false,//是否显示光场图的modal
     plotDialogVisible:false,//是否展示统计图的modal
+    eventSource: null, // 用于存储 EventSource 实例
     // simulationResult:['{"iterationCount": 1, "transmissionCoefficientMain": 0.12488810380845108, "transmissionCoefficientFree": 1.3597301688242887, "outputPower": 1.3844463502127228e-08, "selectedAttribute": {"pumpWatt": 100}}',
     //   '{"iterationCount": 2, "transmissionCoefficientMain": 4.394131158750255, "transmissionCoefficientFree": 0.28927424014929864, "outputPower": 1.889652435807665e-08, "selectedAttribute": {"pumpWatt": 100}}',
     //   '{"iterationCount": 3, "transmissionCoefficientMain": 1.6079267344310049, "transmissionCoefficientFree": 0.3671436057957992, "outputPower": 5.457417415780011e-09, "selectedAttribute": {"pumpWatt": 100}}',
@@ -84,10 +85,10 @@ export const useThreeInstanceStore = defineStore("threeInstance", {
       
       const sseUrl = `/flask/api/v1/stream?taskID=${param.taskID}`;
       // 创建 EventSource 实例
-      const eventSource = new EventSource(sseUrl);
+      const es = new EventSource(sseUrl);
        // 监听消息事件
       var that=this//保存上下文 
-      eventSource.onmessage = function(event) {
+      es.onmessage = function(event) {
         console.log("Received data:", event.data);
         console.log(event.data);
         that.simulationResult.push({
@@ -100,11 +101,11 @@ export const useThreeInstanceStore = defineStore("threeInstance", {
       };
      
       // 监听错误事件
-      eventSource.onerror = function(err) {
+      es.onerror = function(err) {
         console.error("EventSource failed:", err);
-        eventSource.close(); // 关闭连接
+        es.close(); // 关闭连接
       };
-
+      this.eventSource = es; // 保存 EventSource 实例到 store 中
       // 清空之前的结果
       this.simulationResult=[]
       /** @type {param} */
@@ -181,6 +182,9 @@ export const useThreeInstanceStore = defineStore("threeInstance", {
     async cancelTask(taskID) {
       console.log("cancelTask",taskID)
       try {
+        this.eventSource.close(); // 关闭 EventSource 连接
+        this.eventSource = null; // 清空 EventSource 实例
+        // 发送取消请求
         const response = await axios.get(`/flask/api/v1/task/cancel?taskID=${encodeURIComponent(taskID)}`);
         console.log(response.data); 
       } catch (error) {
