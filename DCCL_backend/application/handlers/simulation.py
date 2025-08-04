@@ -10,7 +10,7 @@ from application.utils.redis_utils import get_redis_data, set_redis_data
 from application.services.dccl_simulation.pipeline import SimulationPipeline
 from application.services.dccl_simulation.task import Task, TaskStatus
 import redis
-from application.config import Config
+from application.config import current_config
 
 
 import logging
@@ -129,7 +129,7 @@ def stream():
     task_id = request.args.get('taskID') 
     def result_stream():
         try:
-            r = redis.from_url(Config.REDIS_URL)
+            r = redis.from_url(current_config.REDIS_URL)
             pubsub = r.pubsub()
             # pubsub = conn.pubsub()
             pubsub.subscribe('task_progress')
