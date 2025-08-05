@@ -195,7 +195,7 @@ def cancel():
         return make_response('取消任务失败', 500)
 
 @routes.route("/task/continue",methods=['GET'])
-def _continue():
+def continue_task():
     task_id = request.args.get('taskID') 
     if not task_id:
         return make_response('任务ID未提供', 400)

@@ -24,9 +24,9 @@ class Task:
         self.task_id = task_id or generate_task_id()  # 默认生成新任务 ID
         self.redis_client = redis_client # Redis 客户端实例
         self.status = TaskStatus.PENDING
-        self.result_path ={}  # 结果存储路径
+        self.result_path =[]  # 结果存储路径
         self.params = params
-        self.variable= meta_param['variable'] if 'variable' in meta_param else {}
+        self.sweep= meta_param['variable'] if 'variable' in meta_param else {}
         self.iteration_count = meta_param['iterationCount'] if 'iterationCount' in meta_param else 1
         self._load()  # 加载任务数据（如果已存在）
 
@@ -40,14 +40,18 @@ class Task:
             params_bytes = self.redis_client.hget(self.task_id, 'params')
             self.params = json.loads(params_bytes.decode()) if params_bytes else {}
 
+            sweep_bytes = self.redis_client.hget(self.task_id, 'sweep')
+            self.sweep = json.loads(sweep_bytes.decode()) if sweep_bytes else {}
+            
             result_path_bytes = self.redis_client.hget(self.task_id, 'result_path')
-            self.result_path = json.loads(result_path_bytes.decode()) if result_path_bytes else {}
+            self.result_path = json.loads(result_path_bytes.decode()) if result_path_bytes else []
     
     def save(self):
         #保存任务状态到 Redis
         self.redis_client.hset(self.task_id, mapping={
             "status": self.status,
             "params": json.dumps(self.params),
+            "sweep": json.dumps(self.sweep),
             "result_path":  json.dumps(self.result_path),
         })
         self.redis_client.expire(self.task_id, 6 * 60 * 60)  # 设置过期时间（例如6小时）
@@ -58,7 +62,7 @@ class Task:
         self.save()
 
         # 启动后台线程
-        if self.variable=={}:
+        if self.sweep=={}:
             thread = threading.Thread(target=self._run_pipeline_loop)
         else:
             thread = threading.Thread(target=self._run_pipeline_loop_range)
@@ -88,6 +92,13 @@ class Task:
                 if isinstance(value, tuple):
                     file_path_field_distribution_main=Config.RESULT_PATH / f"{self.task_id}" / "field_distribution_main.mat"
                     file_path_field_distribution_free=Config.RESULT_PATH / f"{self.task_id}" / "field_distribution_free.mat"
+                    m={}
+                    m['field_distribution_main'] = str(file_path_field_distribution_main)
+                    m['field_distribution_free'] = str(file_path_field_distribution_free)
+                    m['variant']=1
+                    self.result_path.append(m)
+                    self.save()
+                    # 保存字节流到文件
                     save_bytes_to_file(file_path_field_distribution_main, value[1])
                     save_bytes_to_file(file_path_field_distribution_free, value[2])
                     value = value[0]
@@ -119,8 +130,8 @@ class Task:
         try:
             from jsonpath_ng import parse
             pipeline=SimulationPipeline(self.params, self.task_id, self.iteration_count)
-            path= self.variable['path']
-            vectors = self.variable['vectors']
+            path= self.sweep['path']
+            vectors = self.sweep['vectors']
             jsonpath_expr = parse(path)
             r = redis.from_url(Config.REDIS_URL)
             for i in vectors:
@@ -145,6 +156,12 @@ class Task:
                     if isinstance(value, tuple):
                         file_path_field_distribution_main=Config.RESULT_PATH / f"{self.task_id}" / "field_distribution_main.mat"
                         file_path_field_distribution_free=Config.RESULT_PATH / f"{self.task_id}" / "field_distribution_free.mat"
+                        m={}
+                        m['field_distribution_main'] = str(file_path_field_distribution_main)
+                        m['field_distribution_free'] = str(file_path_field_distribution_free)
+                        m['variant']= i
+                        self.result_path.append(m)
+                        self.save()
                         save_bytes_to_file(file_path_field_distribution_main, value[1])
                         save_bytes_to_file(file_path_field_distribution_free, value[2])
                         value = value[0]
