@@ -3,12 +3,11 @@ import json
 import redis
 import time
 from application.utils.utility_function import generate_task_id,save_bytes_to_file
-from application.config import Config
 from .pipeline import SimulationPipeline
 import logging
 import threading
 import gc,cupy as cp
-from application.config import Config
+from application.config import current_config
 logger = logging.getLogger(__name__)
 class TaskStatus:
     PENDING = 'pending'
@@ -73,7 +72,7 @@ class Task:
         try:
             pipeline= SimulationPipeline(self.params, self.task_id, self.iteration_count)
             generator = pipeline.run()  # 获取生成器
-            r = redis.from_url(Config.REDIS_URL)
+            r = redis.from_url(current_config.REDIS_URL)
             for value in generator:
                 current_status = self.redis_client.hget(self.task_id, "status").decode()
                 logger.debug(f"[{self.task_id}] current status: {current_status}")
@@ -135,7 +134,7 @@ class Task:
             path= self.sweep['path']
             vectors = self.sweep['vectors']
             jsonpath_expr = parse(path)
-            r = redis.from_url(Config.REDIS_URL)
+            r = redis.from_url(current_config.REDIS_URL)
             for i in vectors:
                 jsonpath_expr.update(self.params,i)
                 key = jsonpath_expr.find(self.params)[0].path.fields[-1]#获取键名
