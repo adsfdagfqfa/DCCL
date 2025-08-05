@@ -59,7 +59,7 @@ class Task:
         # self.pipeline = SimulationPipeline(params, self.task_id, self.iteration_count)
         self.status = TaskStatus.RUNNING
         self.save()
-
+        logger.debug(f"sweep {self.sweep} ")
         # 启动后台线程
         if self.sweep=={}:
             thread = threading.Thread(target=self._run_pipeline_loop)
@@ -89,12 +89,12 @@ class Task:
                     break
                 #如果value是元组，表示包含了中间结果和两个矩阵的字节流
                 if isinstance(value, tuple):
-                    file_path_field_distribution_main=Config.RESULT_PATH / f"{self.task_id}" / "field_distribution_main.mat"
-                    file_path_field_distribution_free=Config.RESULT_PATH / f"{self.task_id}" / "field_distribution_free.mat"
+                    file_path_field_distribution_main=current_config.RESULT_PATH / f"{self.task_id}" / "field_distribution_main.mat"
+                    file_path_field_distribution_free=current_config.RESULT_PATH / f"{self.task_id}" / "field_distribution_free.mat"
                     m={}
                     m['field_distribution_main'] = str(file_path_field_distribution_main)
                     m['field_distribution_free'] = str(file_path_field_distribution_free)
-                    m['variant']=1
+                    m['variant']=None
                     self.result_path.append(m)
                     self.save()
                     # 保存字节流到文件
@@ -155,8 +155,8 @@ class Task:
                         logger.info(f"[{self.task_id}] unknown state.")
                         break
                     if isinstance(value, tuple):
-                        file_path_field_distribution_main=Config.RESULT_PATH / f"{self.task_id}" / "field_distribution_main.mat"
-                        file_path_field_distribution_free=Config.RESULT_PATH / f"{self.task_id}" / "field_distribution_free.mat"
+                        file_path_field_distribution_main=current_config.RESULT_PATH / f"{self.task_id}" / "field_distribution_main.mat"
+                        file_path_field_distribution_free=current_config.RESULT_PATH / f"{self.task_id}" / "field_distribution_free.mat"
                         m={}
                         m['field_distribution_main'] = str(file_path_field_distribution_main)
                         m['field_distribution_free'] = str(file_path_field_distribution_free)
