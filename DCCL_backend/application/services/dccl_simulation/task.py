@@ -102,6 +102,8 @@ class Task:
                     save_bytes_to_file(file_path_field_distribution_main, value[1])
                     save_bytes_to_file(file_path_field_distribution_free, value[2])
                     value = value[0]
+                    value["fieldDistributionMain"] = str(file_path_field_distribution_main)
+                    value["fieldDistributionFree"] = str(file_path_field_distribution_free)
                 # 推送当前进度
                 # 收到创建redis连接
                 
@@ -165,6 +167,8 @@ class Task:
                         save_bytes_to_file(file_path_field_distribution_main, value[1])
                         save_bytes_to_file(file_path_field_distribution_free, value[2])
                         value = value[0]
+                        value["fieldDistributionMain"] = str(file_path_field_distribution_main)
+                        value["fieldDistributionFree"] = str(file_path_field_distribution_free)
                     
                     value['selectedAttribute'] = {key:i}
                     redis_message=RedisMessage(self.task_id, self.status, value).to_json()
