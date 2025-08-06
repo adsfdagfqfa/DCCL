@@ -6,20 +6,27 @@ from flask import Response, request, make_response,jsonify,g
 from .base import routes
 from application.utils.utility_function import generate_jwt_token, verify_jwt_token,get_uuid_from_token,format_string
 from application.utils.redis_utils import get_redis_data, set_redis_data
+from application.config import current_config
 import matplotlib 
 matplotlib.use('Agg')  # 使用非交互式后端
 import matplotlib.pyplot as plt
 import mpld3
+from pathlib import Path
 
-@routes.route("/picture/<string:path>",methods=['GET'])
-def getPicture(path):
+@routes.route("/picture/<string:taskID>/<string:fileName>",methods=['GET'])
+def getPicture(taskID,fileName):
     if not g.user_id:
         # 生成新用户
         return make_response('token未上传或验证失败，请重新上传参数', 400)
     # mat_bytes= get_redis_data(path)
     # mat_buffer = io.BytesIO(mat_bytes)
     # mat_data = np.abs(sio.loadmat(mat_buffer)['matrix'])
-    mat_data =np.abs(sio.loadmat(path)['matrix'])
+    safe_root = Path(current_config.RESULT_PATH).resolve()
+    safe_path = (safe_root / taskID / fileName).resolve()
+    if not safe_root in safe_path.parents or not safe_path.exists():
+        return make_response('文件不存在或路径不安全', 500)
+         
+    mat_data =np.abs(sio.loadmat(safe_path)['matrix'])
     plt.figure()
     img=plt.imshow(mat_data, cmap='jet', interpolation='nearest')
     plt.colorbar(img)
@@ -29,8 +36,8 @@ def getPicture(path):
     # 返回HTML内容
     return jsonify({'html': html_content})
 
-@routes.route("/download/<string:path>",methods=['GET'])
-def download(path):
+@routes.route("/download/<string:taskID>/<string:fileName>",methods=['GET'])
+def download(taskID,fileName):
     # token = request.cookies.get('token')
     # user_id=get_uuid_from_token(token)
     # if not token or not verify_jwt_token(token):
@@ -48,9 +55,15 @@ def download(path):
     if not g.user_id:
    
         return make_response('token未上传或验证失败，请重新上传参数', 400)
+    safe_root = Path(current_config.RESULT_PATH).resolve()
+    safe_path = (safe_root / taskID / fileName).resolve()
+
+    if not safe_root in safe_path.parents or not safe_path.exists():
+        return make_response('文件不存在或路径不安全', 500)
+
     return send_file(
-        path,
-        mimetype="application/octet-stream",
+        safe_path,
+        # mimetype="application/octet-stream",
         as_attachment=True,
-        download_name="file.mat"
+        download_name=fileName
     )

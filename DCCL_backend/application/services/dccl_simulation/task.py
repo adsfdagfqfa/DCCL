@@ -89,20 +89,19 @@ class Task:
                     break
                 #如果value是元组，表示包含了中间结果和两个矩阵的字节流
                 if isinstance(value, tuple):
-                    file_path_field_distribution_main=current_config.RESULT_PATH / f"{self.task_id}" / "field_distribution_main.mat"
-                    file_path_field_distribution_free=current_config.RESULT_PATH / f"{self.task_id}" / "field_distribution_free.mat"
-                    m={}
-                    m['field_distribution_main'] = str(file_path_field_distribution_main)
-                    m['field_distribution_free'] = str(file_path_field_distribution_free)
-                    m['variant']=None
-                    self.result_path.append(m)
+                    file_name_main="field_distribution_main.mat"
+                    file_name_free="field_distribution_free.mat"
+                    file_path_field_distribution_main=current_config.RESULT_PATH / f"{self.task_id}" / f"{file_name_main}"
+                    file_path_field_distribution_free=current_config.RESULT_PATH / f"{self.task_id}" / f"{file_name_free}"
+                    self.result_path.append(str(file_path_field_distribution_main))
+                    self.result_path.append(str(file_path_field_distribution_free))
                     self.save()
                     # 保存字节流到文件
                     save_bytes_to_file(file_path_field_distribution_main, value[1])
                     save_bytes_to_file(file_path_field_distribution_free, value[2])
                     value = value[0]
-                    value["fieldDistributionMain"] = str(file_path_field_distribution_main)
-                    value["fieldDistributionFree"] = str(file_path_field_distribution_free)
+                    value["fieldDistributionMain"] = file_name_main
+                    value["fieldDistributionFree"] = file_name_free
                 # 推送当前进度
                 # 收到创建redis连接
                 
@@ -155,19 +154,18 @@ class Task:
                         logger.info(f"[{self.task_id}] unknown state.")
                         break
                     if isinstance(value, tuple):
-                        file_path_field_distribution_main=current_config.RESULT_PATH / f"{self.task_id}" / "field_distribution_main.mat"
-                        file_path_field_distribution_free=current_config.RESULT_PATH / f"{self.task_id}" / "field_distribution_free.mat"
-                        m={}
-                        m['field_distribution_main'] = str(file_path_field_distribution_main)
-                        m['field_distribution_free'] = str(file_path_field_distribution_free)
-                        m['variant']= i
-                        self.result_path.append(m)
+                        file_name_main=key+'_'+str(i)+'_'+"field_distribution_main.mat"
+                        file_name_free=key+'_'+str(i)+'_'+"field_distribution_free.mat"
+                        file_path_field_distribution_main=current_config.RESULT_PATH / f"{self.task_id}" / f"{file_name_main}"
+                        file_path_field_distribution_free=current_config.RESULT_PATH / f"{self.task_id}" / f"{file_name_free}"
+                        self.result_path.append(str(file_path_field_distribution_main))
+                        self.result_path.append(str(file_path_field_distribution_free))
                         self.save()
                         save_bytes_to_file(file_path_field_distribution_main, value[1])
                         save_bytes_to_file(file_path_field_distribution_free, value[2])
                         value = value[0]
-                        value["fieldDistributionMain"] = str(file_path_field_distribution_main)
-                        value["fieldDistributionFree"] = str(file_path_field_distribution_free)
+                        value["fieldDistributionMain"] = file_name_main
+                        value["fieldDistributionFree"] = file_name_main
                     
                     value['selectedAttribute'] = {key:i}
                     redis_message=RedisMessage(self.task_id, self.status, value).to_json()
