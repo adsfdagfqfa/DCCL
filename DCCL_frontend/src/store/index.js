@@ -4,6 +4,7 @@ import threeInstance from "@/utils/threeInstance";
 import { defineStore } from "pinia";
 import axios from "axios";
 import { v4 as uuidv4 } from 'uuid'; // 引入 uuid 库
+import { th } from "element-plus/es/locale";
 export const useThreeInstanceStore = defineStore("threeInstance", {
   state: () => ({
     tokenInitialized: false, // 是否初始化了token
@@ -21,9 +22,11 @@ export const useThreeInstanceStore = defineStore("threeInstance", {
       sampleNumber:8192,//采样点数量
       windowExpandFactor:3//窗口扩展因子
     },
-    pictureKey:"5281bd60-6d64-4ee4-9f11-25948f8e5da4276dbd",
+    // pictureKey:"5281bd60-6d64-4ee4-9f11-25948f8e5da4276dbd",
     opticalFieldDialogVisible:false,//是否显示光场图的modal
     plotDialogVisible:false,//是否展示统计图的modal
+    currentTaskID:"",//当前任务的ID
+    fileName:"",//当前要获取的文件名
     eventSource: null, // 用于存储 EventSource 实例
     // simulationResult:['{"iterationCount": 1, "transmissionCoefficientMain": 0.12488810380845108, "transmissionCoefficientFree": 1.3597301688242887, "outputPower": 1.3844463502127228e-08, "selectedAttribute": {"pumpWatt": 100}}',
     //   '{"iterationCount": 2, "transmissionCoefficientMain": 4.394131158750255, "transmissionCoefficientFree": 0.28927424014929864, "outputPower": 1.889652435807665e-08, "selectedAttribute": {"pumpWatt": 100}}',
@@ -64,6 +67,7 @@ export const useThreeInstanceStore = defineStore("threeInstance", {
           withCredentials: true
         });
         console.log(res.data);
+        this.currentTaskID = res.data.task_id; // 保存任务ID
         return res.data.task_id; //  正确返回
       } catch (err) {
         console.error(err);
@@ -125,7 +129,7 @@ export const useThreeInstanceStore = defineStore("threeInstance", {
     async getPicture() {
       console.log("getPicture")
       try {
-        const response = await axios.get(`/flask/api/v1/picture/${this.pictureKey}`);
+        const response = await axios.get(`/flask/api/v1/picture/${this.taskID}/${this.fileName}`);
         return response.data; // 返回数据，供组件使用
       } catch (error) {
         console.error('Request failed:', error);
@@ -136,7 +140,7 @@ export const useThreeInstanceStore = defineStore("threeInstance", {
       console.log("downloadData")
       try {
         const a = document.createElement('a');
-        a.href = `/flask/api/v1/download/${this.pictureKey}`;
+        a.href = `/flask/api/v1/download/${this.taskID}/${this.fileName}`;
         a.download = 'file.mat';
         a.style.display = 'none';
         document.body.appendChild(a);
@@ -184,6 +188,8 @@ export const useThreeInstanceStore = defineStore("threeInstance", {
       try {
         this.eventSource.close(); // 关闭 EventSource 连接
         this.eventSource = null; // 清空 EventSource 实例
+        this.simulationResult = []; // 清空模拟结果
+        this.currentTaskID = ""; // 清空当前任务ID
         // 发送取消请求
         const response = await axios.get(`/flask/api/v1/task/cancel?taskID=${encodeURIComponent(taskID)}`);
         console.log(response.data); 

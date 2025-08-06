@@ -56,7 +56,7 @@ function onGetPicture(value) {
     // 处理获取图片的逻辑
     console.log("获取图片",value)
     console.log("opticalFieldDialogVisible",store.opticalFieldDialogVisible)
-    store.pictureKey=value
+    store.fileName=value
     store.opticalFieldDialogVisible = true
     // 这里可以添加获取图片的代码
 }
