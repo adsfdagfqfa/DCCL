@@ -39,11 +39,11 @@ class Task:
             params_bytes = self.redis_client.hget(self.task_id, 'params')
             self.params = json.loads(params_bytes.decode()) if params_bytes else {}
 
-            sweep_bytes = self.redis_client.hget(self.task_id, 'sweep')
-            self.sweep = json.loads(sweep_bytes.decode()) if sweep_bytes else {}
+            # sweep_bytes = self.redis_client.hget(self.task_id, 'sweep')
+            # self.sweep = json.loads(sweep_bytes.decode()) if sweep_bytes else {}
             
-            result_path_bytes = self.redis_client.hget(self.task_id, 'result_path')
-            self.result_path = json.loads(result_path_bytes.decode()) if result_path_bytes else []
+            # result_path_bytes = self.redis_client.hget(self.task_id, 'result_path')
+            # self.result_path = json.loads(result_path_bytes.decode()) if result_path_bytes else []
     
     def save(self):
         #保存任务状态到 Redis
