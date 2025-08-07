@@ -4,7 +4,7 @@ import threeInstance from "@/utils/threeInstance";
 import { defineStore } from "pinia";
 import axios from "axios";
 import { v4 as uuidv4 } from 'uuid'; // 引入 uuid 库
-import { th } from "element-plus/es/locale";
+
 export const useThreeInstanceStore = defineStore("threeInstance", {
   state: () => ({
     tokenInitialized: false, // 是否初始化了token
@@ -25,6 +25,7 @@ export const useThreeInstanceStore = defineStore("threeInstance", {
     // pictureKey:"5281bd60-6d64-4ee4-9f11-25948f8e5da4276dbd",
     opticalFieldDialogVisible:false,//是否显示光场图的modal
     plotDialogVisible:false,//是否展示统计图的modal
+    onlyFinalResult:false,//是否只显示最终结果
     currentTaskID:"",//当前任务的ID
     fileName:"",//当前要获取的文件名
     eventSource: null, // 用于存储 EventSource 实例
@@ -129,7 +130,7 @@ export const useThreeInstanceStore = defineStore("threeInstance", {
     async getPicture() {
       console.log("getPicture")
       try {
-        const response = await axios.get(`/flask/api/v1/picture/${this.taskID}/${this.fileName}`);
+        const response = await axios.get(`/flask/api/v1/picture/${this.currentTaskID}/${this.fileName}`);
         return response.data; // 返回数据，供组件使用
       } catch (error) {
         console.error('Request failed:', error);
@@ -140,7 +141,7 @@ export const useThreeInstanceStore = defineStore("threeInstance", {
       console.log("downloadData")
       try {
         const a = document.createElement('a');
-        a.href = `/flask/api/v1/download/${this.taskID}/${this.fileName}`;
+        a.href = `/flask/api/v1/download/${this.currentTaskID}/${this.fileName}`;
         a.download = 'file.mat';
         a.style.display = 'none';
         document.body.appendChild(a);

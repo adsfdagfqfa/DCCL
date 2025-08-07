@@ -28,15 +28,15 @@
         <DynamicScroller
           ref="virtualScroller"
           class="list"
-          :items="resultList"
+          :items="visibleItems"
           :min-item-size="150">
           <template v-slot="{ item }">
             <!-- <div class="list-item">
               <ResultItem :item="item" ></ResultItem>
             </div> -->
-            <DynamicScrollerItem :item="item" :active="true" :size-dependencies="[item]">
+            <DynamicScrollerItem :item="item" :active="true" :size-dependencies="[item.content]">
               <div class="list-item" :key="item.id">
-                <ResultItem :item="item.content" />
+                <ResultItem :item="item.content" :only_final_result="store.onlyFinalResult" />
               </div>
             </DynamicScrollerItem>
           </template>
@@ -47,9 +47,12 @@
           </div>
           
         </div> -->
-        <div class="flex justify-end items-end p-4">
-          <el-button :type="isPaused?'success':'warning'" @click="onTogglePauseTask">{{ isPaused ? '继续' : '暂停' }}</el-button>
-          <el-button type="danger" @click="onCancelTask">取消</el-button>
+        <div class="flex justify-between items-center p-4">
+          <el-checkbox v-model="store.onlyFinalResult" label="只显示结果" size="large" />
+          <div class="flex items-center space-x-2">
+            <el-button :type="isPaused?'success':'warning'" @click="onTogglePauseTask">{{ isPaused ? '继续' : '暂停' }}</el-button>
+            <el-button type="danger" @click="onCancelTask">取消</el-button>
+          </div>
         </div>
       </div>
 
@@ -120,7 +123,19 @@
   const resultList = computed(() => {
     return store.simulationResult;
   });
+  const visibleItems = computed(() =>
+    store.onlyFinalResult
+      ? resultList.value.filter(({ content }) => {
+          try {
+            return JSON.parse(content).isEnd
+          } catch {
+            return false
+          }
+        })
+      : resultList.value
+  )
   
+
   // async function getAllParameter() {
   //   data.distance=store.distance;
   //   data.angle=store.angle;

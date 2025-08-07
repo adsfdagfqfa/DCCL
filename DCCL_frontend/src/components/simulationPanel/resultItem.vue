@@ -18,7 +18,7 @@
                 </div>  
             </div>
         </div>
-        <div v-else>
+        <div v-else v-show="!only_final_result" >
             <div v-if="itemJSON.selectedAttribute">
                 <div v-for="(value, key) in itemJSON.selectedAttribute" :key="key">
                     <strong>{{key}}：</strong>{{value}}
@@ -41,6 +41,10 @@ const props = defineProps({
     item: {
         type: String,
         required: true
+    },
+    only_final_result: {
+        type: Boolean,
+        default: false
     }
 });
 const itemJSON=ref({});
