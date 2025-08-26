@@ -141,7 +141,8 @@ def stream():
                     try:
                         # yield format_string(data)
                         yield format_string(data.get('progress', {}))
-                    except (IOError, BrokenPipeError, ConnectionResetError):
+                        logger.info("发送数据:%s",data.get('progress', {}))
+                    except GeneratorExit:
                         # 客户端断开,自动取消任务
                         Task(task_id=task_id, redis_client=redis_client).cancel()
                         break    
@@ -160,9 +161,16 @@ def sse():
     """SSE 路由"""
     def generate_events():
         """生成事件数据"""
-        while True:
-            time.sleep(2)  # 每2秒发送一次事件
-            yield f"data: The current time is: {time.ctime()}\n\n"
+        try:
+            while True:
+                time.sleep(2)  # 每2秒发送一次事件
+                string="The current time is: "+str(time.ctime())
+                print(string)
+                yield f"data:{string }\n\n"
+        except (BrokenPipeError, ConnectionResetError):
+            print("Client disconnected")
+        except GeneratorExit:
+            print("GeneratorExit")
     return Response(generate_events(), mimetype='text/event-stream')
 
 
