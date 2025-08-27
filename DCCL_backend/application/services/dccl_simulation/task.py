@@ -74,41 +74,24 @@ class Task:
             generator = pipeline.run()  # 获取生成器
             r = redis.from_url(current_config.REDIS_URL)
             for value in generator:
-                current_status = self.redis_client.hget(self.task_id, "status").decode()
-                logger.debug(f"[{self.task_id}] current status: {current_status}")
-                if current_status == TaskStatus.CANCELLED:
-                    logger.info(f"[{self.task_id}] cancelled.")
-                    break
-                elif current_status == TaskStatus.PAUSED:
-                    logger.info(f"[{self.task_id}] paused.")
-                    while self.redis_client.hget(self.task_id, "status").decode() == TaskStatus.PAUSED:
-                        time.sleep(1)
-                    # continue  # 继续执行
-                elif current_status != TaskStatus.RUNNING:
-                    logger.info(f"[{self.task_id}] unknown state.")
-                    break
+                if not self._should_continue():
+                    return
                 #如果value是元组，表示包含了中间结果和两个矩阵的字节流
-                if isinstance(value, tuple):
-                    file_name_main="field_distribution_main.mat"
-                    file_name_free="field_distribution_free.mat"
-                    file_path_field_distribution_main=current_config.RESULT_PATH / f"{self.task_id}" / f"{file_name_main}"
-                    file_path_field_distribution_free=current_config.RESULT_PATH / f"{self.task_id}" / f"{file_name_free}"
-                    self.result_path.append(str(file_path_field_distribution_main))
-                    self.result_path.append(str(file_path_field_distribution_free))
-                    self.save()
-                    # 保存字节流到文件
-                    save_bytes_to_file(file_path_field_distribution_main, value[1])
-                    save_bytes_to_file(file_path_field_distribution_free, value[2])
-                    value = value[0]
-                    value["fieldDistributionMain"] = file_name_main
-                    value["fieldDistributionFree"] = file_name_free
-                # 推送当前进度
-                # 收到创建redis连接
-                
-                # redis_message = {
-                #     "task_id": self.task_id,
-                #     "status": TaskStatus.RUNNING,
-                # }
+                # if isinstance(value, tuple):
+                #     file_name_main="field_distribution_main.mat"
+                #     file_name_free="field_distribution_free.mat"
+                #     file_path_field_distribution_main=current_config.RESULT_PATH / f"{self.task_id}" / f"{file_name_main}"
+                #     file_path_field_distribution_free=current_config.RESULT_PATH / f"{self.task_id}" / f"{file_name_free}"
+                #     self.result_path.append(str(file_path_field_distribution_main))
+                #     self.result_path.append(str(file_path_field_distribution_free))
+                #     self.save()
+                #     # 保存字节流到文件
+                #     save_bytes_to_file(file_path_field_distribution_main, value[1])
+                #     save_bytes_to_file(file_path_field_distribution_free, value[2])
+                #     value = value[0]
+                #     value["fieldDistributionMain"] = file_name_main
+                #     value["fieldDistributionFree"] = file_name_free
+                value=self._handle_single_value(value,'single_run',0)
                 value['selectedAttribute'] = {}
                 # redis_message['progress']=json.dumps(value)#确保是字符串
                 redis_message = RedisMessage(self.task_id, self.status, value).to_json()
@@ -140,33 +123,35 @@ class Task:
                 pipeline.update_input_data(self.params)  # 更新输入数据
                 generator = pipeline.run()
                 for value in generator:
-                    current_status = self.redis_client.hget(self.task_id, "status").decode()
+                    # current_status = self.redis_client.hget(self.task_id, "status").decode()
                     
-                    if current_status == TaskStatus.CANCELLED:
-                        logger.info(f"[{self.task_id}] cancelled.")
-                        break
-                    elif current_status == TaskStatus.PAUSED:
-                        logger.info(f"[{self.task_id}] paused.")
-                        while self.redis_client.hget(self.task_id, "status").decode() == TaskStatus.PAUSED:
-                            time.sleep(1)
-                        continue  # 继续执行
-                    elif current_status != TaskStatus.RUNNING:
-                        logger.info(f"[{self.task_id}] unknown state.")
-                        break
-                    if isinstance(value, tuple):
-                        file_name_main=key+'_'+str(i)+'_'+"field_distribution_main.mat"
-                        file_name_free=key+'_'+str(i)+'_'+"field_distribution_free.mat"
-                        file_path_field_distribution_main=current_config.RESULT_PATH / f"{self.task_id}" / f"{file_name_main}"
-                        file_path_field_distribution_free=current_config.RESULT_PATH / f"{self.task_id}" / f"{file_name_free}"
-                        self.result_path.append(str(file_path_field_distribution_main))
-                        self.result_path.append(str(file_path_field_distribution_free))
-                        self.save()
-                        save_bytes_to_file(file_path_field_distribution_main, value[1])
-                        save_bytes_to_file(file_path_field_distribution_free, value[2])
-                        value = value[0]
-                        value["fieldDistributionMain"] = file_name_main
-                        value["fieldDistributionFree"] = file_name_main
-                    
+                    # if current_status == TaskStatus.CANCELLED:
+                    #     logger.info(f"[{self.task_id}] cancelled.")
+                    #     break
+                    # elif current_status == TaskStatus.PAUSED:
+                    #     logger.info(f"[{self.task_id}] paused.")
+                    #     while self.redis_client.hget(self.task_id, "status").decode() == TaskStatus.PAUSED:
+                    #         time.sleep(1)
+                    #     continue  # 继续执行
+                    # elif current_status != TaskStatus.RUNNING:
+                    #     logger.info(f"[{self.task_id}] unknown state.")
+                    #     break
+                    # if isinstance(value, tuple):
+                    #     file_name_main=key+'_'+str(i)+'_'+"field_distribution_main.mat"
+                    #     file_name_free=key+'_'+str(i)+'_'+"field_distribution_free.mat"
+                    #     file_path_field_distribution_main=current_config.RESULT_PATH / f"{self.task_id}" / f"{file_name_main}"
+                    #     file_path_field_distribution_free=current_config.RESULT_PATH / f"{self.task_id}" / f"{file_name_free}"
+                    #     self.result_path.append(str(file_path_field_distribution_main))
+                    #     self.result_path.append(str(file_path_field_distribution_free))
+                    #     self.save()
+                    #     save_bytes_to_file(file_path_field_distribution_main, value[1])
+                    #     save_bytes_to_file(file_path_field_distribution_free, value[2])
+                    #     value = value[0]
+                    #     value["fieldDistributionMain"] = file_name_main
+                    #     value["fieldDistributionFree"] = file_name_main
+                    if not self._should_continue():
+                        return
+                    value=self._handle_single_value(value,key,i)
                     value['selectedAttribute'] = {key:i}
                     redis_message=RedisMessage(self.task_id, self.status, value).to_json()
                     # redis_message.update(value)  # 更新进度信息
@@ -180,8 +165,41 @@ class Task:
         finally:
             # 清理资源
             self._cleanup_resources()
+    def _handle_single_value(self, raw_value, key, i):
+        #如果value是元组，表示包含了中间结果和两个矩阵的字节流
+        if not isinstance(raw_value, tuple):
+            return {**raw_value, 'selectedAttribute': {key: i}}
 
+        main_name = f"{key}_{i}_field_distribution_main.mat"
+        free_name = f"{key}_{i}_field_distribution_free.mat"
+        main_path = current_config.RESULT_PATH / self.task_id / main_name
+        free_path = current_config.RESULT_PATH / self.task_id / free_name
 
+        save_bytes_to_file(main_path, raw_value[1])
+        save_bytes_to_file(free_path, raw_value[2])
+
+        self.result_path.extend([str(main_path), str(free_path)])
+        self.save()
+
+        return {
+            **raw_value[0],
+            'fieldDistributionMain': main_name,
+            'fieldDistributionFree': free_name,
+        }
+    def _should_continue(self) -> bool:
+        status = self.redis_client.hget(self.task_id, "status").decode()
+        if status == TaskStatus.CANCELLED:
+            logger.info(f"[{self.task_id}] cancelled.")
+            return False
+        if status == TaskStatus.PAUSED:
+            logger.info(f"[{self.task_id}] paused.")
+            while self.redis_client.hget(self.task_id, "status").decode() == TaskStatus.PAUSED:
+                time.sleep(1)
+            # PAUSED→RUNNING 后继续
+        elif status != TaskStatus.RUNNING:
+            logger.info(f"[{self.task_id}] unknown state.")
+            return False
+        return True
     def cancel(self):
         #取消任务
         self.status = TaskStatus.CANCELLED
@@ -223,7 +241,7 @@ class Task:
         cp.get_default_memory_pool().free_all_blocks()
         cp.get_default_pinned_memory_pool().free_all_blocks()
 
-        # 如果还用了FFT计划缓存，也顺手清掉
+        # FFT计划缓存清掉
         cp.fft.config.get_plan_cache().clear()
 
         # 触发 Python 垃圾回收，确保对象被回收
@@ -232,11 +250,8 @@ class Task:
         logger.info(f"[{self.task_id}] CuPy GPU memory released")
 
 class RedisMessage:
-    """
-    轻量级消息封装：
-    RedisMessage(task_id, status, progress).to_json()
-    """
-
+    #轻量级消息封装：
+    #RedisMessage(task_id, status, progress).to_json()
     def __init__(self, task_id: str, status: str, progress: any):
         self._data = {
             "task_id": task_id,
@@ -245,9 +260,9 @@ class RedisMessage:
         }
 
     def to_json(self) -> str:
-        """返回可直接写到 Redis 的 JSON 字符串"""
+        #返回可直接写到 Redis 的 JSON 字符串
         return json.dumps(self._data, ensure_ascii=False)
 
     def to_dict(self) -> dict:
-        """如需直接存 dict，也可调用"""
+        #如需直接存 dict，也可调用
         return self._data
