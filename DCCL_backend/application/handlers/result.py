@@ -27,7 +27,8 @@ def getPicture(taskID,fileName):
         return make_response('文件不存在或路径不安全', 500)
          
     mat_data =np.abs(sio.loadmat(safe_path)['matrix'])
-    plt.figure()
+    # plt.figure()
+    plt.figure(figsize=(4.5, 3.4))   
     img=plt.imshow(mat_data, cmap='jet', interpolation='nearest')
     plt.colorbar(img)
     html_content=mpld3.fig_to_html(plt.gcf(),template_type='simple')
