@@ -19,35 +19,36 @@
       <!-- <OutputResult></OutputResult> -->
       <ElementDistancePanel/>
       <el-tabs v-model="activeName" @tab-click="handleClick">
-        <el-tab-pane label="常数" name="constant">
+        <!-- <el-tab-pane label="常数" name="constant">
           <ConstantPanel/>
-        </el-tab-pane>
+        </el-tab-pane> -->
         <el-tab-pane label="参数" name="parameter">
-          <ParameterPanel/>
+          <div class='flex'>
+            <ParameterPanel/>
+            <SimulationPanel/>
+          </div>
         </el-tab-pane>
-        <el-tab-pane label="仿真" name="simulation">
-          <SimulationPanel/>
+        <el-tab-pane label="输出" name="output">
+          <!-- <SimulationPanel/> -->
+          <div class="flex">
+          <OutputResultPanel/>
+          <el-card  class="flex-1">
+            <OpticalFieldViewer ref="opticalFieldViewer"/>
+            <div class="mt-2 text-right">
+              <el-button type="primary" @click="downloadData">
+                Download<el-icon class="el-icon--right"><Download /></el-icon>
+              </el-button>
+            </div>
+          </el-card>
+
+          <!-- 曲线分析 -->
+          <el-card  class="flex-1">
+            <PLotViewer ref="plotViewer"/>
+          </el-card>
+          </div>
         </el-tab-pane>
       </el-tabs>
     </div>
-    <!-- <el-button plain @click="store.opticalFieldDialogVisible=true">
-      Open the optical field Dialog
-    </el-button>
-    <el-button plain @click="store.plotDialogVisible=true">
-      Open the plot Dialog
-    </el-button> -->
-  <el-dialog v-model="store.opticalFieldDialogVisible" destroy-on-close>
-    <OpticalFieldViewer ref="opticalFieldViewer"/>
-    <template #footer>
-      <el-button type="primary" @click="downloadData">
-        Download<el-icon class="el-icon--right"><Download /></el-icon>
-      </el-button>
-    </template>
-  </el-dialog>
-  <el-dialog v-model="store.plotDialogVisible" destroy-on-close> 
-    <PLotViewer ref="plotViewer"/>
-  </el-dialog>
-    <!-- <PyPlot></PyPlot> -->
   </div>
 </template>
 
@@ -64,6 +65,7 @@ import ElementDistancePanel from '@/components/elementDistancePanel/index.vue';
 import ConstantPanel from '@/components/constantPanel/index.vue';
 import ParameterPanel from '@/components/parameterPanel/index.vue';
 import SimulationPanel from '@/components/simulationPanel/index.vue';
+import OutputResultPanel from '@/components/outputResultPanel/index.vue';
 import PLotViewer from '@/components/plotViewer/index.vue'
 import { Upload,Download } from '@element-plus/icons-vue'
 import { useThreeInstanceStore } from '@/store';

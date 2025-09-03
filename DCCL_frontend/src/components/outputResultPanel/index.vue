@@ -1,5 +1,5 @@
 <template>
-    <div class="min-w-[600px]">
+    <div class="min-w-[500px]">
         <!-- <el-scrollbar >
           
         </el-scrollbar> -->
@@ -37,7 +37,7 @@
 </template>
 <script setup>
 import ResultItem from './resultItem.vue';
-import { ref ,getCurrentInstance ,computed} from 'vue'
+import { ref ,getCurrentInstance ,computed, watch, nextTick} from 'vue'
 import { DynamicScroller, DynamicScrollerItem } from 'vue-virtual-scroller'
 import { useThreeInstanceStore } from '@/store';
 import { onMounted } from 'vue';
@@ -56,6 +56,15 @@ const visibleItems = computed(() =>
             return false
             }
         }): resultList.value
+)
+watch(
+  () => store.simulationResult,
+  async () => {
+    await nextTick() // 等 DOM 更新完
+    console.log("滚动到底部")
+    pageInstance.refs.virtualScroller.scrollToBottom()
+  },
+  { deep: true }
 )
 function onTogglePauseTask(){
     //清除rangeGenerator里面的输入
@@ -82,13 +91,13 @@ function onCancelTask(){
 }
 onMounted(() => {
     console.log("simulationPanel","挂载")
-    store.setOutputResultDom(pageInstance.refs.virtualScroller);
+    
 });
 </script>
 <style scoped>
 /* Your component-specific styles go here */
 .list {
-  height: 300px;
+  height: 500px;
   border: 5px solid #eeeeeee9;
   border-radius: 8px;
 }

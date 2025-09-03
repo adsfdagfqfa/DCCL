@@ -22,10 +22,10 @@ export const useThreeInstanceStore = defineStore("threeInstance", {
       sampleNumber:8192,//采样点数量
       windowExpandFactor:3//窗口扩展因子
     },
-    outputResultDom:null,//输出结果的dom节点
+    // outputResultDom:null,//输出结果的dom节点
     // pictureKey:"5281bd60-6d64-4ee4-9f11-25948f8e5da4276dbd",
-    opticalFieldDialogVisible:false,//是否显示光场图的modal
-    plotDialogVisible:false,//是否展示统计图的modal
+    opticalFieldReady:false,
+    plotReady:false,
     onlyFinalResult:false,//是否只显示最终结果
     currentTaskID:"",//当前任务的ID
     fileName:"",//当前要获取的文件名
@@ -59,9 +59,6 @@ export const useThreeInstanceStore = defineStore("threeInstance", {
     },
     setSelectedElement(name){
       this.selectedElement=name
-    },
-    setOutputResultDom(dom){
-      this.outputResultDom=dom
     },
     async uploadParameter(data) {
       try {
@@ -105,15 +102,21 @@ export const useThreeInstanceStore = defineStore("threeInstance", {
           id: uuidv4(),
           content: event.data
         })
-        that.outputResultDom.scrollToBottom()
+        // that.outputResultDom.scrollToBottom()
         //更新数据
       };
      
       // 监听错误事件
       es.onerror = function(err) {
         console.error("EventSource failed:", err);
+        this.plotReady = true
         es.close(); // 关闭连接
       };
+      es.onerror = function(err) {
+  console.log("SSE closed:", err)
+  that.plotReady = true
+  es.close()
+}
       this.eventSource = es; // 保存 EventSource 实例到 store 中
       // 清空之前的结果
       this.simulationResult=[]
@@ -198,6 +201,7 @@ export const useThreeInstanceStore = defineStore("threeInstance", {
         // 发送取消请求
         const response = await axios.get(`/flask/api/v1/task/cancel?taskID=${encodeURIComponent(taskID)}`);
         console.log(response.data); 
+        this.plotReady=true
       } catch (error) {
         console.error('Request failed:', error);
         throw error; 

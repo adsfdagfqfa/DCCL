@@ -1,7 +1,7 @@
 <template>
     <div>
         <label class="font-bold text-xl mb-3 block">结果分析图</label>
-        <div class="flex gap-4">
+        <!-- <div class="flex gap-4">
             <el-select v-model="yLabel" placeholder="Select Y">
                 <el-option v-for="item in yLabels" :key="item" :label="item" :value="item"/>
             </el-select>
@@ -9,37 +9,35 @@
                 <el-option v-for="item in xLabels" :key="item" :label="item" :value="item"/>
             </el-select>
             <el-button type="primary" @click="drawPlot">生成图表</el-button>
-        </div>
+        </div> -->
+        <el-button type="primary" @click="drawPlot">生成图表</el-button>
         <div ref="plotContainer" class="chart-container"></div>
     </div>
 </template>
 
 <script setup>
-import { ref,onMounted,getCurrentInstance,onUnmounted } from 'vue';
+import { ref,onMounted,getCurrentInstance,onUnmounted,watch } from 'vue';
 import { useThreeInstanceStore } from '@/store';
 const store=useThreeInstanceStore();
 const pageInstance = getCurrentInstance();
 const xLabels=ref()
 const yLabels=ref(["outputPower"])
 const xLabel=ref('')
-const yLabel=ref('')
+const yLabel=ref('outputPower')
 const data=ref([])
 const parsedData=ref([])
 //绘图使用的是d3库，在index.html中以CDN形式引入
 onMounted(() => {
-    //获取xLabels的数据
-    // 一次性解析整个数组
-    getData()
     console.log('plot','挂载')
 });
 
 function getData(){
-    //获取xLabels的数据
-    // 一次性解析整个数组
     parsedData.value = store.simulationResult.map(item => JSON.parse(item.content));
     console.log(parsedData.value)
     // const parsedContent = JSON.parse(store.simulationResult[0].content);
-    xLabels.value=Object.keys(parsedData.value[0].selectedAttribute)
+    // xLabels.value=Object.keys(parsedData.value[0].selectedAttribute)
+    xLabel.value=Object.keys(parsedData.value[0].selectedAttribute)[0];
+    // console.log("xLabel",xLabel.value)
 }
 
 onUnmounted(() => {
@@ -48,6 +46,7 @@ onUnmounted(() => {
 });
 
 function drawPlot(){
+    getData()
     for (const item of parsedData.value) {
         if(item.isEnd){
             console.log(item.selectedAttribute)
@@ -67,7 +66,7 @@ function drawPlot(){
     //     { x: 5, y: 60 }
     // ];
     d3.select(pageInstance.refs.plotContainer).selectAll('*').remove();
-    const width = 600;
+    const width = 450;
     const height = 400;
     console.log("plot","绘图")
     console.log(pageInstance.refs.plotContainer)
@@ -83,7 +82,7 @@ function drawPlot(){
         .range([50, width - 50]);
 
     const yScale = d3.scaleLinear()
-        .domain([ d3.min(data.value,d=>d.y), d3.max(data.value,d=>d.y)])
+        .domain([d3.min(data.value,d=>d.y), d3.max(data.value,d=>d.y)])
         .range([height - 50, 50]);
 
     // 创建折线生成器
@@ -123,6 +122,15 @@ function drawPlot(){
         .style('font-size', '16px') //文本大小
         .text(yLabel.value);
 }
+watch(
+  () => store.plotReady,
+  (ready) => {
+    if (ready) {
+      console.log("加载曲线数据")
+      loadPlot(store.plotData)
+    }
+  }
+)
 defineExpose({
     getData, // 将 getData 方法暴露给父组件
 });

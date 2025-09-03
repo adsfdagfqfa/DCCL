@@ -1,7 +1,7 @@
 <template>
-    <div class="relative w-full min-h-100">
+    <div class="relative w-full">
         <label class="font-bold text-xl mb-3 block">光场分布热度图</label>
-        <div ref="plotContainer"></div>
+        <div ref="plotContainer" ></div>
         <!-- 加载状态 -->
         <!-- <div v-if="loading" class="loading">Loading...</div> -->
         <!-- <el-icon class="is-loading"> -->
@@ -13,7 +13,7 @@
   
 <script setup>
 
-import { ref,onMounted,getCurrentInstance } from 'vue';
+import { ref,onMounted,getCurrentInstance ,watch} from 'vue';
 import { useThreeInstanceStore } from '@/store';
 import { storeToRefs } from "pinia";
 import { Loading } from '@element-plus/icons-vue'
@@ -23,6 +23,7 @@ const loading=ref(false);
 const pageInstance = getCurrentInstance();
 
 async function loadPlot() {
+    pageInstance.refs.plotContainer.innerHTML=''; // 清空之前的内容
     loading.value = true
     // store.getPicture()
     try{
@@ -55,12 +56,21 @@ function executeScript(container){
 }
 onMounted(async()=>{
   console.log("opticalFieldViewer","挂载")
-  await loadPlot()
+//   await loadPlot()
 })
 
-
+watch(
+  () => store.opticalFieldReady,
+  (ready) => {
+    if (ready) {
+      console.log("加载光场数据")
+      // 这里调用原来 onMounted 里的逻辑
+      loadPlot()
+    }
+  }
+)
 defineExpose({
-      loadPlot, // 将 loadPlot 方法暴露给父组件
+    loadPlot, // 将 loadPlot 方法暴露给父组件
 });
 
 </script>
