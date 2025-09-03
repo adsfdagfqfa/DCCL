@@ -1,5 +1,6 @@
 <template>
     <div>
+        <label class="font-bold text-xl mb-3 block">结果分析图</label>
         <div class="flex gap-4">
             <el-select v-model="yLabel" placeholder="Select Y">
                 <el-option v-for="item in yLabels" :key="item" :label="item" :value="item"/>

@@ -1,26 +1,29 @@
 <template>
-    <div class="flex">
-      <div style="flex:0 0 30%">
+    <div class="min-w-[400px]">
+        
         <el-card class="h-full">
-            <el-cascader class="mb-5" clearable 
-                    v-model="selectedElement" 
-                    :options="jsonpath" 
-                    :show-all-levels="false" 
-                    placeholder="请选择参数"
-                    @expand-change="handleExpandChange"
-                    @clear="handleClear"/>    
-            <RangeGenerator @get-result-array="getResultArray"  ref="rangeGenerator"/>
-            <div class="flex items-center mb-5">
-              <label class="whitespace-nowrap min-w-20">迭代次数:</label>
-              <el-input type="number" v-model.number="iterationCount"
-                placeholder="请输入迭代次数"
-                title="" clearable/>
+            <label class="font-bold text-xl mb-3 block">仿真设置</label>
+            <div>
+              <el-cascader class="mb-5" clearable 
+                      v-model="selectedElement" 
+                      :options="jsonpath" 
+                      :show-all-levels="false" 
+                      placeholder="请选择参数"
+                      @expand-change="handleExpandChange"
+                      @clear="handleClear"/>    
+              <RangeGenerator @get-result-array="getResultArray"  ref="rangeGenerator"/>
+              <div class="flex items-center mb-5">
+                <label class="whitespace-nowrap min-w-20">迭代次数:</label>
+                <el-input type="number" v-model.number="iterationCount"
+                  placeholder="请输入迭代次数"
+                  title="" clearable/>
+              </div>
+              <!-- <el-button type="primary" @click="onUploadParameter">上传参数</el-button> -->
+              <el-button type="primary" @click="onSimulation">开始仿真</el-button>
+              <!-- <el-button type="primary" @click="store.plotDialogVisible=true">分析结果</el-button> -->
             </div>
-            <!-- <el-button type="primary" @click="onUploadParameter">上传参数</el-button> -->
-            <el-button type="primary" @click="onSimulation">开始仿真</el-button>
-            <el-button type="primary" @click="store.plotDialogVisible=true">分析结果</el-button>
         </el-card>
-      </div>
+      
       <!-- <div class="flex-1">
         <DynamicScroller
           ref="virtualScroller"

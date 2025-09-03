@@ -1,5 +1,6 @@
 <template>
     <div class="relative w-full min-h-100">
+        <label class="font-bold text-xl mb-3 block">光场分布热度图</label>
         <div ref="plotContainer"></div>
         <!-- 加载状态 -->
         <!-- <div v-if="loading" class="loading">Loading...</div> -->
