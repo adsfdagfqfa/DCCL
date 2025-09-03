@@ -21,19 +21,13 @@
             <el-button type="primary" @click="store.plotDialogVisible=true">分析结果</el-button>
         </el-card>
       </div>
-      <div class="flex-1">
-        <!-- <el-scrollbar >
-          
-        </el-scrollbar> -->
+      <!-- <div class="flex-1">
         <DynamicScroller
           ref="virtualScroller"
           class="list"
           :items="visibleItems"
           :min-item-size="150">
           <template v-slot="{ item }">
-            <!-- <div class="list-item">
-              <ResultItem :item="item" ></ResultItem>
-            </div> -->
             <DynamicScrollerItem :item="item" :active="true" :size-dependencies="[item.content]">
               <div class="list-item" :key="item.id">
                 <ResultItem :item="item.content" :only_final_result="store.onlyFinalResult" />
@@ -41,12 +35,6 @@
             </DynamicScrollerItem>
           </template>
         </DynamicScroller>
-        <!-- <div v-for="(item,index) in resultList" :key="index" >
-          <div class="list-item">
-            <ResultItem :item="item" ></ResultItem>
-          </div>
-          
-        </div> -->
         <div class="flex justify-between items-center p-4">
           <el-checkbox v-model="store.onlyFinalResult" label="只显示结果" size="large" />
           <div class="flex items-center space-x-2">
@@ -54,7 +42,7 @@
             <el-button type="danger" @click="onCancelTask">取消</el-button>
           </div>
         </div>
-      </div>
+      </div> -->
 
     </div>
   </template>
@@ -64,10 +52,9 @@
   import { onMounted,getCurrentInstance,onBeforeMount, ref ,computed} from 'vue';
   import { useThreeInstanceStore } from '@/store';
   import RangeGenerator from './rangeGenerator.vue';
-  import { dateTableEmits } from 'element-plus/es/components/calendar/src/date-table';
-  import ResultItem from './resultItem.vue'; 
+  // import ResultItem from '../outputPanel/resultItem.vue'; 
   const rangeGenerator = ref();//引用的rangeGenerator组件
-  const isPaused = ref(false)
+  // const isPaused = ref(false)
   const taskID = ref(null);
   var jp = require('jsonpath');
   const data = computed(() => ({
@@ -118,24 +105,10 @@
       leaf:true
     },
   ])
-  const pageInstance = getCurrentInstance();
   
   const resultList = computed(() => {
     return store.simulationResult;
   });
-  const visibleItems = computed(() =>
-    store.onlyFinalResult
-      ? resultList.value.filter(({ content }) => {
-          try {
-            return JSON.parse(content).isEnd
-          } catch {
-            return false
-          }
-        })
-      : resultList.value
-  )
-  
-
   // async function getAllParameter() {
   //   data.distance=store.distance;
   //   data.angle=store.angle;
@@ -234,8 +207,8 @@
     console.log(param)
     console.log('上传参数')
     
-    var virtualScroller=pageInstance.refs.virtualScroller;
-    await store.simulation(param,virtualScroller)
+    // var virtualScroller=pageInstance.refs.virtualScroller;
+    await store.simulation(param)
     // console.log(data)
     console.log('开始仿真')
    
@@ -258,45 +231,28 @@
       rangeGenerator.value.clearInput();
     }
   }
-  function onTogglePauseTask(){
-    //清除rangeGenerator里面的输入
-    if(isPaused.value){
-      isPaused.value=false;
-      store.continueTask(taskID.value);
-    }
-    else{
-      isPaused.value=true;
-      store.pauseTask(taskID.value);
-    }
-  }
-  function onCancelTask(){
-    //清除rangeGenerator里面的输入
-    store.cancelTask(taskID.value);
-    isPaused.value=false;
-    console.log("取消任务")
-    //清空结果列表
-    store.simulationResult=[];
-    //清空rangeGenerator里面的输入
-    if (rangeGenerator.value) {
-      rangeGenerator.value.clearInput();
-    }
-  }
+  // function onTogglePauseTask(){
+  //   if(isPaused.value){
+  //     isPaused.value=false;
+  //     store.continueTask(taskID.value);
+  //   }
+  //   else{
+  //     isPaused.value=true;
+  //     store.pauseTask(taskID.value);
+  //   }
+  // }
+  // function onCancelTask(){
+  //   store.cancelTask(taskID.value);
+  //   isPaused.value=false;
+  //   console.log("取消任务")
+  //   //清空结果列表
+  //   store.simulationResult=[];
+  //   //清空rangeGenerator里面的输入
+  //   if (rangeGenerator.value) {
+  //     rangeGenerator.value.clearInput();
+  //   }
+  // }
   const onTest=()=>{
-    
-    // const sseUrl = `/flask/api/v1/sse`;
-    // // 创建 EventSource 实例
-    // const eventSource = new EventSource(sseUrl);
-    //   // 监听消息事件
-    // eventSource.onmessage = function(event) {
-    //   console.log("Received data:", event.data);
-    //   //更新数据
-    // };
-  
-    // // 监听错误事件
-    // eventSource.onerror = function(err) {
-    //   console.error("EventSource failed:", err);
-    //   eventSource.close(); // 关闭连接
-    // };
     const now=new Date();
     resultList.value.push(now.toLocaleTimeString())
     console.log(resultList.value)
@@ -308,19 +264,5 @@
   </script>
   
 <style scoped>
-/* Your component-specific styles go here */
-.list {
-  height: 300px;
-  border: 5px solid #eeeeeee9;
-  border-radius: 8px;
-}
 
-.list-item {
-  height:150px;
-  padding: 12px;
-  border-bottom: 1px dashed #020817;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
 </style>

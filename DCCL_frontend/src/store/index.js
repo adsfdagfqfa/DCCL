@@ -22,6 +22,7 @@ export const useThreeInstanceStore = defineStore("threeInstance", {
       sampleNumber:8192,//采样点数量
       windowExpandFactor:3//窗口扩展因子
     },
+    outputResultDom:null,//输出结果的dom节点
     // pictureKey:"5281bd60-6d64-4ee4-9f11-25948f8e5da4276dbd",
     opticalFieldDialogVisible:false,//是否显示光场图的modal
     plotDialogVisible:false,//是否展示统计图的modal
@@ -59,6 +60,9 @@ export const useThreeInstanceStore = defineStore("threeInstance", {
     setSelectedElement(name){
       this.selectedElement=name
     },
+    setOutputResultDom(dom){
+      this.outputResultDom=dom
+    },
     async uploadParameter(data) {
       try {
         const res = await axios.post('/flask/api/v1/uploadParameter', data, {
@@ -76,7 +80,7 @@ export const useThreeInstanceStore = defineStore("threeInstance", {
       }
     },
 
-    async simulation(param,dom){
+    async simulation(param){
      
       /**
        * 仿真计算参数
@@ -101,7 +105,7 @@ export const useThreeInstanceStore = defineStore("threeInstance", {
           id: uuidv4(),
           content: event.data
         })
-        dom.scrollToBottom()
+        that.outputResultDom.scrollToBottom()
         //更新数据
       };
      
