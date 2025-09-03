@@ -1,5 +1,5 @@
 <template>
-    <div class="flex-1">
+    <div class="min-w-[600px]">
         <!-- <el-scrollbar >
           
         </el-scrollbar> -->
@@ -30,12 +30,14 @@
           <div class="flex items-center space-x-2">
             <el-button :type="isPaused?'success':'warning'" @click="onTogglePauseTask">{{ isPaused ? '继续' : '暂停' }}</el-button>
             <el-button type="danger" @click="onCancelTask">取消</el-button>
+            <!-- <el-button type="primary" @click="store.plotDialogVisible=true">分析结果</el-button> -->
           </div>
         </div>
       </div>
 </template>
 <script setup>
-import ResultItem from './resultItem.vue'; 
+import ResultItem from './resultItem.vue';
+import { ref ,getCurrentInstance ,computed} from 'vue'
 import { DynamicScroller, DynamicScrollerItem } from 'vue-virtual-scroller'
 import { useThreeInstanceStore } from '@/store';
 import { onMounted } from 'vue';

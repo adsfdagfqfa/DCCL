@@ -1,6 +1,6 @@
 <template>
  
-    <el-scrollbar  max-height="300px" class="h-full">
+    <el-scrollbar class="h-full">
       <el-card >
         <div class="flex flex-col">
           <span class="font-bold whitespace-nowrap min-w-36 text-xl">谐振腔参数</span>
