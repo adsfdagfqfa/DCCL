@@ -3,7 +3,7 @@
   <div>
     <div class="flex items-center">
       <el-icon size="20"><List/></el-icon>
-      <span> 模型列表 </span>
+      <span> 元件列表 </span>
     </div>
     <el-scrollbar max-height="150">
       <div  v-for="item in modelAttributeList"
@@ -31,7 +31,7 @@
   <div>
     <div class="flex items-center">
       <el-icon size="20"><Edit/></el-icon>
-      <span>编辑面板</span>
+      <span>元件面板</span>
     </div>
     <div v-for="(value, key) in attribute" :key="key">
       <div v-if="isEditableType(key)" class="flex justify-between gap-2"> 
@@ -44,7 +44,7 @@
   <div class="flex flex-col">
     <div class="flex items-center">
         <el-icon size="20"><Location /></el-icon>
-        <span> 模型位置 </span>
+        <span> 元件位置 </span>
     </div>
     <div class="flex" v-if="store.selectedElement"> 
       <el-button class="mx-2" type="primary" link>X 轴</el-button>
