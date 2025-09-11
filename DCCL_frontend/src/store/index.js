@@ -4,7 +4,7 @@ import threeInstance from "@/utils/threeInstance";
 import { defineStore } from "pinia";
 import axios from "axios";
 import { v4 as uuidv4 } from 'uuid'; // 引入 uuid 库
-
+import {bus} from './mittBus.js';
 export const useThreeInstanceStore = defineStore("threeInstance", {
   state: () => ({
     tokenInitialized: false, // 是否初始化了token
@@ -59,6 +59,7 @@ export const useThreeInstanceStore = defineStore("threeInstance", {
     },
     setSelectedElement(name){
       this.selectedElement=name
+      this.threeInstance.setSelectedByName(name)
     },
     async uploadParameter(data) {
       try {
@@ -112,11 +113,7 @@ export const useThreeInstanceStore = defineStore("threeInstance", {
         this.plotReady = true
         es.close(); // 关闭连接
       };
-      es.onerror = function(err) {
-  console.log("SSE closed:", err)
-  that.plotReady = true
-  es.close()
-}
+
       this.eventSource = es; // 保存 EventSource 实例到 store 中
       // 清空之前的结果
       this.simulationResult=[]
@@ -207,5 +204,11 @@ export const useThreeInstanceStore = defineStore("threeInstance", {
         throw error; 
       }
     },
+    // 统一入口，启动监听
+    startListen() {
+      bus.on('selectedElementChanged', (model) => {
+        this.selectedElement=model
+      });
+    }
   }
 });
