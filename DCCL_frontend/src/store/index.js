@@ -1,10 +1,10 @@
 // store.js
-import { opticalModelList } from "@/utils/constant/model";
+import { opticalModelList } from "@/utils/constant/model.js";
 import threeInstance from "@/utils/threeInstance";
 import { defineStore } from "pinia";
 import axios from "axios";
 import { v4 as uuidv4 } from 'uuid'; // 引入 uuid 库
-import {bus} from './mittBus.js';
+import {bus} from '../js/mittBus.js';
 export const useThreeInstanceStore = defineStore("threeInstance", {
   state: () => ({
     tokenInitialized: false, // 是否初始化了token
@@ -12,6 +12,7 @@ export const useThreeInstanceStore = defineStore("threeInstance", {
     selectedElement: "",//当前选择的元素的名称
     distance:[],//储存的元素之间的距离
     angle:[],//储存的元素之间的角度，具体而言是其连线与主光轴的夹角
+    tourVisible:false,//引导是否可见
     resonatorParam : {
       lambda:1064,//光的波长
       pumpWatt:100,//泵浦功率

@@ -1,6 +1,6 @@
 <template>
   <div class="menu-bar">
-    <MenuBar title="开始" @click="handleClick('开始')"></MenuBar>
+    <MenuBar title="开始" @click="tourVisible=true"></MenuBar>
     <MenuBar title="文件" @click="handleClick('文件')">
       <SubMenu>
           <MenuItem title="打开" @click="handleClickOpen">
@@ -43,13 +43,17 @@
 </template>
 
 <script setup>
-import {ref} from  'vue';
+import {computed, ref} from  'vue';
 import MenuBar from '@/components/menu/menuBar.vue';
 import MenuItem from '@/components/menu/menuItem.vue';
 import SubMenu from '@/components/menu/subMenu.vue';
 import { useThreeInstanceStore } from '@/store';
 import {saveStateToJson} from '@/utils/utilityFunction'
 const store = useThreeInstanceStore();
+const tourVisible=computed({
+  get: () => store.tourVisible,
+  set: (val) => store.tourVisible = val
+});
 const fileInput=ref(null)
 function handleClick(title) {
   console.log(`Clicked on: ${title}`);

@@ -1,5 +1,12 @@
 <template>
   <div>
+    <!-- <el-button type="primary" @click="tourVisible = true">
+      开始引导
+    </el-button> -->
+    <Guide :steps="tourSteps" :modelValue="tourVisible"
+      @update:modelValue="val => tourVisible = val"/>
+    <!-- 添加Tour组件 -->
+    
     <!-- 顶端部分 -->
     <header class="flex flex-col">
       <div class="bg-blue-200 text-gray-800 text-center leading-[60px]">分布式耦合腔激光系统仿真软件</div>
@@ -7,12 +14,12 @@
     </header>
     <div class="grid grid-cols-8">
       <!-- <Steps  @update:router-view="handleClick"/> -->
-      <ElementList></ElementList>
+      <ElementList class="element-list"></ElementList>
       <div class="col-span-5">
-        <Resonator></Resonator>
+        <Resonator class="resonator"></Resonator>
         <!-- <router-view/> -->
       </div>
-      <ElementPanel class="col-span-2"/>
+      <ElementPanel class="element-panel col-span-2"/>
       <!-- <test></test> -->
     </div>
     <div>
@@ -53,7 +60,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import Menu from '@/components/menu/index.vue'
 import ElementList from '@/components/elementList/index.vue'
 import ElementPanel from '@/components/elementPanel/index.vue'
@@ -69,10 +76,20 @@ import OutputResultPanel from '@/components/outputResultPanel/index.vue';
 import PLotViewer from '@/components/plotViewer/index.vue'
 import { Upload,Download } from '@element-plus/icons-vue'
 import { useThreeInstanceStore } from '@/store';
+import { ElTour} from 'element-plus';
+import Guide from '@/components/guide/index.vue';
+import { tourSteps } from '@/js/tourConfig.js';
 const store = useThreeInstanceStore();
+
+// 在 setup 中添加 tour 相关数据
+const tourVisible = computed({
+  get: () => store.tourVisible,
+  set: (val) => store.tourVisible = val
+});
 
 onMounted(async()=>{
   console.log("mainView","挂载")
+  // 首次访问时自动显示引导
 })
 const tabs=[]
 const activeName=ref("")
