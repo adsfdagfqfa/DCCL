@@ -1,8 +1,5 @@
 <template>
   <div>
-    <!-- <el-button type="primary" @click="tourVisible = true">
-      开始引导
-    </el-button> -->
     <Guide :steps="tourSteps" :modelValue="tourVisible"
       @update:modelValue="val => tourVisible = val"/>
     <!-- 添加Tour组件 -->
@@ -14,18 +11,18 @@
     </header>
     <div class="grid grid-cols-8">
       <!-- <Steps  @update:router-view="handleClick"/> -->
-      <ElementLibrary></ElementLibrary>
+      <ComponentLibrary></ComponentLibrary>
       <div class="col-span-5">
         <Resonator></Resonator>
         <!-- <router-view/> -->
       </div>
-      <ElementPanel class="col-span-2"/>
+      <ComponentWorkbench class="col-span-2"/>
       <!-- <test></test> -->
     </div>
     <div>
       <!-- <OutputResult></OutputResult> -->
-      <ElementDistancePanel/>
-      <el-tabs v-model="activeName" @tab-click="handleClick">
+      <ComponentDistancePanel/>
+      <el-tabs ref="tabsRef" v-model="activeName" @tab-click="handleClick" class="tour-parameter-panel  tour-output-panel">
         <!-- <el-tab-pane label="常数" name="constant">
           <ConstantPanel/>
         </el-tab-pane> -->
@@ -60,15 +57,15 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref ,provide} from 'vue'
 import Menu from '@/components/menu/index.vue'
-import ElementLibrary from '@/components/elementLibrary/index.vue'
-import ElementPanel from '@/components/elementPanel/index.vue'
+import ComponentLibrary from '@/components/componentLibrary/index.vue'
+import ComponentWorkbench from '@/components/componentWorkbench/index.vue'
 // import OutputResult from '@/components/outputResult/index.vue';
 import Resonator from '@/components/resonator/index.vue';
 import { onMounted } from 'vue';
 import OpticalFieldViewer from '@/components/opticalFieldViewer/index.vue';
-import ElementDistancePanel from '@/components/elementDistancePanel/index.vue';
+import ComponentDistancePanel from '@/components/componentDistancePanel/index.vue';
 import ConstantPanel from '@/components/constantPanel/index.vue';
 import ParameterPanel from '@/components/parameterPanel/index.vue';
 import SimulationPanel from '@/components/simulationPanel/index.vue';
@@ -91,8 +88,9 @@ onMounted(async()=>{
   console.log("mainView","挂载")
   // 首次访问时自动显示引导
 })
-const tabs=[]
-const activeName=ref("")
+const activeName=ref("parameter")
+const tabsRef=ref(null)
+provide('tabsRef',tabsRef)
 function handleClick(tab, event) {
   console.log(tab, event);
 }
