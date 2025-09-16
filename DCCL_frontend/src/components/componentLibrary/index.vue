@@ -1,7 +1,7 @@
 <template>
   <el-scrollbar class="max-h-[400px]">
-    <el-collapse class="tour-element-library" v-model="activeNames" @change="handleChange">
-      <el-collapse-item  name="opticalElement">
+    <el-collapse class="tour-component-library" v-model="activeNames" @change="handleChange">
+      <el-collapse-item  name="opticalComponent">
         <template #title>
           <img src="@/assets/lens.svg"  class="w-3" />光学元件
         </template>
@@ -40,7 +40,7 @@ import { ref } from 'vue';
 import { opticalModelList } from '@/utils/constant/model'; 
 import { useThreeInstanceStore } from '@/store';
 //记录打开的折叠面板
-const activeNames = ref(['opticalElement'])
+const activeNames = ref(['opticalComponent'])
 const store=useThreeInstanceStore();
 const handleChange = (val) => {
   console.log(val)

@@ -86,7 +86,7 @@ function handleFileChange(event){
       try {
         const jsonData = JSON.parse(fileContent); // 将文本内容解析为 JSON 对象
         console.log("解析后的 JSON 数据：", jsonData);
-        store.selectedElement=""
+        store.selectedComponent=""
         store.$patch({
           angle: jsonData.angle,
           distance: jsonData.distance,

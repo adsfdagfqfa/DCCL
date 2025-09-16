@@ -9,7 +9,7 @@ export const useThreeInstanceStore = defineStore("threeInstance", {
   state: () => ({
     tokenInitialized: false, // 是否初始化了token
     threeInstance: null,//threejs的实例
-    selectedElement: "",//当前选择的元素的名称
+    selectedComponent: "",//当前选择的元素的名称
     distance:[],//储存的元素之间的距离
     angle:[],//储存的元素之间的角度，具体而言是其连线与主光轴的夹角
     tourVisible:false,//引导是否可见
@@ -58,8 +58,8 @@ export const useThreeInstanceStore = defineStore("threeInstance", {
     setThreeInstance(threeInstance){
       this.threeInstance=threeInstance
     },
-    setSelectedElement(name){
-      this.selectedElement=name
+    setSelectedComponent(name){
+      this.selectedComponent=name
       this.threeInstance.setSelectedByName(name)
     },
     async uploadParameter(data) {
@@ -207,8 +207,8 @@ export const useThreeInstanceStore = defineStore("threeInstance", {
     },
     // 统一入口，启动监听
     startListen() {
-      bus.on('selectedElementChanged', (model) => {
-        this.selectedElement=model
+      bus.on('selectedComponentChanged', (model) => {
+        this.selectedComponent=model
       });
     }
   }

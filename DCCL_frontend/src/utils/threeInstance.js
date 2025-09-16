@@ -55,7 +55,7 @@ export default class threeInstance {
         //模型属性列表
         this.modelAttributeList=[]
         //当前选择对象
-        this.selectedElement=null
+        this.selectedComponent=null
         this.cameraHelper=null
     }
     init() {
@@ -390,19 +390,19 @@ export default class threeInstance {
         }
     }
     setSelected(object) {
-        if (this.selectedElement === object) return;   // 重复点同一个无视
-        this.selectedElement = object;
+        if (this.selectedComponent === object) return;   // 重复点同一个无视
+        this.selectedComponent = object;
         this.outlinePass.selectedObjects = object ? [object] : [];
-        //修改store中的selectedElement
-        bus.emit('selectedElementChanged', object ? object.userData.attribute.model : null);
+        //修改store中的selectedComponent
+        bus.emit('selectedComponentChanged', object ? object.userData.attribute.model : null);
     }
     setSelectedByName(modelName) {
         console.log("setSelectedByName",modelName)
         let proxyObj = this.modelList.find(v => v.userData.attribute.model === modelName);
         const object = proxyObj ? toRaw(proxyObj) : null; // 解包 Proxy
-        if (this.selectedElement === object) return;
-        this.selectedElement = object;
-        console.log("selectedElement",this.selectedElement)
+        if (this.selectedComponent === object) return;
+        this.selectedComponent = object;
+        console.log("selectedComponent",this.selectedComponent)
         this.outlinePass.selectedObjects = object ? [object] : [];
     }
     updateCameraView(){
