@@ -1,7 +1,7 @@
 <template>
  
     <el-scrollbar class="h-full">
-      <el-card >
+      <el-card class="tour-resonator-parameter" >
         <div class="flex flex-col">
           <span class="font-bold whitespace-nowrap min-w-36 text-xl">谐振腔参数</span>
           <div class="h-3"></div><!-- 用于占位 -->
@@ -19,7 +19,7 @@
         </div>
       </el-card>
       <br>
-      <el-card >
+      <el-card class="tour-fft-parameter" >
         <div class="flex flex-col">
           <span class="font-bold whitespace-nowrap min-w-36 text-xl">快速傅里叶变换(FFT)参数</span>
           <div class="h-3"></div><!-- 用于占位 -->

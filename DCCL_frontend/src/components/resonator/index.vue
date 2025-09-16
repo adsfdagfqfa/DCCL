@@ -1,5 +1,5 @@
 <template>
-    <div  style="height:400px" class="relative" id="resonator" 
+    <div  style="height:400px" class="relative tour-resonator" id="resonator" 
         @drop="onDragDrop" @dragover="onDragOver">
       <div class="absolute top-2.5 right-1/2">
         <el-tooltip effect="dark" content="重置视角" placement="top">
@@ -78,7 +78,7 @@ function clearAllModel(){
   
   store.distance.splice(0,store.distance.length)
   store.angle.splice(0,store.angle.length)
-  store.selectedElement=""
+  store.selectedComponent=""
   store.threeInstance.clearAllModel()
 }
 </script>
