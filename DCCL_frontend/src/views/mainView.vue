@@ -14,12 +14,12 @@
     </header>
     <div class="grid grid-cols-8">
       <!-- <Steps  @update:router-view="handleClick"/> -->
-      <ElementList class="element-list"></ElementList>
+      <ElementLibrary></ElementLibrary>
       <div class="col-span-5">
-        <Resonator class="resonator"></Resonator>
+        <Resonator></Resonator>
         <!-- <router-view/> -->
       </div>
-      <ElementPanel class="element-panel col-span-2"/>
+      <ElementPanel class="col-span-2"/>
       <!-- <test></test> -->
     </div>
     <div>
@@ -62,7 +62,7 @@
 <script setup>
 import { computed, ref } from 'vue'
 import Menu from '@/components/menu/index.vue'
-import ElementList from '@/components/elementList/index.vue'
+import ElementLibrary from '@/components/elementLibrary/index.vue'
 import ElementPanel from '@/components/elementPanel/index.vue'
 // import OutputResult from '@/components/outputResult/index.vue';
 import Resonator from '@/components/resonator/index.vue';
