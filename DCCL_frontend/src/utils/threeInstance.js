@@ -7,7 +7,7 @@ import { set } from 'mpld3';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass';
 import { OutlinePass } from 'three/examples/jsm/postprocessing/OutlinePass';
-import {bus} from '@/store/mittBus.js';
+import {bus} from '@/js/mittBus.js';
 import { toRaw } from 'vue';
 export default class threeInstance {
     constructor(id) {
@@ -99,10 +99,9 @@ export default class threeInstance {
         
         // this.currentCamera.lookAt(new THREE.Vector3(0,0,0))
         // 创建一个 `CameraHelper`，将相机传递给它
-        this.cameraHelper = new THREE.CameraHelper(this.currentCamera);
-
+        // this.cameraHelper = new THREE.CameraHelper(this.currentCamera);
         // 将 `CameraHelper` 添加到场景中
-        this.scene.add(this.cameraHelper);
+        // this.scene.add(this.cameraHelper);
         console.log(this.currentCamera.position)
     }
     //创建渲染器
@@ -428,7 +427,7 @@ export default class threeInstance {
             this.currentCamera.lookAt(this.currentCamera.position.clone().add(direction)); // 相机沿指定方向看
             this.updateCameraView();
         }
-        this.cameraHelper.update();
+        // this.cameraHelper.update();
         // this.renderer.render(this.scene, this.currentCamera);
         this.glowComposer.render(this.scene, this.currentCamera);  
     }
