@@ -29,7 +29,7 @@
         <el-tab-pane label="参数" name="parameter">
           <div class='flex'>
             <ParameterPanel/>
-            <SimulationPanel/>
+            <!-- <SimulationPanel/> -->
           </div>
         </el-tab-pane>
         <el-tab-pane label="输出" name="output">
@@ -53,6 +53,12 @@
         </el-tab-pane>
       </el-tabs>
     </div>
+    <el-dialog v-model="store.dialogVisible" destroy-on-close  width="30%" :close-on-click-modal="false">
+      <template #title>
+        <span class="font-bold text-lg">仿真设置</span>
+      </template>
+      <SimulationPanel/>
+    </el-dialog>
   </div>
 </template>
 

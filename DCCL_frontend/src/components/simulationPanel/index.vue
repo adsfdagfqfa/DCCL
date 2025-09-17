@@ -1,51 +1,41 @@
 <template>
   <div class="min-w-[400px] tour-simulation-parameter"> 
-    <el-card class="h-full">
-      <label class="font-bold text-xl mb-3 block">仿真设置</label>
-      <div>
-        <el-cascader class="mb-5" clearable 
-          v-model="selectedComponent" 
-          :options="jsonpath" 
-          :show-all-levels="false" 
+    <div class="h-full">
+      <!-- <label class="font-bold text-xl mb-3 block">仿真设置</label> -->
+      <div class="mb-2">
+        <label class="block mb-2">选择仿真类型</label>
+        <el-radio-group v-model="simType">
+          <el-radio label="single">单次仿真</el-radio>
+          <el-radio label="batch">多次仿真</el-radio>
+        </el-radio-group>
+      </div>
+      <div class="flex items-center mb-5">
+        <label class="whitespace-nowrap min-w-20">迭代次数:</label>
+        <el-input type="number" v-model.number="iterationCount"
+          placeholder="请输入迭代次数"
+          title="" clearable/>
+      </div>
+      <template v-if="simType === 'batch'">
+        <el-cascader
+          class="mb-5"
+          clearable
+          v-model="selectedComponent"
+          :options="jsonpath"
+          :show-all-levels="false"
           placeholder="请选择参数"
           @expand-change="handleExpandChange"
-          @clear="handleClear"/>    
-        <RangeGenerator @get-result-array="getResultArray"  ref="rangeGenerator"/>
-        <div class="flex items-center mb-5">
-          <label class="whitespace-nowrap min-w-20">迭代次数:</label>
-          <el-input type="number" v-model.number="iterationCount"
-            placeholder="请输入迭代次数"
-            title="" clearable/>
-        </div>
-        <!-- <el-button type="primary" @click="onUploadParameter">上传参数</el-button> -->
-        <el-button type="primary" @click="onSimulation">开始仿真</el-button>
-        <!-- <el-button type="primary" @click="store.plotDialogVisible=true">分析结果</el-button> -->
+          @clear="handleClear"/>
+        <RangeGenerator
+          @get-result-array="getResultArray"
+          ref="rangeGenerator"
+          class="mb-5"/>
+      </template>
+      <div class="flex justify-end">
+        <el-button type="primary" @click="onContinueSimulation">
+          继续
+        </el-button>
       </div>
-    </el-card>
-  
-    <!-- <div class="flex-1">
-      <DynamicScroller
-        ref="virtualScroller"
-        class="list"
-        :items="visibleItems"
-        :min-item-size="150">
-        <template v-slot="{ item }">
-          <DynamicScrollerItem :item="item" :active="true" :size-dependencies="[item.content]">
-            <div class="list-item" :key="item.id">
-              <ResultItem :item="item.content" :only_final_result="store.onlyFinalResult" />
-            </div>
-          </DynamicScrollerItem>
-        </template>
-      </DynamicScroller>
-      <div class="flex justify-between items-center p-4">
-        <el-checkbox v-model="store.onlyFinalResult" label="只显示结果" size="large" />
-        <div class="flex items-center space-x-2">
-          <el-button :type="isPaused?'success':'warning'" @click="onTogglePauseTask">{{ isPaused ? '继续' : '暂停' }}</el-button>
-          <el-button type="danger" @click="onCancelTask">取消</el-button>
-        </div>
-      </div>
-    </div> -->
-
+    </div>
   </div>
 </template>
   
@@ -56,6 +46,7 @@ import { useThreeInstanceStore } from '@/store';
 import RangeGenerator from './rangeGenerator.vue';
 // import ResultItem from '../outputPanel/resultItem.vue'; 
 const rangeGenerator = ref();//引用的rangeGenerator组件
+const simType = ref('single')
 // const isPaused = ref(false)
 const taskID = ref(null);
 var jp = require('jsonpath');
@@ -182,7 +173,7 @@ onMounted(async () => {
   // await getAllParameter();
   console.log('Component is mounted');
 })
-async function onSimulation(){
+async function onContinueSimulation(){
   
   //判断是否设置参数
   if(iterationCount.value===undefined || iterationCount.value<=0){

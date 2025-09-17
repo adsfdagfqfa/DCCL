@@ -36,6 +36,12 @@
           </div>
         </div>
       </el-card>
+      <br>
+      <div class="flex justify-end">
+        <el-button type="primary" @click="store.dialogVisible=true">
+          开始仿真
+        </el-button>
+      </div>
     </el-scrollbar>
   
 </template>

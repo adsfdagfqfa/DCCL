@@ -89,9 +89,7 @@ function onCancelTask(){
         rangeGenerator.value.clearInput();
     }
 }
-onMounted(() => {
-    console.log("simulationPanel","挂载")
-    
+onMounted(() => { 
 });
 </script>
 <style scoped>
