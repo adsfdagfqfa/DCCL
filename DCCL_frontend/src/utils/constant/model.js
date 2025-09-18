@@ -19,8 +19,8 @@ const opticalModelList=[
         // position:null,
         radius:0.003,
         length:0.001,
-        // sigma:15.6e-23,     //Nd:YVO4 吸收发射截面
-        // tau:100e-6          //Nd:YVO4 介质上能级粒子寿命
+        sigma:15.6e-23,     //Nd:YVO4 吸收发射截面
+        tau:100e-6          //Nd:YVO4 介质上能级粒子寿命
     }
 ]
 const keyMappings={

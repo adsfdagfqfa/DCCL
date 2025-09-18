@@ -34,7 +34,7 @@
       <span>元件面板</span>
     </div>
     <div v-for="(value, key) in attribute" :key="key">
-      <div v-if="isEditableType(key)" class="flex justify-between gap-2"> 
+      <div v-if="isEditableType(key)" class="flex justify-between gap-4"> 
         <label class="no-wrap" :for="key">{{keyMappings[key] }} </label>
         <el-input type="number"  v-model.number="attribute[key]"  placeholder="请输入" title=""
                   :min="rangeLimits[key]?.min" :max="rangeLimits[key]?.max"/>
