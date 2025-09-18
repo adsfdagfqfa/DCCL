@@ -5,16 +5,16 @@ import time
 import datetime 
 from cupyx.scipy.special import lambertw as cupyx_lambertw
 from application.utils.utility_function import log_gpu_memory
-def propagation_within_gain(U_pre, lm,rm, P_in, lambda_,eta_c):  # lm：增益介质的长度
+def propagation_within_gain(U_pre, lm,rm,sigma_medium,tau_medium, P_in, lambda_,eta_c):  # lm：增益介质的长度
     l = 0.001  # 分割粒度
     # U = U_pre.copy()  # 创建U_pre的副本以避免修改原始数组
     for i in range(int(np.ceil(lm / l))):  # 使用np.ceil确保循环次数足够
-        g_ij = fun_of_gain(U_pre, l,rm, P_in, lambda_,eta_c)
+        g_ij = fun_of_gain(U_pre, l,rm,sigma_medium,tau_medium, P_in, lambda_,eta_c)
         U_pre *= g_ij
     return U_pre
 
 
-def fun_of_gain(in_U, lm,rm, P_in, lambda_,eta_c):
+def fun_of_gain(in_U, lm,rm,sigma_medium,tau_medium, P_in, lambda_,eta_c):
     #eta_c泵浦效率
     # 开始计时
     start_time = time.time()
@@ -25,8 +25,10 @@ def fun_of_gain(in_U, lm,rm, P_in, lambda_,eta_c):
     mu0 = 4 * cp.pi * 1e-7
 
     # 系统参数,这里分别是sigma吸收/发射截面，tau_f上能级(激发态)粒子寿命
-    sigma = 15.6e-23  # Nd:YVO4
-    tau_f = 100e-6  # Nd:YVO4
+    # sigma = 15.6e-23  # Nd:YVO4
+    # tau_f = 100e-6  # Nd:YVO4
+    sigma=sigma_medium
+    tau_f=tau_medium
     #频率
     nu = c / lambda_
 
