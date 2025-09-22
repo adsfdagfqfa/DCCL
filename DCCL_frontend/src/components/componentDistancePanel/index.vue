@@ -1,10 +1,10 @@
 <template>
-    <div>
+    <div class="tour-component-distance-panel">
       <div>
         <el-card>
             <el-scrollbar   class="height-full">
               <div class="flex items-center">
-                <span class="font-bold whitespace-nowrap min-w-36">模型元素</span>
+                <span class="font-bold whitespace-nowrap min-w-36">光学元件</span>
                 <div v-for="item in store.threeInstance?.modelAttributeList" :key="item.model" class="flex-item">
                   <span>{{ item.model }}</span>
                 </div>

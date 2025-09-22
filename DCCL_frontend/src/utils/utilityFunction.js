@@ -33,7 +33,7 @@ export function saveStateToJson(store) {
   return jsonString
 }
 // export function saveDataFromJson(jsonObject,store){
-//   store.selectedElement=""
+//   store.selectedComponent=""
 //   store.$patch({
 //     angle: jsonObject.angle,
 //     distance: jsonObject.distance,

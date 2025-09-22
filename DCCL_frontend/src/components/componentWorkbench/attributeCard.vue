@@ -1,19 +1,19 @@
 <template>
   <div>
-  <div>
+  <div class="tour-component-list">
     <div class="flex items-center">
       <el-icon size="20"><List/></el-icon>
-      <span> 模型列表 </span>
+      <span> 元件列表 </span>
     </div>
     <el-scrollbar max-height="150">
       <div  v-for="item in modelAttributeList"
             :key="item.model">
         <div  class="flex justify-between items-center"
-              :class="item.model===store.selectedElement?'choose':''" 
-              @click="setSelectedElement(item.model)">
+              :class="item.model===store.selectedComponent?'choose':''" 
+              @click="setSelectedComponent(item.model)">
           <span>{{ item.model }} </span>
           <el-space>
-            <div v-show="item.model===store.selectedElement">
+            <div v-show="item.model===store.selectedComponent">
               <el-icon size="20" color="#0c5df2">
                 <Check/>
               </el-icon>
@@ -28,29 +28,29 @@
       </div>
     </el-scrollbar>
   </div>
-  <div>
+  <div class="tour-component-panel">
     <div class="flex items-center">
       <el-icon size="20"><Edit/></el-icon>
-      <span>编辑面板</span>
+      <span>元件面板</span>
     </div>
     <div v-for="(value, key) in attribute" :key="key">
-      <div v-if="isEditableType(key)" class="flex justify-between gap-2"> 
+      <div v-if="isEditableType(key)" class="flex justify-between gap-4"> 
         <label class="no-wrap" :for="key">{{keyMappings[key] }} </label>
         <el-input type="number"  v-model.number="attribute[key]"  placeholder="请输入" title=""
                   :min="rangeLimits[key]?.min" :max="rangeLimits[key]?.max"/>
       </div>
     </div>
   </div>
-  <div class="flex flex-col">
+  <div class="tour-component-position flex flex-col">
     <div class="flex items-center">
         <el-icon size="20"><Location /></el-icon>
-        <span> 模型位置 </span>
+        <span> 元件位置 </span>
     </div>
-    <div class="flex" v-if="store.selectedElement"> 
+    <div class="flex" v-if="store.selectedComponent"> 
       <el-button class="mx-2" type="primary" link>X 轴</el-button>
       <el-slider class="mx-2" :max="300" v-model="position.x" show-input />   
     </div>
-    <div class="flex" v-if="store.selectedElement">
+    <div class="flex" v-if="store.selectedComponent">
       <el-button class="mx-2" type="primary" link>Y 轴</el-button>
       <el-slider class="mx-2" :max="300" v-model="position.y" show-input /> 
     </div>
@@ -83,11 +83,11 @@ function isEditableType(key) {
 //   console.log(component.value)
 //   emits('update:component', component.value);
 // }
-function setSelectedElement(name){
+function setSelectedComponent(name){
   if(name){
-    store.setSelectedElement(name)
+    store.setSelectedComponent(name)
   }
-  console.log("当前点击元素",store.selectedElement)
+  console.log("当前点击元素",store.selectedComponent)
 }
 
 
@@ -96,7 +96,7 @@ const modelAttributeList = computed(() => store.threeInstance?.modelAttributeLis
 const modelList = computed(() => store.threeInstance?.modelList);
 const attribute=ref({})
 const position=ref({})
-watch(()=>store.selectedElement,(newVal)=>{
+watch(()=>store.selectedComponent,(newVal)=>{
 
   const foundItem=modelList.value?.filter(item=>item.userData.attribute.model===newVal)
   
@@ -183,8 +183,8 @@ function deleteModel(name){
     store.threeInstance.deleteModel(name)
   
     // store.threeInstance.modelList=store.threeInstance.modelList.filter(v => v.userData.attribute.model !== name);
-    if(store.selectedElement===name){
-      store.selectedElement=""
+    if(store.selectedComponent===name){
+      store.selectedComponent=""
     }
     // store.distance.pop()
     // store.angle.pop() 

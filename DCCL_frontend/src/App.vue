@@ -10,6 +10,7 @@ const store = useThreeInstanceStore();
 const router =useRouter()
 onMounted(() => {
   store.initToken()
+  store.startListen()
   console.log('App mounted');
 })
 </script>

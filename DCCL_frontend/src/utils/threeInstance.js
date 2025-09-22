@@ -1,9 +1,14 @@
 import * as THREE from 'three';
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { MapControls } from "three/examples/jsm/controls/MapControls";
 import { ModelFactory } from "@/utils/modelFactory/modelFactory"
 import { onlyKey } from './utilityFunction';
 import { set } from 'mpld3';
-
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass';
+import { OutlinePass } from 'three/examples/jsm/postprocessing/OutlinePass';
+import {bus} from '@/js/mittBus.js';
+import { toRaw } from 'vue';
 export default class threeInstance {
     constructor(id) {
         this.id = id;
@@ -12,11 +17,17 @@ export default class threeInstance {
         //相机
         this.camera2D=null;
         this.camera3D=null;
+        this.stateCamera2D=null;
+        this.stateCamera3D=null;
         this.currentCamera=null;
         //相机初始位置
         this.initialCameraPosition=new THREE.Vector3(300,0,50);
         // 控制器
         this.controls=null;
+        this.mapControls=null;
+        this.orbitControls=null;
+        //模型组
+        this.geometryGroup=null;
         //场景
         this.scene=null;
         //渲染器
@@ -31,6 +42,10 @@ export default class threeInstance {
         this.ambientLight=null;  
         // 鼠标位置
         this.mousePosition = new THREE.Vector2();
+        
+        this.glowComposer=null;
+        this.glowRenderPass=null;
+        this.outlinePass=null;
         // 碰撞检测
         this.raycaster = new THREE.Raycaster();
         //显示辉光
@@ -39,15 +54,20 @@ export default class threeInstance {
         this.dragModel={}
         //模型属性列表
         this.modelAttributeList=[]
+        //当前选择对象
+        this.selectedComponent=null
+        this.cameraHelper=null
     }
     init() {
         this.initScene();
         this.initCamera();
         this.initRender();
         this.initControls();
-        
         this.initaxesHelper();
         this.addLight();
+        this.createEffectComposer();
+        //绑定事件
+        this.dom.addEventListener('pointerdown', e => this._onClick(e));
         //窗口改变时场景适配
         window.addEventListener('resize', () => {
             this.currentCamera.aspect = this.dom.offsetWidth / this.dom.offsetHeight;
@@ -64,21 +84,25 @@ export default class threeInstance {
     initCamera() {
         //相机
         //透视相机,各参数含义,视野角度,宽高比,近端面,远端面
+        console.log(this.dom.offsetWidth,this.dom.offsetHeight)
         this.camera3D = new THREE.PerspectiveCamera(75, this.dom.offsetWidth / this.dom.offsetHeight, 0.1, 1000);
         //正交相机,各参数含义,左侧面,右侧面,上侧面,下侧面,近端面,远端面
-        this.camera2D = new THREE.OrthographicCamera(this.dom.offsetWidth / -2, 
-                                                    this.dom.offsetWidth / 2,  
-                                                    this.dom.offsetHeight / 2, 
-                                                    this.dom.offsetHeight / -2, 0.1, 1000);
+        this.camera2D = new THREE.OrthographicCamera(this.dom.offsetWidth / -6, 
+                                                    this.dom.offsetWidth / 6,  
+                                                    this.dom.offsetHeight / 6, 
+                                                    this.dom.offsetHeight / -6, 0.1, 1000);
+        this.camera2D.position.x=0
+        this.camera2D.position.z=100
+        this.camera3D.position.set(300,0,50)
         this.currentCamera=this.camera2D
         // this.currentCamera.position = new THREE.Vector3(this.dom.offsetWidth/2-100,0,10)
-        this.currentCamera.position.x=this.dom.offsetWidth/2-100
-     
-        this.currentCamera.position.z=50
-        // this.currentCamera.lookAt(new THREE.Vector3(0,0,0))
-        console.log(this.currentCamera.position)
         
-       
+        // this.currentCamera.lookAt(new THREE.Vector3(0,0,0))
+        // 创建一个 `CameraHelper`，将相机传递给它
+        // this.cameraHelper = new THREE.CameraHelper(this.currentCamera);
+        // 将 `CameraHelper` 添加到场景中
+        // this.scene.add(this.cameraHelper);
+        console.log(this.currentCamera.position)
     }
     //创建渲染器
     initRender() {
@@ -93,7 +117,17 @@ export default class threeInstance {
     }
     //创建控制器
     initControls(){
-        this.controls = new OrbitControls(this.currentCamera, this.renderer.domElement);
+        this.orbitControls = new OrbitControls(this.camera3D, this.renderer.domElement);
+        this.mapControls=new MapControls(this.camera2D,this.renderer.domElement);
+        //监听控制器变化
+        this.mapControls.addEventListener('change',  ()=> {
+            this.currentCamera.position.z=100
+            console.log("Camera Position:", this.currentCamera.position);
+        });
+        this.controls=this.mapControls
+        this.setupMapControls();
+        this.stateCamera2D=this.saveCameraState(this.camera2D,this.mapControls)
+        this.stateCamera3D=this.saveCameraState(this.camera3D,this.orbitControls)
         //this.controls.target.set(0, 0, 0);
     }
     //创建坐标
@@ -102,6 +136,23 @@ export default class threeInstance {
         this.axesHelper = new THREE.AxesHelper(1000);//100为其长度
         // this.axesHelper.visible = false;
         this.scene.add(this.axesHelper);
+    }
+    // 创建效果合成器
+    createEffectComposer(){
+        this.glowComposer = new EffectComposer(this.renderer);
+        this.glowRenderPass = new RenderPass(this.scene, this.currentCamera);
+        this.glowComposer.addPass(this.glowRenderPass);
+        this.outlinePass = new OutlinePass(
+            new THREE.Vector2(this.dom.width, this.dom.height),
+            this.scene,
+            this.currentCamera
+        );
+        this.outlinePass.edgeStrength = 6;
+        this.outlinePass.edgeGlow = 0.5;
+        this.outlinePass.edgeThickness = 1;
+        this.outlinePass.visibleEdgeColor.set('#ffdd00');
+        this.outlinePass.hiddenEdgeColor.set('#ffdd00');
+        this.glowComposer.addPass(this.outlinePass);
     }
     setupScene() {
         // this.addLight();
@@ -121,33 +172,65 @@ export default class threeInstance {
         console.log (cameraType);
         if ( cameraType === '2D' ) {
             this.currentCamera = this.camera2D;
-            
-            this.resetCameraToNegativeZ()
-            console.log(this.currentCamera.position)
-            this.controls.object = this.camera2D;
-            this.controls.enableRotate = false; // 禁用旋转
-            this.controls.enableZoom = true; // 启用缩放
-            //将其左键设计为平移
-            this.controls.mouseButtons = { LEFT: THREE.MOUSE.PAN, MIDDLE: THREE.MOUSE.DOLLY, RIGHT: THREE.MOUSE.PAN };
+            this.controls=this.mapControls
+            // this.resetCameraToNegativeZ()
+            this.restoreCameraState(this.camera2D,this.mapControls,this.stateCamera2D)
+            this.setupMapControls();
         } 
         else if ( cameraType==='3D' ) {
             this.currentCamera = this.camera3D;
-            
-            this.resetCameraToNegativeZ();
-            this.controls.object = this.camera3D;
-            this.controls.enableRotate = true; // 启用旋转
-            this.controls.enableZoom = true; // 启用缩放
-            this.controls.mouseButtons = { LEFT: THREE.MOUSE.ROTATE, MIDDLE: THREE.MOUSE.DOLLY, RIGHT: THREE.MOUSE.PAN };
+            this.controls=this.orbitControls
+            // this.resetCameraToNegativeZ();
+            this.restoreCameraState(this.camera3D,this.orbitControls,this.stateCamera3D)
+            this.setupOrbitControls();
+            // this.controls.mouseButtons = { LEFT: THREE.MOUSE.ROTATE, MIDDLE: THREE.MOUSE.DOLLY, RIGHT: THREE.MOUSE.PAN };
         }
+        this.glowRenderPass.camera = this.currentCamera;
+        this.outlinePass.renderCamera = this.currentCamera;
         //this.controls.update();
-    } 
+    }
+    setupOrbitControls() {
+        this.mapControls.enabled = false;
+        this.orbitControls.enabled = true;
+        this.controls.enableRotate = true; // 启用旋转
+        this.controls.enableZoom = true; // 启用缩放
+    }
+    setupMapControls() {
+        this.mapControls.enabled = true;
+        this.orbitControls.enabled = false;
+        this.controls.enableRotate = false; // 禁用旋转
+        this.controls.enableZoom = true; // 启用缩放
+        this.controls.enablePan = true; // 启用平移
+        this.controls.screenSpacePanning = true; // 允许屏幕空间平移
+    }
     //重置相机位置，并使其对准Z轴负半轴
     resetCameraToNegativeZ() {
-        
-        this.controls.target.set(0, 0, 0);
-        this.currentCamera.position.set(this.initialCameraPosition.x,this.initialCameraPosition.y,this.initialCameraPosition.z);
-        const direction = new THREE.Vector3(0, 0, -1); // Z轴负半轴方向
-        this.currentCamera.lookAt(this.initialCameraPosition.clone().add(direction)); // 相机沿指定方向看
+        // this.controls.target.set(0, 0, 0);
+        // this.currentCamera.position.set(this.initialCameraPosition.x,this.initialCameraPosition.y,this.initialCameraPosition.z);
+        // const direction = new THREE.Vector3(0, 0, -1); // Z轴负半轴方向
+        // this.currentCamera.lookAt(this.initialCameraPosition.clone().add(direction)); // 相机沿指定方向看
+
+        if(this.currentCamera===this.camera2D){
+            this.restoreCameraState(this.camera2D,this.mapControls,this.stateCamera2D)
+        }
+        else{
+            this.restoreCameraState(this.camera3D,this.orbitControls,this.stateCamera3D)
+        }
+    }
+    saveCameraState(camera, controls) {
+        return {
+            position: camera.position.clone(),
+            zoom: camera.zoom,
+            target: controls.target.clone()
+        };
+    }
+
+    restoreCameraState(camera, controls, state) {
+        camera.position.copy(state.position);
+        camera.zoom = state.zoom;
+        camera.updateProjectionMatrix();
+        controls.target.copy(state.target);
+        controls.update();
     }
     //保存拖拽的模型的相应参数
     setDragModel(model){
@@ -187,7 +270,6 @@ export default class threeInstance {
             resolve(true);
         });
     }
-    
     //添加模型
     addModel(model){
         return new Promise(async (resolve, reject) => {
@@ -288,6 +370,51 @@ export default class threeInstance {
         });
         this.scene.add(this.group);
     }
+    _onClick(event) {
+        //拿到画布矩形，把屏幕坐标转成 WebGL 归一化坐标
+        const rect = this.dom.getBoundingClientRect();
+        this.mousePosition.x =  ((event.clientX - rect.left) / rect.width ) * 2 - 1;
+        this.mousePosition.y = -((event.clientY - rect.top ) / rect.height) * 2 + 1;
+
+        //从相机位置往鼠标方向射一条射线
+        this.raycaster.setFromCamera(this.mousePosition, this.currentCamera);
+
+        const intersects = this.raycaster.intersectObjects(this.group.children,true);
+
+        //有命中就高亮，没命中就清空
+        if (intersects.length > 0) {
+            const hit = intersects[0].object;
+            this.setSelected(hit);
+        } else {
+            this.setSelected(null);
+        }
+    }
+    setSelected(object) {
+        if (this.selectedComponent === object) return;   // 重复点同一个无视
+        this.selectedComponent = object;
+        this.outlinePass.selectedObjects = object ? [object] : [];
+        //修改store中的selectedComponent
+        bus.emit('selectedComponentChanged', object ? object.userData.attribute.model : null);
+    }
+    setSelectedByName(modelName) {
+        console.log("setSelectedByName",modelName)
+        let proxyObj = this.modelList.find(v => v.userData.attribute.model === modelName);
+        const object = proxyObj ? toRaw(proxyObj) : null; // 解包 Proxy
+        if (this.selectedComponent === object) return;
+        this.selectedComponent = object;
+        console.log("selectedComponent",this.selectedComponent)
+        this.outlinePass.selectedObjects = object ? [object] : [];
+    }
+    updateCameraView(){
+        //根据相机位置更新相机视野
+        if(this.currentCamera===this.camera2D){
+            this.currentCamera.left = this.dom.offsetWidth/-6+this.currentCamera.position.x;
+            this.currentCamera.right = this.dom.offsetWidth/6+this.currentCamera.position.x;
+            this.currentCamera.top = this.dom.offsetHeight/6+this.currentCamera.position.y;   
+            this.currentCamera.bottom = this.dom.offsetHeight /-6+this.currentCamera.position.y;
+            this.currentCamera.updateProjectionMatrix();
+        }
+    }
     // 动画循环
     animate = () => {
         requestAnimationFrame(this.animate);
@@ -298,8 +425,11 @@ export default class threeInstance {
             // console.log(this.currentCamera.position)
             var  direction = new THREE.Vector3(0, 0, -100); // Z轴负半轴方向
             this.currentCamera.lookAt(this.currentCamera.position.clone().add(direction)); // 相机沿指定方向看
+            this.updateCameraView();
         }
-        this.renderer.render(this.scene, this.currentCamera);
+        // this.cameraHelper.update();
+        // this.renderer.render(this.scene, this.currentCamera);
+        this.glowComposer.render(this.scene, this.currentCamera);  
     }
 }
 

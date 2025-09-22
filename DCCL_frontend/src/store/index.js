@@ -1,17 +1,18 @@
 // store.js
-import { opticalModelList } from "@/utils/constant/model";
+import { opticalModelList } from "@/utils/constant/model.js";
 import threeInstance from "@/utils/threeInstance";
 import { defineStore } from "pinia";
 import axios from "axios";
 import { v4 as uuidv4 } from 'uuid'; // 引入 uuid 库
-
+import {bus} from '../js/mittBus.js';
 export const useThreeInstanceStore = defineStore("threeInstance", {
   state: () => ({
     tokenInitialized: false, // 是否初始化了token
     threeInstance: null,//threejs的实例
-    selectedElement: "",//当前选择的元素的名称
+    selectedComponent: "",//当前选择的元素的名称
     distance:[],//储存的元素之间的距离
     angle:[],//储存的元素之间的角度，具体而言是其连线与主光轴的夹角
+    tourVisible:false,//引导是否可见
     resonatorParam : {
       lambda:1064,//光的波长
       pumpWatt:100,//泵浦功率
@@ -22,13 +23,15 @@ export const useThreeInstanceStore = defineStore("threeInstance", {
       sampleNumber:8192,//采样点数量
       windowExpandFactor:3//窗口扩展因子
     },
+    // outputResultDom:null,//输出结果的dom节点
     // pictureKey:"5281bd60-6d64-4ee4-9f11-25948f8e5da4276dbd",
-    opticalFieldDialogVisible:false,//是否显示光场图的modal
-    plotDialogVisible:false,//是否展示统计图的modal
+    opticalFieldReady:false,
+    plotReady:false,
     onlyFinalResult:false,//是否只显示最终结果
     currentTaskID:"",//当前任务的ID
     fileName:"",//当前要获取的文件名
     eventSource: null, // 用于存储 EventSource 实例
+    dialogVisible:false,//仿真设置对话框是否可见
     // simulationResult:['{"iterationCount": 1, "transmissionCoefficientMain": 0.12488810380845108, "transmissionCoefficientFree": 1.3597301688242887, "outputPower": 1.3844463502127228e-08, "selectedAttribute": {"pumpWatt": 100}}',
     //   '{"iterationCount": 2, "transmissionCoefficientMain": 4.394131158750255, "transmissionCoefficientFree": 0.28927424014929864, "outputPower": 1.889652435807665e-08, "selectedAttribute": {"pumpWatt": 100}}',
     //   '{"iterationCount": 3, "transmissionCoefficientMain": 1.6079267344310049, "transmissionCoefficientFree": 0.3671436057957992, "outputPower": 5.457417415780011e-09, "selectedAttribute": {"pumpWatt": 100}}',
@@ -56,8 +59,9 @@ export const useThreeInstanceStore = defineStore("threeInstance", {
     setThreeInstance(threeInstance){
       this.threeInstance=threeInstance
     },
-    setSelectedElement(name){
-      this.selectedElement=name
+    setSelectedComponent(name){
+      this.selectedComponent=name
+      this.threeInstance.setSelectedByName(name)
     },
     async uploadParameter(data) {
       try {
@@ -76,7 +80,7 @@ export const useThreeInstanceStore = defineStore("threeInstance", {
       }
     },
 
-    async simulation(param,dom){
+    async simulation(param){
      
       /**
        * 仿真计算参数
@@ -101,15 +105,17 @@ export const useThreeInstanceStore = defineStore("threeInstance", {
           id: uuidv4(),
           content: event.data
         })
-        dom.scrollToBottom()
+        // that.outputResultDom.scrollToBottom()
         //更新数据
       };
      
       // 监听错误事件
       es.onerror = function(err) {
         console.error("EventSource failed:", err);
+        this.plotReady = true
         es.close(); // 关闭连接
       };
+
       this.eventSource = es; // 保存 EventSource 实例到 store 中
       // 清空之前的结果
       this.simulationResult=[]
@@ -194,10 +200,17 @@ export const useThreeInstanceStore = defineStore("threeInstance", {
         // 发送取消请求
         const response = await axios.get(`/flask/api/v1/task/cancel?taskID=${encodeURIComponent(taskID)}`);
         console.log(response.data); 
+        this.plotReady=true
       } catch (error) {
         console.error('Request failed:', error);
         throw error; 
       }
     },
+    // 统一入口，启动监听
+    startListen() {
+      bus.on('selectedComponentChanged', (model) => {
+        this.selectedComponent=model
+      });
+    }
   }
 });

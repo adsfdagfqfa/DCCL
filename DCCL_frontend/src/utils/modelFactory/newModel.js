@@ -4,7 +4,7 @@ const glassMaterial = new THREE.MeshPhysicalMaterial({
   metalness: 0.0,//玻璃非金属  金属度设置0
   roughness: 0.0,//玻璃表面光滑  
   envMapIntensity:1.0,
-  transmission:1.0,//透射度(透光率)
+  transmission:0.6,//透射度(透光率)
   ior:1.5,//折射率
 })
 /**
@@ -25,15 +25,15 @@ export function newMedium(){
  */
 export function newLens(){
   // 创建两个球体
-  
+  var material = new THREE.MeshBasicMaterial({ color: 0xA3D8F4 });  
   const radius = 40;
   const widthSegments = 32;
   const heightSegments = 32;
   let distance=1.7*radius
   const sphere1 = new THREE.SphereGeometry(radius, widthSegments, heightSegments);
   const sphere2 = new THREE.SphereGeometry(radius, widthSegments, heightSegments);
-  const sphereMesh1=new THREE.Mesh(sphere1,glassMaterial)
-  const sphereMesh2=new THREE.Mesh(sphere2,glassMaterial)
+  const sphereMesh1=new THREE.Mesh(sphere1,material)
+  const sphereMesh2=new THREE.Mesh(sphere2,material)
   // 移动第二个球体以形成凸透镜
   sphereMesh2.position.set(distance,0,0)
   sphereMesh1.updateMatrix();
@@ -51,7 +51,7 @@ export function newLens(){
  */
 export function newMirror(){
   const geometry = new THREE.BoxGeometry(5, 50, 50); // 宽度、高度、深度
-  
-  var box = new THREE.Mesh( geometry, glassMaterial );
+  var material = new THREE.MeshBasicMaterial({ color: 0xA3D8F4 });  
+  var box = new THREE.Mesh( geometry, material );
   return box;
 }
