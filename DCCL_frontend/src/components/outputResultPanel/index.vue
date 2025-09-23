@@ -47,6 +47,9 @@ const pageInstance = getCurrentInstance();
 const resultList = computed(() => {
     return store.simulationResult;
 });
+const currentTaskID = computed(() => {
+    return store.currentTaskID;
+});
 const visibleItems = computed(() =>
     store.onlyFinalResult
         ? resultList.value.filter(({ content }) => {
@@ -70,16 +73,16 @@ function onTogglePauseTask(){
     //清除rangeGenerator里面的输入
     if(isPaused.value){
         isPaused.value=false;
-        store.continueTask(taskID.value);
+        store.continueTask(currentTaskID.value);
     }
     else{
         isPaused.value=true;
-        store.pauseTask(taskID.value);
+        store.pauseTask(currentTaskID.value);
     }
 }
 function onCancelTask(){
     //清除rangeGenerator里面的输入
-    store.cancelTask(taskID.value);
+    store.cancelTask(currentTaskID.value);
     isPaused.value=false;
     console.log("取消任务")
     //清空结果列表
