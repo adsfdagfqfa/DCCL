@@ -16,7 +16,7 @@ worker_connections = 20
 # 其余常用可选配置
 keepalive = 2
 max_requests = 0           # 0 表示不限制，SSE 连接需要长寿命
-preload_app = True         # 预加载代码，节省内存
+preload_app = False         # 预加载代码，节省内存
 accesslog = '/var/log/gunicorn_acess.log'
 errorlog = '/var/log/gunicorn_error.log'
 # daemon = True  # 以守护进程模式运行（后台运行）
