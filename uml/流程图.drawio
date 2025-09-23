@@ -1,0 +1,116 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 Edg/131.0.0.0" version="24.8.6">
+  <diagram id="6a731a19-8d31-9384-78a2-239565b7b9f0" name="Page-1">
+    <mxGraphModel dx="1002" dy="573" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" background="none" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="Tq3qzejHLCFqoSY3waj7-59" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="Tq3qzejHLCFqoSY3waj7-56" target="Tq3qzejHLCFqoSY3waj7-58" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Tq3qzejHLCFqoSY3waj7-56" value="开始" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.start_2;whiteSpace=wrap;" parent="1" vertex="1">
+          <mxGeometry x="290" y="80" width="100" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="Tq3qzejHLCFqoSY3waj7-57" value="结束" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.start_1;whiteSpace=wrap;" parent="1" vertex="1">
+          <mxGeometry x="290" y="970" width="100" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="Tq3qzejHLCFqoSY3waj7-63" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="Tq3qzejHLCFqoSY3waj7-58" target="Tq3qzejHLCFqoSY3waj7-62" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Tq3qzejHLCFqoSY3waj7-80" value="YES" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="Tq3qzejHLCFqoSY3waj7-63" vertex="1" connectable="0">
+          <mxGeometry x="0.208" y="2" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Tq3qzejHLCFqoSY3waj7-65" value="NO" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" source="Tq3qzejHLCFqoSY3waj7-58" target="Tq3qzejHLCFqoSY3waj7-64" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="530" y="125" as="sourcePoint" />
+            <mxPoint x="730" y="130" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="510" y="195" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Tq3qzejHLCFqoSY3waj7-58" value="新建工程" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.decision;whiteSpace=wrap;" parent="1" vertex="1">
+          <mxGeometry x="290" y="160" width="100" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="Tq3qzejHLCFqoSY3waj7-68" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="Tq3qzejHLCFqoSY3waj7-62" target="Tq3qzejHLCFqoSY3waj7-67" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Tq3qzejHLCFqoSY3waj7-62" value="选择功能类型（谐振腔）" style="whiteSpace=wrap;html=1;strokeWidth=2;" parent="1" vertex="1">
+          <mxGeometry x="280" y="260" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="Tq3qzejHLCFqoSY3waj7-70" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="Tq3qzejHLCFqoSY3waj7-64" target="Tq3qzejHLCFqoSY3waj7-69" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="510" y="500" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Tq3qzejHLCFqoSY3waj7-64" value="选择工程打开" style="whiteSpace=wrap;html=1;strokeWidth=2;" parent="1" vertex="1">
+          <mxGeometry x="450" y="280" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="Tq3qzejHLCFqoSY3waj7-71" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="Tq3qzejHLCFqoSY3waj7-67" target="Tq3qzejHLCFqoSY3waj7-69" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Tq3qzejHLCFqoSY3waj7-67" value="输入对应参数&lt;div&gt;（腔镜数量与光波长）&lt;/div&gt;" style="whiteSpace=wrap;html=1;strokeWidth=2;" parent="1" vertex="1">
+          <mxGeometry x="280" y="354" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="Tq3qzejHLCFqoSY3waj7-73" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="Tq3qzejHLCFqoSY3waj7-69" target="Tq3qzejHLCFqoSY3waj7-72" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Tq3qzejHLCFqoSY3waj7-69" value="进入到工程界面" style="whiteSpace=wrap;html=1;strokeWidth=2;" parent="1" vertex="1">
+          <mxGeometry x="280" y="470" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="Tq3qzejHLCFqoSY3waj7-75" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="Tq3qzejHLCFqoSY3waj7-72" target="Tq3qzejHLCFqoSY3waj7-74" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Tq3qzejHLCFqoSY3waj7-78" value="YES" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="Tq3qzejHLCFqoSY3waj7-75" vertex="1" connectable="0">
+          <mxGeometry x="-0.0274" y="2" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Tq3qzejHLCFqoSY3waj7-83" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="Tq3qzejHLCFqoSY3waj7-72" target="Tq3qzejHLCFqoSY3waj7-82" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Tq3qzejHLCFqoSY3waj7-72" value="对谐振腔结构进行调整" style="rhombus;whiteSpace=wrap;html=1;strokeWidth=2;" parent="1" vertex="1">
+          <mxGeometry x="265" y="550" width="150" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="Tq3qzejHLCFqoSY3waj7-77" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.343;entryY=0.128;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="Tq3qzejHLCFqoSY3waj7-74" target="Tq3qzejHLCFqoSY3waj7-72" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="110" y="490" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="110" y="550" />
+              <mxPoint x="317" y="550" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Tq3qzejHLCFqoSY3waj7-74" value="调整参数或者新增&lt;div&gt;元件之类的操作&lt;/div&gt;" style="whiteSpace=wrap;html=1;strokeWidth=2;" parent="1" vertex="1">
+          <mxGeometry x="50" y="570" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="Tq3qzejHLCFqoSY3waj7-91" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="Tq3qzejHLCFqoSY3waj7-82" target="Tq3qzejHLCFqoSY3waj7-85" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="340" y="827" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Tq3qzejHLCFqoSY3waj7-82" value="二维/三维分析计算&lt;div&gt;（设置fox-li迭代结束条件）&lt;/div&gt;&lt;div&gt;选择可展示的光场平面&lt;/div&gt;" style="whiteSpace=wrap;html=1;strokeWidth=2;" parent="1" vertex="1">
+          <mxGeometry x="240" y="690" width="200" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="Tq3qzejHLCFqoSY3waj7-84" value="NO" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+          <mxGeometry x="340" y="658" width="40" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="Tq3qzejHLCFqoSY3waj7-93" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="Tq3qzejHLCFqoSY3waj7-85" target="Tq3qzejHLCFqoSY3waj7-92" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Tq3qzejHLCFqoSY3waj7-85" value="功率分析&lt;div&gt;（设置电路的相应参数数据）&lt;/div&gt;" style="whiteSpace=wrap;html=1;strokeWidth=2;" parent="1" vertex="1">
+          <mxGeometry x="280" y="780" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="Tq3qzejHLCFqoSY3waj7-94" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="Tq3qzejHLCFqoSY3waj7-92" target="Tq3qzejHLCFqoSY3waj7-57" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Tq3qzejHLCFqoSY3waj7-92" value="保存结果文件&lt;div&gt;保存功能文件&lt;/div&gt;" style="whiteSpace=wrap;html=1;strokeWidth=2;" parent="1" vertex="1">
+          <mxGeometry x="280" y="870" width="120" height="60" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
