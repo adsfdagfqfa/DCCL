@@ -31,6 +31,7 @@ class SimulationPipeline:
                 yield value
         except StopIteration as e:
             # 捕获steay_state最终返回值
+            logger.info("迭代任务完成,任务ID: %s", self.task_id)
             yield e.value
     def update_input_data(self, new_data):
         self.input_data = new_data

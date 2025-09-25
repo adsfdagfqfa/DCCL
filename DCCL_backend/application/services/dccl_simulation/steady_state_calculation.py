@@ -150,7 +150,7 @@ def cal_final_output(matrix_all, aperture_all, data,task_id,iteration_count):
     
     # V_round = cal_trans_factor(U_M1, s_it1)  # 一个 roundtrip 的传输系数
     del U_M1
-   
+    logger.info("迭代结束,共迭代次数: %d", t)
     s_it1_buffer = io.BytesIO()
     sio.savemat( s_it1_buffer, {'matrix': s_it1.get()}, format='5',do_compression=True)
     del s_it1
@@ -162,7 +162,7 @@ def cal_final_output(matrix_all, aperture_all, data,task_id,iteration_count):
     del s_it2
     # key2=task_id+uuid.uuid4().hex[:6]
     # set_redis_data(key2, s_it2_buffer.getvalue())
-    
+    logger.info("迭代任务结束,任务ID: %s", task_id)
     result={}
     result["iterationCount"] = t
     result["fieldDistributionMain"] = ""
