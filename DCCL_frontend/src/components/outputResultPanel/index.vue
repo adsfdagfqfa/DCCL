@@ -14,7 +14,7 @@
             </div> -->
             <DynamicScrollerItem :item="item" :active="true" :size-dependencies="[item.content]">
               <div class="list-item" :key="item.id">
-                <ResultItem :item="item.content" :only_final_result="store.onlyFinalResult" />
+                <ResultItem :item="item.content" :only_final_result="onlyFinalResult" />
               </div>
             </DynamicScrollerItem>
           </template>
@@ -26,7 +26,7 @@
           
         </div> -->
         <div class="flex justify-between items-center p-4">
-          <el-checkbox v-model="store.onlyFinalResult" label="只显示结果" size="large" />
+          <el-checkbox v-model="onlyFinalResult" label="只显示结果" size="large" />
           <div class="flex items-center space-x-2">
             <el-button :type="isPaused?'success':'warning'" @click="onTogglePauseTask">{{ isPaused ? '继续' : '暂停' }}</el-button>
             <el-button type="danger" @click="onCancelTask">取消</el-button>
@@ -50,15 +50,17 @@ const resultList = computed(() => {
 const currentTaskID = computed(() => {
     return store.currentTaskID;
 });
+const onlyFinalResult = ref(false)
 const visibleItems = computed(() =>
-    store.onlyFinalResult
-        ? resultList.value.filter(({ content }) => {
-            try {
-            return JSON.parse(content).isEnd
-            } catch {
-            return false
-            }
-        }): resultList.value
+  onlyFinalResult.value 
+    ? resultList.value.filter( ({ content }) => { 
+        try {
+          return JSON.parse(content).isEnd
+        } catch {
+          return false
+        }
+      })
+    : resultList.value
 )
 watch(
   () => store.simulationResult,
@@ -88,11 +90,13 @@ function onCancelTask(){
     //清空结果列表
     store.simulationResult=[];
     //清空rangeGenerator里面的输入
-    if (rangeGenerator.value) {
-        rangeGenerator.value.clearInput();
-    }
+    // if (rangeGenerator.value) {
+    //     rangeGenerator.value.clearInput();
+    // }
 }
 onMounted(() => { 
+  console.log("outputResultPanel mounted")
+  console.log(onlyFinalResult.value)
 });
 </script>
 <style scoped>

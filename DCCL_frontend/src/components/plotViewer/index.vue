@@ -1,18 +1,18 @@
 <template>
-    <div>
-        <label class="font-bold text-xl mb-3 block">结果分析图</label>
-        <!-- <div class="flex gap-4">
-            <el-select v-model="yLabel" placeholder="Select Y">
-                <el-option v-for="item in yLabels" :key="item" :label="item" :value="item"/>
-            </el-select>
-            <el-select v-model="xLabel" placeholder="Select X">
-                <el-option v-for="item in xLabels" :key="item" :label="item" :value="item"/>
-            </el-select>
-            <el-button type="primary" @click="drawPlot">生成图表</el-button>
-        </div> -->
+  <div>
+    <label class="font-bold text-xl mb-3 block">结果分析图</label>
+    <!-- <div class="flex gap-4">
+        <el-select v-model="yLabel" placeholder="Select Y">
+            <el-option v-for="item in yLabels" :key="item" :label="item" :value="item"/>
+        </el-select>
+        <el-select v-model="xLabel" placeholder="Select X">
+            <el-option v-for="item in xLabels" :key="item" :label="item" :value="item"/>
+        </el-select>
         <el-button type="primary" @click="drawPlot">生成图表</el-button>
-        <div ref="plotContainer" class="chart-container"></div>
-    </div>
+    </div> -->
+    <el-button type="primary" @click="drawPlot">生成图表</el-button>
+    <div ref="plotContainer" class="chart-container"></div>
+  </div>
 </template>
 
 <script setup>
@@ -28,16 +28,16 @@ const data=ref([])
 const parsedData=ref([])
 //绘图使用的是d3库，在index.html中以CDN形式引入
 onMounted(() => {
-    console.log('plot','挂载')
+  console.log('plot','挂载')
 });
 
 function getData(){
-    parsedData.value = store.simulationResult.map(item => JSON.parse(item.content));
-    console.log(parsedData.value)
-    // const parsedContent = JSON.parse(store.simulationResult[0].content);
-    // xLabels.value=Object.keys(parsedData.value[0].selectedAttribute)
-    xLabel.value=Object.keys(parsedData.value[0].selectedAttribute)[0];
-    // console.log("xLabel",xLabel.value)
+parsedData.value = store.simulationResult.map(item => JSON.parse(item.content));
+console.log(parsedData.value)
+// const parsedContent = JSON.parse(store.simulationResult[0].content);
+// xLabels.value=Object.keys(parsedData.value[0].selectedAttribute)
+xLabel.value=Object.keys(parsedData.value[0].selectedAttribute)[0];
+// console.log("xLabel",xLabel.value)
 }
 
 onUnmounted(() => {
@@ -127,7 +127,8 @@ watch(
   (ready) => {
     if (ready) {
       console.log("加载曲线数据")
-      loadPlot(store.plotData)
+    //   loadPlot(store.plotData)
+      drawPlot()
     }
   }
 )
