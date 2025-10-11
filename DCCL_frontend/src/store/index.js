@@ -27,7 +27,7 @@ export const useThreeInstanceStore = defineStore("threeInstance", {
     // pictureKey:"5281bd60-6d64-4ee4-9f11-25948f8e5da4276dbd",
     opticalFieldReady:false,
     plotReady:false,
-    onlyFinalResult:false,//是否只显示最终结果
+    // onlyFinalResult:false,//是否只显示最终结果
     currentTaskID:"",//当前任务的ID
     fileName:"",//当前要获取的文件名
     eventSource: null, // 用于存储 EventSource 实例
@@ -40,17 +40,17 @@ export const useThreeInstanceStore = defineStore("threeInstance", {
     //   '{"iterationCount": 6, "transmissionCoefficientMain": 2.6011093223635466, "transmissionCoefficientFree": 0.2333651375509338, "outputPower": 8.241264818278385e-09, "selectedAttribute": {"pumpWatt": 100}}',
     //   '{"iterationCount": 6, "fieldDistributionMain": "ef83f993-f5f2-4e87-885b-c88d3413023efe13be", "fieldDistributionFree": "ef83f993-f5f2-4e87-885b-c88d3413023e03e54a", "outputPower": 8.241264818278385e-09, "isEnd": true}',
     // ]
-    simulationResult:[{id:'asdgaka',content:'{"iterationCount": 1, "transmissionCoefficientMain": 0.598172448859426, "transmissionCoefficientFree": 1.0467823194621835, "outputPower": 1.36186823910903e-08, "isEnd": false, "selectedAttribute": {"lambda": 1064.1}}',}
-    ,{id:'1111',content:'{"iterationCount": 2, "transmissionCoefficientMain": 2.1774218242786127, "transmissionCoefficientFree": 0.21662303832812996, "outputPower": 1.4299165644251156e-08, "isEnd": false, "selectedAttribute": {"lambda": 1064.1}}',},
-    
-    {id:'2222',content:'{"iterationCount": 3, "transmissionCoefficientMain": 0.9774801348234873, "transmissionCoefficientFree": 2.5120109677046387, "outputPower": 3.0801227115969505e-09, "isEnd": false, "selectedAttribute": {"lambda": 1064.1}}',},
-    {id:'3333',content:'{"iterationCount": 4, "transmissionCoefficientMain": 0.7856474450095124, "transmissionCoefficientFree": 1.5535101704999157, "outputPower": 7.786699866076718e-09, "isEnd": false, "selectedAttribute": {"lambda": 1064.1}}',},
-    {id:'4444',content:'{"iterationCount": 5, "transmissionCoefficientMain": 1.3952515792149736, "transmissionCoefficientFree": 0.5707095893986177, "outputPower": 1.2117033671122183e-08, "isEnd": false, "selectedAttribute": {"lambda": 1064.1}}',},
-    {id:'5555',content:'{"iterationCount": 6, "transmissionCoefficientMain": 1.1374454011432196, "transmissionCoefficientFree": 1.171414700310216, "outputPower": 6.910340588242904e-09, "isEnd": false, "selectedAttribute": {"lambda": 1064.1}}',},
-    {id:'6666',content:'{"iterationCount": 7, "transmissionCoefficientMain": 0.949813934162312, "transmissionCoefficientFree": 1.5032604221678725, "outputPower": 8.095587938440452e-09, "isEnd": false, "selectedAttribute": {"lambda": 1064.1}}',},
-    {id:'7777',content:'{"iterationCount": 8, "transmissionCoefficientMain": 1.2077731534934137, "transmissionCoefficientFree": 0.8466666863557571, "outputPower": 1.2179056297915608e-08, "isEnd": false, "selectedAttribute": {"lambda": 1064.1}}',},
-    {id:'8888',content:'{"iterationCount": 9, "transmissionCoefficientMain": 1.1681646578449236, "transmissionCoefficientFree": 1.0576713825207311, "outputPower": 1.03146712818499e-08, "isEnd": false, "selectedAttribute": {"lambda": 1064.1}}',}
-  ],
+    simulationResult:[{id:'asdgaka',content:'{"iterationCount": 1, "transmissionCoefficientMain": 0.598172448859426, "transmissionCoefficientFree": 1.0467823194621835, "outputPower": 1.36186823910903e-08, "isEnd": false, "selectedAttribute": {"lambda": 1064.1}}',},
+      {id:'1111',content:'{"iterationCount": 2, "transmissionCoefficientMain": 2.1774218242786127, "transmissionCoefficientFree": 0.21662303832812996, "outputPower": 1.4299165644251156e-08, "isEnd": false, "selectedAttribute": {"lambda": 1064.1}}',},
+      
+      {id:'2222',content:'{"iterationCount": 3, "transmissionCoefficientMain": 0.9774801348234873, "transmissionCoefficientFree": 2.5120109677046387, "outputPower": 3.0801227115969505e-09, "isEnd": false, "selectedAttribute": {"lambda": 1064.1}}',},
+      {id:'3333',content:'{"iterationCount": 4, "transmissionCoefficientMain": 0.7856474450095124, "transmissionCoefficientFree": 1.5535101704999157, "outputPower": 7.786699866076718e-09, "isEnd": false, "selectedAttribute": {"lambda": 1064.1}}',},
+      {id:'4444',content:'{"iterationCount": 5, "transmissionCoefficientMain": 1.3952515792149736, "transmissionCoefficientFree": 0.5707095893986177, "outputPower": 1.2117033671122183e-08, "isEnd": false, "selectedAttribute": {"lambda": 1064.1}}',},
+      {id:'5555',content:'{"iterationCount": 6, "transmissionCoefficientMain": 1.1374454011432196, "transmissionCoefficientFree": 1.171414700310216, "outputPower": 6.910340588242904e-09, "isEnd": false, "selectedAttribute": {"lambda": 1064.1}}',},
+      {id:'6666',content:'{"iterationCount": 7, "transmissionCoefficientMain": 0.949813934162312, "transmissionCoefficientFree": 1.5032604221678725, "outputPower": 8.095587938440452e-09, "isEnd": false, "selectedAttribute": {"lambda": 1064.1}}',},
+      {id:'7777',content:'{"iterationCount": 8, "transmissionCoefficientMain": 1.2077731534934137, "transmissionCoefficientFree": 0.8466666863557571, "outputPower": 1.2179056297915608e-08, "isEnd": false, "selectedAttribute": {"lambda": 1064.1}}',},
+      {id:'8888',content:'{"iterationCount": 9, "transmissionCoefficientMain": 1.1681646578449236, "transmissionCoefficientFree": 1.0576713825207311, "outputPower": 1.03146712818499e-08, "isEnd": false, "selectedAttribute": {"lambda": 1064.1}}',}
+    ],
   }),
   getters: {
     
