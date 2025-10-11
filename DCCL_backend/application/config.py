@@ -33,8 +33,8 @@ class ProductionConfig(Config):
     LOG_TO_FILE = True
     LOG_CONSOLE_LEVEL = logging.INFO    # 生产控制台只打印 info+
     LOG_FILE_LEVEL = logging.DEBUG      # 文件保留所有日志
-    # REDIS_URL = "redis://:123456@redis-service:6379/0"
-    REDIS_URL = "redis://:123456@localhost:6379/0"
+    REDIS_URL = "redis://:123456@redis-service:6379/0"
+    # REDIS_URL = "redis://:123456@localhost:6379/0"
 
 class DevelopmentConfig(Config):
     ENV = 'development'
