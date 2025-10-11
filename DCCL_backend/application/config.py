@@ -27,6 +27,8 @@ class Config:
     LOG_PATH = _CONFIG_DIR / ".." / "logs"  # 日志文件目录
 
 class ProductionConfig(Config):
+    ENV = 'production'
+    DEBUG = False
     LOG_TO_CONSOLE = False
     LOG_TO_FILE = True
     LOG_CONSOLE_LEVEL = logging.INFO    # 生产控制台只打印 info+
@@ -35,6 +37,7 @@ class ProductionConfig(Config):
     # REDIS_URL = "redis://:123456@localhost:6379/0"
 
 class DevelopmentConfig(Config):
+    ENV = 'development'
     DEBUG = True
     LOG_TO_CONSOLE = True
     LOG_TO_FILE = False
